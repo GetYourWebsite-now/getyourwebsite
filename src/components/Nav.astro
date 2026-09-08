@@ -6,7 +6,7 @@
  * once you scroll (see the inline script at the bottom). Everywhere else it
  * is solid from the start.
  */
-import { NAV_LINKS } from '../data/site.js';
+import { NAV_LINKS, PORTAL_URL } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -41,6 +41,14 @@ const here = Astro.url.pathname;
       }
     </nav>
 
+    {
+      PORTAL_URL && (
+        <a class="nav__signin" href={PORTAL_URL} rel="noopener">
+          Sign in
+        </a>
+      )
+    }
+
     <a class="btn btn--gold btn--sm nav__cta" href={url('/contact')}>Free Mockup</a>
 
     <button
@@ -69,7 +77,23 @@ const here = Astro.url.pathname;
           </a>
         ))
       }
+      {/* Benefits lost its header slot to "How it works" but is still a live
+          page, so the drawer keeps it — along with the footer and the home
+          page, that's three ways to reach it. */}
+      <a
+        href={url('/benefits')}
+        aria-current={isActive(here, '/benefits') ? 'page' : undefined}
+      >
+        Benefits
+      </a>
       <a class="btn btn--gold nav__drawer-cta" href={url('/contact')}>Free Mockup</a>
+      {/* Below the CTA on purpose: findable, and out of the way of the thing we
+          actually want a first-time visitor to press. */}
+      {PORTAL_URL && (
+        <a class="nav__drawer-signin" href={PORTAL_URL} rel="noopener">
+          Sign in
+        </a>
+      )}
     </nav>
   </div>
 </header>
@@ -128,6 +152,34 @@ const here = Astro.url.pathname;
     text-decoration: none;
     border-radius: var(--radius-pill);
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+  }
+
+  /* Sign in. Deliberately quiet and set apart from the main link group: the
+     gold CTA is the primary action and this must not compete with it. The rule
+     on the left is what separates it — clients arrive here knowing they have an
+     account, so it only has to be findable, not loud. */
+  .nav__signin {
+    display: none;
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    margin-left: 0.55rem;
+    padding-left: 1.4rem;
+    border-left: 1px solid var(--line-dark);
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--silver);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .nav__signin:hover { color: var(--white); }
+
+  .nav__drawer-signin {
+    margin-top: 0.25rem;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--silver);
   }
 
   .nav__link:hover {
@@ -229,7 +281,13 @@ const here = Astro.url.pathname;
 
   /* Desktop --------------------------------------------------------------- */
 
-  @media (min-width: 900px) {
+  /* 1060, not 900. The desktop row now carries five links, a Sign in link and
+     the gold CTA; at 900 it had 81px of slack before any of that was added, so
+     the burger keeps the job further up than it used to. Below this the drawer
+     holds everything comfortably. */
+  @media (min-width: 1060px) {
+    .nav__signin { display: inline-flex; }
+
     .nav__links,
     .nav__cta { display: flex; }
     .nav__burger { display: none; }

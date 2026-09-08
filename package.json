@@ -13,6 +13,7 @@
     "verify:contrast": "node tools/contrast.mjs",
     "verify:wraps": "node tools/wraps.mjs",
     "verify:voids": "node tools/voids.mjs",
+    "verify:portal": "node tools/portal-sync.mjs",
     "shots:ambient": "node tools/ambient-shots.mjs",
     "shots:teaser": "node tools/teaser.mjs"
   },

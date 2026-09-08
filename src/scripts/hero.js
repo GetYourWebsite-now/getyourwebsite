@@ -994,7 +994,10 @@ function start() {
       const over = window.scrollY - maxY;
       // Gated means "the gate is up and we're at the wall", not "we overshot" —
       // with interception working, `over` stays 0 and the old test never fired.
-      gated = over > -1;
+      // The 2px tolerance is for sub-pixel scroll positions: landing on the pin
+      // via scrollTo can leave `over` at -1.2, which read as "not at the wall"
+      // even though every key press was correctly being swallowed.
+      gated = over > -2;
       // The half-pixel deadband keeps sub-pixel scroll positions from
       // triggering a write every frame, which is what reads as jitter.
       // Feed it into the same urgency signal the intercepted paths use, so a

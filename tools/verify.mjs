@@ -19,17 +19,18 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/benefits', '/why-us', '/contact'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/benefits', '/why-us', '/contact'];
 
-// Jumping straight to a scroll position takes a while to settle, because the
-// hero timeline has a minimum play time (MIN_PLAY_S in hero.js, 4.6s).
+// Budget for the hero timeline to play out after a jump. MIN_PLAY_S is 6.9s.
 //
-// Be generous, and here's the arithmetic for why: hero.js clamps dt to 0.1s a
-// frame so a stall can't jump the scene. Headless software rendering manages
-// about 6fps, i.e. 0.167s of wall time per frame, so animation time advances at
-// roughly 0.6x wall time — 4.6s of timeline needs ~7.7s of waiting. Anything
-// tighter samples a half-finished frame and reads as a site bug.
-const HERO_SETTLE_MS = 12000;
+// This is a ceiling, not a sleep: the checks below poll for the beat they want
+// and return the moment it arrives, so a generous number costs nothing on a
+// healthy run. It needs to be generous because hero.js clamps dt to 0.1s a
+// frame, and headless software rendering advances animation time at roughly
+// 0.6x wall time — and worse when the suite has several pages open. Measured
+// runs reach the closing beat at about 11s; at 15s the slowest run timed out
+// mid-launch and reported 15% lit, which reads exactly like a real regression.
+const HERO_SETTLE_MS = 30000;
 
 const browser = await chromium.launch({
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
@@ -74,10 +75,85 @@ console.log('\n[2] Demo sandbox flow');
 await page.goto(`${BASE}/demo`, { waitUntil: 'networkidle' });
 
 await page.click('[data-tab="real-site"]');
-const versions = await page.locator('.portal-version-item').count();
-versions === 3
+// Scoped to the approved-versions list. "My website" now also carries a
+// review queue and the hosted-version list, and an unscoped count picks up all
+// three — it read 9 and looked like a data bug.
+const versions = await page.locator('[data-versions] .portal-version-item').count();
+versions === 4
   ? pass(`version list shows ${versions} approved versions`)
-  : fail(`expected 3 versions, saw ${versions}`);
+  : fail(`expected 4 approved versions, saw ${versions}`);
+
+// The three capabilities the marketing copy leads with have to work here, not
+// just be drawn. If the copy promises them, the demo has to deliver them.
+{
+  const liveBefore = await page.locator('[data-hosted] .dash-pill').count();
+  await page.click('[data-host="4"]');
+  await page.waitForTimeout(300);
+  const nowLive = await page.evaluate(() => {
+    const pill = document.querySelector('[data-hosted] .dash-pill');
+    return pill?.closest('.portal-version-item')?.querySelector('.portal-version-name')?.textContent ?? '';
+  });
+  liveBefore === 1 && /Version 4/.test(nowLive)
+    ? pass('hosted version switches with one button — Live moved to version 4')
+    : fail(`the version switch did not take: "${nowLive}"`);
+}
+
+{
+  await page.click('[data-photos="4"]');
+  await page.waitForSelector('[data-attach]:not([hidden])');
+  await page.waitForTimeout(400);
+  const slots = await page.locator('[data-slot]').count();
+
+  // Two paths, tested two ways.
+  //
+  // Tap-to-place is the touch path and is driven with real clicks. The pointer
+  // drag is driven with synthetic drag events carrying a real DataTransfer,
+  // because Playwright's dragAndDrop is unreliable against HTML5 drag targets —
+  // it picked a neighbouring photo, or none, on roughly half of ten attempts.
+  // That is the harness, not the page: the library's chip positions were
+  // measured pixel-identical from 600ms to 4s, so nothing is moving under it.
+  await page.click('[data-asset="a1"]');
+  await page.click('[data-slot="s2"]');
+  await page.waitForTimeout(200);
+  const tapped = await page.evaluate(
+    () => document.querySelector('[data-slot="s2"] .attach-slot__state')?.textContent?.trim()
+  );
+
+  const dragged = await page.evaluate(() => {
+    const dt = new DataTransfer();
+    const chip = document.querySelector('[data-asset="a4"]');
+    const slot = document.querySelector('[data-slot="s3"]');
+    chip.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }));
+    slot.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt }));
+    slot.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }));
+    return document.querySelector('[data-slot="s3"] .attach-slot__state')?.textContent?.trim();
+  });
+
+  slots >= 3 && tapped === 'Sourdough loaves'
+    ? pass(`photos attach by tap — "${tapped}" landed in the about slot`)
+    : fail(`tap-to-place failed (slots=${slots}, slot reads "${tapped}")`);
+  dragged === 'Cinnamon buns'
+    ? pass(`photos attach by drag — "${dragged}" landed in the menu slot`)
+    : fail(`drag-and-drop onto a placeholder failed (slot reads "${dragged}")`);
+
+  await page.click('[data-attach-close]');
+}
+
+{
+  await page.click('[data-tab="version-tree"]');
+  await page.waitForTimeout(500);
+  const tree = await page.evaluate(() => ({
+    cards: document.querySelectorAll('[data-vtree] .vtree-card').length,
+    edges: document.querySelectorAll('[data-vtree-edges] path').length,
+  }));
+  // Five nodes and four edges is a tree with a branch in it. A straight line
+  // would also give 5 and 4, so check the branch explicitly: two versions
+  // share a parent.
+  tree.cards === 5 && tree.edges === 4
+    ? pass(`version tree draws ${tree.cards} versions and ${tree.edges} edges`)
+    : fail(`version tree wrong: ${JSON.stringify(tree)}`);
+  await page.click('[data-tab="real-site"]');
+}
 
 await page.click('[data-revise-latest]');
 await page.waitForSelector('[data-revise]:not([hidden])');
@@ -150,7 +226,20 @@ async function litBehind(beat, fraction) {
       const hero = document.querySelector('[data-hero]');
       const dist = hero.getBoundingClientRect().height - window.innerHeight;
       window.scrollTo(0, dist * f);
-      await new Promise((r) => setTimeout(r, settle));
+
+      // Wait for the beat itself to reach full opacity rather than sleeping a
+      // fixed time. The timeline is rate limited, so how long it needs depends
+      // entirely on the frame rate we happen to get — a flat wait was only 4%
+      // clear of the requirement and this check failed intermittently at 9%,
+      // 41% lit, on a scene that was simply still mid-launch.
+      const beatEl = document.querySelector(`[data-beat="${beat}"]`);
+      const deadline = performance.now() + settle;
+      while (performance.now() < deadline) {
+        if (parseFloat(getComputedStyle(beatEl).opacity) >= 0.98) break;
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+      // A moment more so the last pieces finish leaving frame.
+      await new Promise((r) => setTimeout(r, 900));
 
       const canvas = document.querySelector('[data-hero-canvas]');
       const block = document.querySelector(`[data-beat="${beat}"] .shell`);
@@ -357,10 +446,18 @@ const heroDarkBottom = async (p) => {
     const r = document.querySelector('[data-hero]').getBoundingClientRect();
     window.scrollTo(0, window.scrollY + r.bottom - window.innerHeight);
   });
-  await p.waitForTimeout(400);
-  const gatedNow = await p.evaluate(() =>
-    document.querySelector('[data-hero]').classList.contains('is-gated')
-  );
+  // Poll rather than wait a flat 400ms. The class is set by the render loop,
+  // and in headless that loop runs slowly enough that engaging took anywhere
+  // from 3ms to 2.2s across runs — a fixed wait failed maybe one run in three
+  // on a gate that was working correctly the whole time.
+  const gatedNow = await p
+    .waitForFunction(
+      () => document.querySelector('[data-hero]').classList.contains('is-gated'),
+      null,
+      { timeout: 8000 }
+    )
+    .then(() => true)
+    .catch(() => false);
   await p.keyboard.press('PageDown');
   await p.keyboard.press('ArrowDown');
   // Upward keys are never touched, wherever you are.

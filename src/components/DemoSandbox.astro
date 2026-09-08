@@ -8,7 +8,9 @@
  *   client/src/pages/ExploreTab.jsx       the dashboard: KPIs, quick actions,
  *                                         and how the recommendations are chosen
  *   client/src/pages/RealSiteTab.jsx      "My website" + the version list
- *   client/src/pages/VersionTreeTab.jsx   the lineage view
+ *   client/src/pages/VersionTreeTab.jsx   the branching lineage view
+ *   client/src/components/HostingPanel.jsx     custom domain + hosted version
+ *   client/src/components/AttachImagesPanel.jsx  photos onto placeholders
  *   client/src/pages/MockSiteTab.jsx      "Free preview"
  *   client/src/pages/AssetsTab.jsx        the image library
  *   client/src/components/ReviseSitePanel.jsx  the change-request workspace
@@ -27,8 +29,13 @@
  *   - The login and set-password screens are skipped; you arrive signed in.
  *   - Sending a change request shows the real success banner, but obviously
  *     doesn't email anyone.
- *   - Assets can't be uploaded; "Add images" drops in samples instead.
- *   - The version tree is a straight line — the real one branches.
+ *   - Assets can't be uploaded; the library is seeded with samples instead.
+ *   - Hosting a version updates the demo, but there is no domain behind it.
+ *   - Domain search is not faked — a domain is shown already connected.
+ *   - Account and Billing are deliberately omitted. They exist in the real
+ *     portal (plan, revision credits, registrant contact, Stripe checkout) but
+ *     say nothing about what the product does, and a mock payment screen is the
+ *     last thing a credibility demo should contain.
  *
  * The portal used to be dark slate and mint. It was redesigned onto gold-on-
  * black, and its token block now says outright that it mirrors this marketing
@@ -220,6 +227,29 @@
               </div>
             </div>
 
+            <!-- Versions in review. The human step, made visible. -->
+            <section class="portal-version-list" data-pending-panel hidden>
+              <h3 class="portal-version-list-title">Versions in review</h3>
+              <ul class="portal-version-items" data-pending></ul>
+            </section>
+
+            <!-- Hosting. The headline capability: a custom domain we register,
+                 and a one-button switch for which approved version is live. -->
+            <section class="portal-version-list">
+              <h3 class="portal-version-list-title">Custom domain</h3>
+              <div class="hosting-domain">
+                <span class="portal-status">Active</span>
+                <span class="hosting-domain__name" data-domain>rosasbakery.com</span>
+                <span class="hosting-domain__meta">Registered for you · served on Cloudflare's network</span>
+              </div>
+
+              <h3 class="portal-version-list-title hosting-hosted-title">Hosted version</h3>
+              <p class="dash-section-lead">
+                Only approved versions can go live. Empty photo slots are checked first.
+              </p>
+              <ul class="portal-version-items" data-hosted></ul>
+            </section>
+
             <section class="portal-version-list">
               <h3 class="portal-version-list-title">Approved versions</h3>
               <ul class="portal-version-items" data-versions></ul>
@@ -238,7 +268,13 @@
               </div>
             </div>
             <div class="portal-panel portal-panel--flush">
-              <ol class="vtree" data-vtree></ol>
+              <!-- Depth flows left to right and siblings fan out on Y, the same
+                   shape client/src/versionTreeLayout.js lays out. Rosa's v3 and
+                   v4 both come off v2, which is what makes it a tree. -->
+              <div class="vtree-wrap">
+                <svg class="vtree-edges" data-vtree-edges aria-hidden="true"></svg>
+                <div class="vtree-nodes" data-vtree></div>
+              </div>
             </div>
           </div>
 
@@ -288,6 +324,47 @@
             </div>
           </div>
         </main>
+      </div>
+    </div>
+
+    <!-- ── Attach images (overlay) ─────────────────────────────────────
+         Mirrors client/src/components/AttachImagesPanel.jsx: the photo slots on
+         a version down one side, the image library down the other, and you drag
+         one onto the other. This is one of the three capabilities the marketing
+         copy promises, so it has to actually work here rather than be a picture
+         of itself. -->
+    <div class="client-revise-overlay" data-attach hidden>
+      <div class="client-revise-shell attach-shell" role="dialog" aria-modal="true" aria-labelledby="attach-title">
+        <section class="client-revise-preview attach-main">
+          <header class="client-revise-preview-header">
+            <div>
+              <h2 id="attach-title">
+                Placeholders on this version
+                <span class="client-revise-version-pill" data-attach-version>Version 4</span>
+              </h2>
+              <p class="client-revise-hint">
+                Drag a photo from your library onto a slot, then save. On a touch
+                screen, tap a photo and then tap a slot.
+              </p>
+            </div>
+            <div class="client-revise-preview-actions">
+              <button type="button" class="client-btn-ghost" data-attach-close aria-label="Close">✕</button>
+            </div>
+          </header>
+          <div class="attach-slots" data-slots></div>
+        </section>
+
+        <aside class="client-revise-sidebar attach-side">
+          <div class="client-revise-sidebar-header">
+            <h3>Image library</h3>
+            <p>Your uploaded photos. Reusable across every version.</p>
+          </div>
+          <div class="attach-library" data-attach-library></div>
+          <div class="client-revise-actions">
+            <button type="button" class="portal-cta" data-attach-save>Save photos</button>
+            <button type="button" class="client-btn-soft" data-attach-close>Cancel</button>
+          </div>
+        </aside>
       </div>
     </div>
 
@@ -867,6 +944,136 @@
     background: var(--accent-soft);
     border: 1px solid var(--gold-line);
     border-radius: 999px;
+  }
+
+  /* Hosting -------------------------------------------------------------- */
+
+  .sandbox .hosting-domain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: var(--p-radius);
+    background: rgba(10, 10, 12, 0.4);
+  }
+
+  .sandbox .hosting-domain__name {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .sandbox .hosting-domain__meta {
+    flex-basis: 100%;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .sandbox .hosting-hosted-title { margin-top: 1.4rem; }
+
+  .sandbox .portal-version-item.is-live {
+    border-color: var(--gold-line);
+    background: rgba(245, 194, 75, 0.06);
+  }
+
+  .sandbox .dash-pill {
+    margin-left: 0.5rem;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--gold-line);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+
+  /* Version tree — depth left to right, siblings fanned on Y ---------------- */
+
+  .sandbox .vtree-wrap { position: relative; overflow-x: auto; padding: 0.5rem 0 0.25rem; }
+  .sandbox .vtree-edges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  .sandbox .vtree-nodes { position: relative; min-width: 34rem; height: 20rem; }
+
+  /* 20rem of height and 10.5rem cards: two siblings sit at a third and two
+     thirds of the column, and at the old 15rem the Christmas branch overlapped
+     the version above it. */
+  .sandbox .vtree-card {
+    position: absolute;
+    width: 10.5rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: var(--p-radius);
+    background: rgba(22, 22, 29, 0.95);
+    transform: translate(-50%, -50%);
+  }
+
+  .sandbox .vtree-card.is-live { border-color: var(--gold-line); background: rgba(245, 194, 75, 0.08); }
+  .sandbox .vtree-card.is-pending { border-style: dashed; opacity: 0.85; }
+  .sandbox .vtree-card__title { font-size: 0.9rem; font-weight: 700; color: var(--ink); }
+  .sandbox .vtree-card__meta { margin-top: 0.15rem; font-size: 0.75rem; color: var(--muted); }
+
+  /* Attach images ---------------------------------------------------------- */
+
+  .sandbox .attach-slots { padding: 1rem 1.25rem 1.5rem; overflow-y: auto; display: grid; gap: 0.75rem; }
+
+  .sandbox .attach-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.85rem;
+    border: 1px dashed var(--line-strong);
+    border-radius: var(--p-radius);
+    background: rgba(10, 10, 12, 0.35);
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .sandbox .attach-slot.is-over,
+  .sandbox .attach-slot.is-armed { border-color: var(--accent); background: rgba(245, 194, 75, 0.08); }
+  .sandbox .attach-slot.is-filled { border-style: solid; }
+
+  .sandbox .attach-slot__thumb {
+    width: 4.5rem;
+    height: 3.2rem;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 1px solid var(--line);
+    background: rgba(230, 231, 235, 0.05);
+    object-fit: cover;
+  }
+
+  .sandbox .attach-slot__label { font-size: 0.92rem; font-weight: 600; color: var(--ink); }
+  .sandbox .attach-slot__state { font-size: 0.78rem; color: var(--muted); }
+
+  .sandbox .attach-library {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    padding: 0 1.25rem 1rem;
+    overflow-y: auto;
+  }
+
+  .sandbox .attach-chip {
+    border: 1px solid var(--line);
+    border-radius: var(--p-radius);
+    overflow: hidden;
+    background: rgba(10, 10, 12, 0.5);
+    cursor: grab;
+    text-align: left;
+  }
+
+  .sandbox .attach-chip.is-armed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--gold-line); }
+  .sandbox .attach-chip img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+  .sandbox .attach-chip span { display: block; padding: 0.35rem 0.5rem; font-size: 0.72rem; color: var(--ink-soft); }
+
+  @media (max-width: 860px) {
+    .sandbox .attach-shell { grid-template-columns: 1fr; }
+    .sandbox .attach-library { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   }
 
   /* Assets --------------------------------------------------------------- */

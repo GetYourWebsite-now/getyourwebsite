@@ -1,5 +1,5 @@
 ---
-import { NAV_LINKS, CONTACT_EMAIL, SOCIALS } from '../data/site.js';
+import { NAV_LINKS, CONTACT_EMAIL, SOCIALS, PORTAL_URL } from '../data/site.js';
 import { url } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -20,6 +20,14 @@ const year = new Date().getFullYear();
       <ul>
         <li><a href={url('/')}>Home</a></li>
         {NAV_LINKS.map((link) => <li><a href={url(link.href)}>{link.label}</a></li>)}
+        {/* Not in NAV_LINKS any more — "How it works" took its header slot —
+            but still a live page, so it stays reachable from here. */}
+        <li><a href={url('/benefits')}>Benefits</a></li>
+        {PORTAL_URL && (
+          <li>
+            <a href={PORTAL_URL} rel="noopener">Sign in</a>
+          </li>
+        )}
         <li><a href={url('/contact')}>Contact</a></li>
       </ul>
     </nav>

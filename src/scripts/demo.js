@@ -24,10 +24,16 @@ function seed() {
   return {
     tab: 'explore',
     businessName: "Rosa's Bakery",
-    // The Assets library starts empty, which is the state the real Explore tab
-    // has a distinct recommendation for ("Upload your first photos").
-    assets: [],
     mock: { placeId: 'demo-rosas-bakery', businessName: "Rosa's Bakery", createdAt: '2025-03-04' },
+
+    /**
+     * Versions, with parents — the real portal stores parentVersionId and draws
+     * the tree from it (client/src/versionTreeLayout.js). The seed deliberately
+     * contains a real branch: v4 is the Christmas version, taken from v2 rather
+     * than from v3, because that is exactly the shape the seasonal story on
+     * /how-it-works describes. A straight line would not show what a tree is
+     * for.
+     */
     site: {
       businessName: "Rosa's Bakery",
       viewStatus: 'ready',
@@ -35,11 +41,34 @@ function seed() {
       versionNumber: 3,
       approvedAt: '2025-06-18',
       versions: [
-        { versionId: 'v3', versionNumber: 3, approvedAt: '2025-06-18' },
-        { versionId: 'v2', versionNumber: 2, approvedAt: '2025-05-02' },
-        { versionId: 'v1', versionNumber: 1, approvedAt: '2025-04-11' },
+        { versionId: 'v4', versionNumber: 4, approvedAt: '2025-11-24', parent: 2, label: 'Christmas' },
+        { versionId: 'v3', versionNumber: 3, approvedAt: '2025-06-18', parent: 2 },
+        { versionId: 'v2', versionNumber: 2, approvedAt: '2025-05-02', parent: 1 },
+        { versionId: 'v1', versionNumber: 1, approvedAt: '2025-04-11', parent: null },
       ],
+      // "Versions in review" — built, waiting on a human to approve it.
+      pending: [{ versionNumber: 5, sentAt: '2025-11-28', parent: 3 }],
     },
+
+    /** Which approved version is actually serving. The one-button switch. */
+    hosting: { domain: 'rosasbakery.com', status: 'active', hostedVersion: 3 },
+
+    /**
+     * The image library, and the photo slots on the site. Attaching is the
+     * other capability the marketing copy promises, so it has to work here.
+     */
+    assets: [
+      { id: 'a1', name: 'Sourdough loaves' },
+      { id: 'a2', name: 'Shopfront morning' },
+      { id: 'a3', name: 'Counter display' },
+      { id: 'a4', name: 'Cinnamon buns' },
+    ],
+    slots: [
+      { id: 's1', label: 'Header photo', assetId: 'a2' },
+      { id: 's2', label: 'About section', assetId: null },
+      { id: 's3', label: 'Menu photo', assetId: null },
+    ],
+
     // Change requests sent during this demo session.
     sent: [],
     // The workspace, when it's open.
@@ -252,6 +281,15 @@ function init(root) {
     kpiAssetsTrend: $('[data-kpi-assets-trend]'),
     recommended: $('[data-recommended]'),
     vtree: $('[data-vtree]'),
+    vtreeEdges: $('[data-vtree-edges]'),
+    pendingPanel: $('[data-pending-panel]'),
+    pending: $('[data-pending]'),
+    hosted: $('[data-hosted]'),
+    domain: $('[data-domain]'),
+    attach: $('[data-attach]'),
+    attachVersion: $('[data-attach-version]'),
+    slots: $('[data-slots]'),
+    attachLibrary: $('[data-attach-library]'),
     assets: $('[data-assets]'),
     assetsEmpty: $('[data-assets-empty]'),
     versions: $('[data-versions]'),
@@ -393,26 +431,226 @@ function init(root) {
     });
   }
 
+  /**
+   * The version tree.
+   *
+   * Depth flows left to right and siblings fan out on Y, which is the shape
+   * client/src/versionTreeLayout.js produces. Rosa's v3 and v4 both hang off
+   * v2 — that branch is the whole point of the view, and of the seasonal story
+   * on /how-it-works. Edges are drawn as SVG curves leaving a parent's right
+   * edge and entering a child's left.
+   */
   function renderVersionTree() {
+    const nodes = [
+      ...state.site.versions.map((v) => ({
+        n: v.versionNumber,
+        parent: v.parent,
+        approvedAt: v.approvedAt,
+        label: v.label,
+      })),
+      ...state.site.pending.map((p) => ({
+        n: p.versionNumber,
+        parent: p.parent,
+        pending: true,
+      })),
+    ];
+
+    // Depth from the root, then spread siblings within each depth column.
+    const byN = new Map(nodes.map((x) => [x.n, x]));
+    const depthOf = (x) => {
+      let d = 0;
+      let cur = x;
+      while (cur && cur.parent != null && byN.has(cur.parent)) {
+        d++;
+        cur = byN.get(cur.parent);
+      }
+      return d;
+    };
+    nodes.forEach((x) => { x.d = depthOf(x); });
+
+    const cols = new Map();
+    nodes.sort((a, b) => a.n - b.n).forEach((x) => {
+      if (!cols.has(x.d)) cols.set(x.d, []);
+      cols.get(x.d).push(x);
+    });
+
+    const W = 100 / (cols.size + 0.6);
+    nodes.forEach((x) => {
+      const col = cols.get(x.d);
+      const i = col.indexOf(x);
+      x.x = W * (x.d + 0.7);
+      x.y = ((i + 1) / (col.length + 1)) * 100;
+    });
+
     el.vtree.innerHTML = '';
-    // Newest first, same order the version list uses.
-    state.site.versions.forEach((v) => {
-      const isCurrent = v.versionNumber === state.site.versionNumber;
+    nodes.forEach((x) => {
+      const live = !x.pending && state.hosting.hostedVersion === x.n;
+      const card = document.createElement('div');
+      card.className = `vtree-card${live ? ' is-live' : ''}${x.pending ? ' is-pending' : ''}`;
+      card.style.left = `${x.x}%`;
+      card.style.top = `${x.y}%`;
+      card.innerHTML = `
+        <div class="vtree-card__title"></div>
+        <div class="vtree-card__meta"></div>`;
+      card.querySelector('.vtree-card__title').textContent =
+        `Version ${x.n}${x.label ? ` · ${x.label}` : ''}`;
+      card.querySelector('.vtree-card__meta').textContent = x.pending
+        ? 'In review'
+        : live
+          ? 'Live now'
+          : `Approved ${fmtDate(x.approvedAt)}`;
+      el.vtree.appendChild(card);
+    });
+
+    // Edges.
+    //
+    // Drawn in a normalised 0-100 x 0-100 space with preserveAspectRatio="none"
+    // rather than in pixels. The pixel version needed the container measured,
+    // which meant waiting for a frame in which the panel was actually visible —
+    // and since the tree first renders while its tab is hidden, that measurement
+    // came back zero and the edges silently never appeared. Percentages need no
+    // measurement and no timing at all.
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+    // Roughly half a card, as a share of the width — where an edge should stop.
+    const HALF = 9;
+    el.vtreeEdges.setAttribute('viewBox', '0 0 100 100');
+    el.vtreeEdges.setAttribute('preserveAspectRatio', 'none');
+    el.vtreeEdges.replaceChildren(
+      ...nodes
+        .filter((x) => x.parent != null && byN.has(x.parent))
+        .map((x) => {
+          const par = byN.get(x.parent);
+          const x1 = par.x + HALF;
+          const x2 = x.x - HALF;
+          const mid = (x1 + x2) / 2;
+          const path = document.createElementNS(SVG_NS, 'path');
+          path.setAttribute(
+            'd',
+            `M${x1},${par.y} C${mid},${par.y} ${mid},${x.y} ${x2},${x.y}`
+          );
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', 'rgba(230,231,235,0.28)');
+          // Non-scaling so the curve keeps an even weight despite the stretched
+          // aspect ratio — without it the line thins horizontally and thickens
+          // vertically.
+          path.setAttribute('vector-effect', 'non-scaling-stroke');
+          path.setAttribute('stroke-width', '1.5');
+          return path;
+        })
+    );
+  }
+
+  /** Versions waiting on a human — the review step, made visible. */
+  function renderPending() {
+    const list = state.site.pending;
+    el.pendingPanel.hidden = list.length === 0;
+    el.pending.innerHTML = '';
+    list.forEach((v) => {
       const li = document.createElement('li');
-      li.className = `vtree-node${isCurrent ? ' is-current' : ''}`;
+      li.className = 'portal-version-item';
       li.innerHTML = `
-        <span class="vtree-dot" aria-hidden="true"></span>
-        <div class="vtree-body">
-          <div class="vtree-title"></div>
-          <div class="vtree-meta"></div>
+        <div>
+          <div class="portal-version-name"></div>
+          <div class="portal-meta"></div>
         </div>
-        ${isCurrent ? '<span class="vtree-badge">Current</span>' : ''}`;
-      li.querySelector('.vtree-title').textContent = `Version ${v.versionNumber}`;
-      li.querySelector('.vtree-meta').textContent =
-        v.versionNumber === 1
-          ? `Approved ${fmtDate(v.approvedAt)} · first build`
-          : `Approved ${fmtDate(v.approvedAt)} · from version ${v.versionNumber - 1}`;
-      el.vtree.appendChild(li);
+        <span class="portal-status">In review</span>`;
+      li.querySelector('.portal-version-name').textContent = `Version ${v.versionNumber}`;
+      li.querySelector('.portal-meta').textContent =
+        `Sent ${fmtDate(v.sentAt)} · we build it, then approve it`;
+      el.pending.appendChild(li);
+    });
+  }
+
+  /**
+   * The hosted-version switch. This is the capability the home page and
+   * /how-it-works both lead with, so in the demo it genuinely switches.
+   */
+  function renderHosting() {
+    el.domain.textContent = state.hosting.domain;
+    el.hosted.innerHTML = '';
+    state.site.versions.forEach((v) => {
+      const live = state.hosting.hostedVersion === v.versionNumber;
+      const filled = live ? state.slots.filter((s2) => s2.assetId).length : null;
+      const li = document.createElement('li');
+      li.className = `portal-version-item${live ? ' is-live' : ''}`;
+      li.innerHTML = `
+        <div>
+          <div class="portal-version-name"></div>
+          <div class="portal-meta"></div>
+        </div>
+        <div class="portal-version-actions">
+          <button type="button" class="client-btn-soft" data-host="${v.versionNumber}"></button>
+        </div>`;
+      const name = li.querySelector('.portal-version-name');
+      name.textContent = `Version ${v.versionNumber}${v.label ? ` · ${v.label}` : ''}`;
+      if (live) {
+        const pill = document.createElement('span');
+        pill.className = 'dash-pill';
+        pill.textContent = 'Live';
+        name.appendChild(pill);
+      }
+      li.querySelector('.portal-meta').textContent =
+        live && filled != null
+          ? `${filled} of ${state.slots.length} photos filled`
+          : `Approved ${fmtDate(v.approvedAt)}`;
+      const btn = li.querySelector('button');
+      btn.textContent = live ? 'Hosting' : 'Host this version';
+      btn.disabled = live;
+      el.hosted.appendChild(li);
+    });
+  }
+
+  // -- Attach images ---------------------------------------------------------
+  // Drag a library photo onto a slot. Pointer drag for a mouse, tap-then-tap
+  // for touch, because a demo nobody can use on a phone proves nothing.
+  let armed = null;
+
+  const assetImg = (id) => {
+    const i = state.assets.findIndex((a) => a.id === id);
+    return `https://loremflickr.com/320/240/bakery?lock=${i + 21}`;
+  };
+
+  function renderAttach() {
+    el.attachVersion.textContent = `Version ${state.site.versionNumber}`;
+
+    el.slots.innerHTML = '';
+    state.slots.forEach((slot) => {
+      const asset = state.assets.find((a) => a.id === slot.assetId);
+      const row = document.createElement('div');
+      row.className = `attach-slot${asset ? ' is-filled' : ''}${armed ? ' is-armed' : ''}`;
+      row.dataset.slot = slot.id;
+      row.innerHTML = `
+        ${asset
+          ? `<img class="attach-slot__thumb" src="${assetImg(asset.id)}" alt="" width="320" height="240" loading="eager">`
+          : '<div class="attach-slot__thumb"></div>'}
+        <div>
+          <div class="attach-slot__label"></div>
+          <div class="attach-slot__state"></div>
+        </div>`;
+      row.querySelector('.attach-slot__label').textContent = slot.label;
+      row.querySelector('.attach-slot__state').textContent = asset
+        ? asset.name
+        : armed
+          ? 'Tap to place the selected photo'
+          : 'Empty — drag a photo here';
+      el.slots.appendChild(row);
+    });
+
+    el.attachLibrary.innerHTML = '';
+    state.assets.forEach((a) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = `attach-chip${armed === a.id ? ' is-armed' : ''}`;
+      chip.draggable = true;
+      chip.dataset.asset = a.id;
+      // Explicit dimensions, and eager. A lazily-loaded image with no
+      // intrinsic size reflows the grid as it arrives, which moves the photo
+      // you were reaching for out from under the cursor — you grab the wrong
+      // one. The panel is opened deliberately, so there is nothing to defer.
+      chip.innerHTML =
+        `<img src="${assetImg(a.id)}" alt="" width="320" height="240" loading="eager"><span></span>`;
+      chip.querySelector('span').textContent = a.name;
+      el.attachLibrary.appendChild(chip);
     });
   }
 
@@ -462,6 +700,7 @@ function init(root) {
         <div class="portal-version-actions">
           <button type="button" class="client-btn-soft" data-open-version="${v.versionNumber}">Open</button>
           <button type="button" class="client-btn-soft" data-revise-vnum="${v.versionNumber}">Request changes</button>
+          <button type="button" class="client-btn-soft" data-photos="${v.versionNumber}">Add photos</button>
         </div>`;
       el.versions.appendChild(li);
     });
@@ -637,6 +876,58 @@ function init(root) {
     };
   }
 
+  // Same reason as the tab switch: the edge geometry is pixel-based.
+  window.addEventListener('resize', () => {
+    if (state.tab === 'version-tree') renderVersionTree();
+  }, { passive: true });
+
+  // ── Attach: drag and drop, plus tap-to-place ─────────────────────────────
+
+  function placeAsset(slotId, assetId) {
+    const slot = state.slots.find((x) => x.id === slotId);
+    if (!slot) return;
+    slot.assetId = assetId;
+    armed = null;
+    renderAttach();
+  }
+
+  root.addEventListener('dragstart', (e) => {
+    const chip = e.target.closest?.('[data-asset]');
+    if (!chip) return;
+    e.dataTransfer.setData('text/plain', chip.dataset.asset);
+    e.dataTransfer.effectAllowed = 'copy';
+  });
+
+  root.addEventListener('dragover', (e) => {
+    const slot = e.target.closest?.('[data-slot]');
+    if (!slot) return;
+    // Without preventDefault the browser refuses the drop entirely — this is
+    // the one line that makes HTML5 drag targets work at all.
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+    slot.classList.add('is-over');
+  });
+
+  root.addEventListener('dragleave', (e) => {
+    e.target.closest?.('[data-slot]')?.classList.remove('is-over');
+  });
+
+  root.addEventListener('drop', (e) => {
+    const slot = e.target.closest?.('[data-slot]');
+    if (!slot) return;
+    e.preventDefault();
+    slot.classList.remove('is-over');
+    const assetId = e.dataTransfer.getData('text/plain');
+    if (assetId) placeAsset(slot.dataset.slot, assetId);
+  });
+
+  // Touch path: a photo is armed by tapping it, then a slot takes it.
+  root.addEventListener('click', (e) => {
+    const slot = e.target.closest?.('[data-slot]');
+    if (!slot || !armed) return;
+    placeAsset(slot.dataset.slot, armed);
+  });
+
   // ── Events ───────────────────────────────────────────────────────────────
 
   root.addEventListener('click', (e) => {
@@ -652,7 +943,55 @@ function init(root) {
       el.portal.classList.remove('is-nav-open');
       el.burger.setAttribute('aria-expanded', 'false');
       renderTabs();
+      // The tree measures itself to place the edges, and a hidden panel has no
+      // width — drawn at boot it silently produced no edges at all. Redraw it
+      // once the panel is actually on screen.
+      if (state.tab === 'version-tree') renderVersionTree();
       el.panels[state.tab]?.scrollIntoView?.({ block: 'nearest' });
+      return;
+    }
+
+    // The one-button version switch.
+    if (t.dataset.host) {
+      state.hosting.hostedVersion = Number(t.dataset.host);
+      renderHosting();
+      renderVersionTree();
+      renderExplore();
+      el.success.hidden = false;
+      el.success.textContent =
+        `Version ${t.dataset.host} is now live on ${state.hosting.domain}.`;
+      return;
+    }
+
+    if (t.dataset.photos) {
+      el.attach.hidden = false;
+      armed = null;
+      renderAttach();
+      return;
+    }
+
+    if (t.hasAttribute('data-attach-close')) {
+      el.attach.hidden = true;
+      armed = null;
+      return;
+    }
+
+    if (t.hasAttribute('data-attach-save')) {
+      el.attach.hidden = true;
+      armed = null;
+      const filled = state.slots.filter((s2) => s2.assetId).length;
+      el.success.hidden = false;
+      el.success.textContent =
+        `Photos saved — ${filled} of ${state.slots.length} slots filled on version ${state.site.versionNumber}.`;
+      renderHosting();
+      renderExplore();
+      return;
+    }
+
+    // Tap a library photo, then tap a slot. The touch path.
+    if (t.dataset.asset) {
+      armed = armed === t.dataset.asset ? null : t.dataset.asset;
+      renderAttach();
       return;
     }
 
@@ -730,6 +1069,8 @@ function init(root) {
       renderSite();
       renderExplore();
       renderVersionTree();
+      renderPending();
+      renderHosting();
       renderAssets();
       renderLog();
       return;
@@ -789,6 +1130,8 @@ function init(root) {
   renderSite();
   renderExplore();
   renderVersionTree();
+  renderPending();
+  renderHosting();
   renderAssets();
   renderLog();
 }

@@ -34,6 +34,8 @@ import { url } from '../data/url.js';
         <li><span>2</span> Hit <strong>Request changes</strong> on any version</li>
         <li><span>3</span> Click a heading or photo in the preview and type what to change</li>
         <li><span>4</span> Send it, and see exactly what we'd receive</li>
+        <li><span>5</span> Press <strong>Host this version</strong> on the Christmas one</li>
+        <li><span>6</span> Drag a photo onto a slot with <strong>Add photos</strong></li>
       </ol>
 
       <DemoSandbox />
@@ -48,7 +50,7 @@ import { url } from '../data/url.js';
         <p class="lead">
           The layout, the wording and the change-request format above are lifted
           from our actual client app rather than redrawn, so what you just used
-          is what you'd get. Three things are deliberately not real here:
+          is what you'd get. Here is everything that is deliberately not real:
         </p>
       </div>
 
@@ -66,21 +68,35 @@ import { url } from '../data/url.js';
         </li>
         <li data-reveal>
           <strong>The versions are the same page.</strong>
-          Version 1, 2 and 3 all load our bakery concept with slightly different
+          Rosa's versions all load our bakery concept with slightly different
           colours, so you can see that revisions change something. In a real
           project each version is a genuinely different build of your site.
         </li>
         <li data-reveal>
-          <strong>Assets don't really upload.</strong>
-          In the portal you drag photos in from your computer and then attach
-          them to image slots on your site. Here the "Add images" button drops in
-          a few samples so you can see what a filled library looks like.
+          <strong>Switching the live version doesn't publish anything.</strong>
+          The button works and the tree updates, which is exactly what the real
+          one does — but there's no domain behind this demo, so nothing changes
+          on the internet. In your portal that button is what visitors see.
         </li>
         <li data-reveal>
-          <strong>The version tree is a straight line.</strong>
-          The real one draws branches, because a change request can be made
-          against any approved version, not just the newest. Rosa's three
-          versions happen to run one after another.
+          <strong>Photos come from a stock service.</strong>
+          The library here is filled with sample images rather than uploads. In
+          the real portal you drag your own files in from your computer, and we
+          convert and host them for you.
+        </li>
+        <li data-reveal>
+          <strong>Domains aren't searchable here.</strong>
+          The real portal searches live registrar availability and prices before
+          you connect one. The demo shows a domain already connected instead —
+          we're not going to fake a registrar lookup.
+        </li>
+        <li data-reveal>
+          <strong>Account and billing are left out.</strong>
+          The real portal has an Account tab with your plan, revision credits and
+          the contact details we register domains against, plus a checkout. None
+          of it tells you anything about what the product does, and a fake
+          payment screen is the last thing a demo should contain — the
+          <a href="/pricing">pricing page</a> covers the money side.
         </li>
       </ul>
 

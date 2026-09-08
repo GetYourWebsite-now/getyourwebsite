@@ -1,0 +1,376 @@
+---
+/**
+ * How it works — the platform behind the sites.
+ *
+ * Everything on this page is checked against the shipped client portal
+ * (GetYourWebsiteAdmin, `development`, the `client/` workspace) rather than
+ * written from the pitch. Where a capability has a condition attached — a
+ * custom domain needs the maintenance plan, only approved versions can be
+ * hosted — the condition is on the page. The voice rule for this site is plain
+ * and specific, and a capability with its limits stated reads as more credible
+ * than one without.
+ *
+ * Deliberately NOT claimed here: no superlatives, no invented statistics, and
+ * the only third-party figures are Cloudflare's own published ones, quoted with
+ * a link so a visitor can check them. No Cloudflare logo, no implication of
+ * partnership or endorsement — we are a customer of theirs, like anyone else.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../data/url.js';
+import { LIVE_SITE_URL } from '../data/site.js';
+
+const pagespeed = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(LIVE_SITE_URL)}`;
+---
+
+<BaseLayout
+  title="How it works"
+  description="Every revision is a saved version you can put live with one button. Managed hosting and domains, a build process with a human at the end of it, and your photos dragged straight onto the page."
+>
+  <!-- 1. Intro ---------------------------------------------------------- -->
+  <section class="section section--dark has-stars has-glow section--tight">
+    <div class="shell-narrow">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">The platform</p>
+        <h1>A website you can actually run.</h1>
+        <p class="lead">
+          Most of what you're paying for isn't the first version of the site. It's
+          what happens for the two years after it — changing it, hosting it,
+          keeping it yours. Here's how that part works.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Versioning — the lead ------------------------------------------- -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Versions</p>
+        <h2>Every change is saved as a new version. Nothing is overwritten.</h2>
+        <p class="lead">
+          Send us a batch of changes and a person reads them, builds them, and
+          gives you back a new version of your site. The old one doesn't go
+          anywhere. You can add photos to the new version and put it live
+          independently of every version that came before it.
+        </p>
+      </div>
+
+      <div class="grid grid-3" data-reveal-group>
+        <article class="card" data-reveal>
+          <h3>You ask in plain words</h3>
+          <p>
+            Click any part of your site and say what you want changed. No file
+            names, no "third paragraph, second sentence".
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3>A person builds it</h3>
+          <p>
+            Not an automatic find-and-replace. Someone reads the request, makes
+            the change, and checks it before it reaches you.
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3>You get a new version</h3>
+          <p>
+            Saved alongside the others, with its own photos. The portal draws
+            them as a tree, so you can see what came from what.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. The one-button switch — the strongest thing we have -------------- -->
+  <section class="section section--dark has-stars has-glow">
+    <div class="shell-narrow">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">The part people don't expect</p>
+        <h2>You choose which version is live. It's one button.</h2>
+      </div>
+
+      <div class="stack-6" data-reveal>
+        <p class="lead">
+          In November you ask for something more Christmassy. We build it, you
+          approve it, you press host — and that's your site until you decide
+          otherwise. In January you press host on the version from before, and
+          you're back to normal. The Christmas one is still sitting there.
+        </p>
+        <p class="lead">
+          Next November you press one button. You build the seasonal version
+          once and reuse it every year.
+        </p>
+        <p>
+          Two honest details. Only versions we've reviewed and approved can be
+          put live — that's what stops a half-finished draft reaching your
+          customers. And if a version still has empty photo slots, the portal
+          tells you how many before it lets you go ahead.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Hosting and domains --------------------------------------------- -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Hosting and domains</p>
+        <h2>You never touch a registrar or a DNS record.</h2>
+        <p class="lead">
+          Search for a domain in your portal, pick one, and press connect. We
+          register it in your business's name and point it at your site. There
+          is no control panel to learn and no nameserver to copy and paste.
+        </p>
+      </div>
+
+      <div class="grid grid-2" data-reveal-group>
+        <article class="card" data-reveal>
+          <h3>Fast where your customers are</h3>
+          <p>
+            Your site is served from Cloudflare's network. Cloudflare publishes
+            its own numbers for that network: hundreds of cities across 100+
+            countries, and within about 50 milliseconds of roughly 95% of the
+            Internet-connected population. You don't have to take our word for
+            any of it —
+            <a href="https://www.cloudflare.com/network/" rel="noopener">
+              their network page
+            </a>
+            is public.
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3>What that means for you</h3>
+          <p>
+            Someone looking you up on their phone down the road gets the site
+            quickly, and it stays up when you're busy. That's the whole of the
+            benefit — we're not going to dress it up as anything more.
+          </p>
+        </article>
+      </div>
+
+      <p class="rule" data-reveal></p>
+      <p data-reveal>
+        <strong>The condition, stated plainly:</strong> connecting a custom
+        domain comes with the maintenance plan, and we need your business
+        contact details first because the domain is registered in that name.
+        Without it your site still lives at a web address we give you.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. How the sites are made ------------------------------------------- -->
+  <section class="section section--dark has-stars">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">How they're made</p>
+        <h2>It isn't one prompt into a chatbot.</h2>
+        <p class="lead">
+          We'd rather tell you what actually happens than claim our sites are
+          the best ones out there. Judge the process.
+        </p>
+      </div>
+
+      <ol class="steps" data-reveal-group>
+        <li data-reveal>
+          <span class="steps__n" aria-hidden="true">1</span>
+          <div>
+            <h3>We research your business first</h3>
+            <p>
+              Your listing, your reviews, what you actually sell, and how other
+              businesses in your industry present themselves — before a single
+              page is drafted.
+            </p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="steps__n" aria-hidden="true">2</span>
+          <div>
+            <h3>It's built from curated pieces</h3>
+            <p>
+              Component libraries we maintain, rather than a layout invented
+              from scratch every time. That's why the sites hold together.
+            </p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="steps__n" aria-hidden="true">3</span>
+          <div>
+            <h3>Several passes, not one</h3>
+            <p>
+              Specialised agents draft the site, critique the draft, and refine
+              it — each one doing a narrow job well instead of one model trying
+              to do everything at once.
+            </p>
+          </div>
+        </li>
+        <li data-reveal>
+          <span class="steps__n" aria-hidden="true">4</span>
+          <div>
+            <h3>A person signs it off</h3>
+            <p>
+              Every site is reviewed by one of us before you see it. Nothing
+              reaches a client unlooked at.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 6. Images and assets ------------------------------------------------ -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Your photos</p>
+        <h2>Drag them onto the page and save.</h2>
+        <p class="lead">
+          Your site has photo slots. Open the image panel, drag one of your
+          photos onto a slot, and save it. No emailing us files, no naming
+          things <code>hero-image-final-v2.jpg</code>, no waiting on us to do it.
+        </p>
+      </div>
+
+      <div class="grid grid-2" data-reveal-group>
+        <article class="card" data-reveal>
+          <h3>A library that stays yours</h3>
+          <p>
+            Upload once and reuse across versions. Photos are converted to a
+            modern format on the way in, so they stay sharp without slowing the
+            page down.
+          </p>
+        </article>
+        <article class="card" data-reveal>
+          <h3>Hosted with the site</h3>
+          <p>
+            We store and serve your images from our own asset host, on the same
+            fast network as the site itself. It's one less account for you to
+            keep track of.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Performance proof ------------------------------------------------ -->
+  <section class="section section--dark has-stars has-glow">
+    <div class="shell-narrow">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">Don't take our word for it</p>
+        <h2>Run the test yourself.</h2>
+        <p class="lead">
+          Google publishes a free tool that grades any public web page on four
+          things. We've prefilled it with this site — the one you're reading
+          right now — so you can run it against us without asking us anything.
+        </p>
+      </div>
+
+      <ul class="scorecard" data-reveal-group>
+        <li data-reveal>Performance</li>
+        <li data-reveal>Accessibility</li>
+        <li data-reveal>Best Practices</li>
+        <li data-reveal>SEO</li>
+      </ul>
+
+      <div class="btn-row btn-row--center" data-reveal>
+        <a class="btn btn--gold btn--lg" href={pagespeed} rel="noopener">
+          Run the test yourself
+        </a>
+      </div>
+
+      <p class="scorecard__note" data-reveal>
+        We deliberately haven't printed a score here. Real results move between
+        runs — a single slow image is enough to shift one — and a number we
+        typed ourselves would be worth less than a test you ran.
+      </p>
+    </div>
+  </section>
+
+  <!-- 8. CTA -------------------------------------------------------------- -->
+  <section class="section section--dark has-stars has-glow cta-band">
+    <div class="shell-narrow" style="text-align:center" data-reveal>
+      <h2 class="cta-band__title">See it with your own business in it.</h2>
+      <p class="lead" style="margin-inline:auto">
+        We'll build you a free mockup of your homepage first. No commitment, no
+        card, no catch.
+      </p>
+      <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
+        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
+        <a class="btn btn--ghost btn--lg" href={url('/demo')}>Try the client demo</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Numbered process list. The number is a gold chip so the sequence reads at a
+     glance without turning into a decorative timeline. */
+  .steps {
+    display: grid;
+    gap: var(--s-4);
+    margin-top: var(--s-6);
+  }
+
+  .steps li {
+    display: flex;
+    gap: var(--s-4);
+    align-items: flex-start;
+  }
+
+  .steps__n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: var(--radius-pill);
+    background: var(--gold-soft);
+    border: 1px solid var(--gold-line);
+    color: var(--gold);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .steps h3 { margin-bottom: var(--s-1); }
+
+  @media (min-width: 860px) {
+    .steps { grid-template-columns: 1fr 1fr; gap: var(--s-6) var(--s-7); }
+  }
+
+  /* The four Lighthouse categories, named but never scored — see the note in
+     the markup for why there is no number here. */
+  .scorecard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--s-2);
+    margin: var(--s-6) 0 var(--s-5);
+  }
+
+  .scorecard li {
+    padding: 0.5rem 1.1rem;
+    border: 1px solid var(--line-dark);
+    border-radius: var(--radius-pill);
+    background: rgba(230, 231, 235, 0.04);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--silver-light);
+  }
+
+  .scorecard__note {
+    max-width: 44rem;
+    margin: var(--s-5) auto 0;
+    text-align: center;
+    font-size: var(--t-small);
+    color: var(--silver);
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--line-dark);
+    margin: var(--s-6) 0 var(--s-4);
+  }
+</style>

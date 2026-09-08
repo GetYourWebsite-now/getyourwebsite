@@ -1,0 +1,8 @@
+{
+  "_comment": "The client/ commit this demo sandbox was built against. tools/portal-sync.mjs compares it to the live development head and fails when the demo falls behind. Update it in the same commit that updates the sandbox — never on its own.",
+  "repo": "GetYourWebsite-now/GetYourWebsiteAdmin",
+  "branch": "development",
+  "path": "client",
+  "commit": "513af611c58729e6dec66f46e96bc15479aa61cf",
+  "date": "2026-09-07"
+}

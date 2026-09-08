@@ -1,45 +1,62 @@
-# Design feedback — round 2: replace the black hole hero
+# Pre-launch feedback — capabilities, proof, portal link, demo accuracy
 
-The buttons from round 1 came out well — keep them exactly as they are. This round is about the hero animation, which is getting replaced again. Read the findings, then the three concepts. **You choose which to build** (decision protocol at the end). Palette stays strict: black, white, silver, gold. `prefers-reduced-motion` gets a static styled fallback as always.
+Four workstreams. Palette, fonts, hero and button system all stay as they are. All suites green and push when done.
 
-## Findings from a live review of the current black hole hero
+## 1. New capability content — what actually makes us different
 
-1. **CRITICAL BUG regardless of concept:** at the final stage, the headline "Above and beyond." and both CTA buttons render **behind** the black hole — the text and gold button are occluded by the disk and ring glow. Text and CTAs must ALWAYS sit on clear background, above every scene element, with the scene composed so nothing crosses them.
-2. The black hole reads as a **glowing gold donut / Saturn**, not a black hole: no gravitational lensing (background stars don't warp around it), no doppler brightening on one side, no matter falling in. The physics that makes a black hole impressive is absent.
-3. The middle ~half of the scroll is **one object slowly enlarging in empty space** — no text on screen, nothing else moving, nothing to look at. That's the boredom.
-4. The concept is **decoration, not communication** — it says nothing about building websites. That's why it feels unnecessary.
-5. The unpin into Our Work crops the object mid-frame — the handoff is abrupt.
+Right now the site sells "students who build websites." It says almost nothing about the platform behind it, which is the real differentiator. Add this material. Placement is your call, but the likely shape is a new **How it works / What you get** section on the home page plus a fuller treatment on `/benefits` (or a new page if you judge that cleaner — propose it before building).
 
-## Universal rules for the replacement (apply to whichever concept wins)
+Cover these, in roughly this priority order:
 
-- A short line of copy is on screen at **every** stage of the scroll (write beat-by-beat lines that match the visuals), and the finale ("Above and beyond." + CTAs) lands on **clear black — nothing behind or crossing the text, ever**.
-- Every scroll position is visually alive: multiple elements in motion, layered parallax starfield (near stars move more than far), bloom on gold light sources, scroll inertia so the camera has weight, subtle film grain.
-- Add gentle mouse-move parallax on desktop so the scene feels alive even without scrolling.
-- Design the unpin: the scene should resolve/clear (fade, recede, or fly off) before the page continues into Our Work.
-- Delete the old black hole code and assets once replaced.
+**a. Versioning — lead with this. It's the strongest thing we have.**
+- Every revision produces a new saved version of your site. Nothing is ever overwritten and nothing is lost.
+- You send a batch of changes, a human reviews and builds them, and you get a new version you can add images to and publish independently of the others.
+- **The headline capability: you choose which version is live with one button.** Use the seasonal example, it sells itself — in November you request "make it more Christmassy," approve the result, press host, and your site is Christmas-themed. In January you press host on the previous version and you're back. Build the theme once, reuse it every year.
+- The portal shows this as a version tree with branching lineage, not a flat list.
 
-## Concept A — The Build & Launch *(Jack's lean — the animation IS the pitch)*
+**b. Hosting and domains, managed for you.**
+- We handle hosting and domain registration end to end. The client never touches a registrar or a DNS record.
+- Hosting runs on Cloudflare's global network. WORDING RULES — read carefully:
+  - Say we host *on Cloudflare's network*. Never "our servers," never anything implying partnership, sponsorship, or endorsement by Cloudflare, and do not use the Cloudflare logo as a badge.
+  - Use only Cloudflare's own published figures and link to https://www.cloudflare.com/network/ so a visitor can verify: hundreds of cities in 100+ countries, and sub-50ms to roughly 95% of the Internet-connected population.
+  - Do NOT write "servers in almost every major city in the US" or any invented stat.
+  - The point for a local business is plain: your site loads fast for the people near you, and it stays up.
 
-A website gets assembled by gravity, then launched.
+**c. How the sites are actually made.**
+- Not a single AI prompt. Generation is a multi-step process: web search and research about the specific business and its industry, curated component libraries, and multiple specialized agents that draft, critique, and refine — then a human reviews every site before the client sees it.
+- Describe the process concretely. Do NOT claim to be "the most unique and detailed sites" or any superlative we cannot prove — the process description is more persuasive than the boast and it is defensible.
 
-- **Stage 1 (0%):** deep parallax starfield. Drifting among the stars: glowing **website fragments** — a gold nav bar, buttons, silver wireframe image blocks, text-line slabs — tumbling slowly like debris, catching light. Headline + sub fade in. Copy beat: the main headline.
-- **Stage 2 (~35–70%):** scroll pulls the pieces together — they fly in with real inertia (fast approach, eased deceleration) and **snap magnetically** into place, assembling a glowing wireframe browser/site floating in space. Assembly order is legible: frame → nav → hero block → buttons. Copy beat: "We design it. We build it."
-- **Stage 3 (~70–100%):** the assembled site **ignites and launches** — rises and streaks upward as a gold light trail, stage clears to calm starfield, and "Above and beyond." + CTAs land on clean black. Copy beat: the closer + CTAs.
-- **Why it wins:** constant motion in every frame, physically real easing, palette-native, unmistakably about getting your website, and the gravity theme still matches the event-horizon button interactions.
-- **Implementation hints:** instanced meshes/planes for fragments (no photo textures needed); GSAP ScrollTrigger scrubbing per-piece position/rotation curves with staggered timing; additive-blend glow; launch streak as a stretched bloom trail.
+**d. Images and assets.**
+- Drag and drop your photos onto the placeholders in your site and save. No file names, no uploads by email, no waiting on us.
+- We host and manage your assets for you (usercontent.getyourwebsite.now) — optimized and served from the same fast network.
 
-## Concept B — Fly through the portfolio *(the proof-first hero)*
+## 2. Performance proof — make it verifiable, not a boast
 
-- **Stage 1 (0%):** starfield with several **gold-edge-lit holographic panels** floating at different depths — live screenshots of Rosa's Bakery, Vela Kitchen, Iron Forge Gym, Bright Smile Dental (use real captures from the mock sites). Nearest panel slightly tilted, catching light. Headline over clear space.
-- **Stage 2 (~35–70%):** scrolling flies the camera **between and past** the panels — each tilts with parallax as you pass, depth-of-field keeps the near one crisp and far ones soft. Copy beats name what you're passing: "Real sites. Built by us."
-- **Stage 3 (~70–100%):** panels recede and shrink into a glowing constellation of gold points; "Above and beyond." + CTAs on clear black.
-- **Why it fits:** rich and personal — visitors see actual work in the first five seconds.
-- **Implementation hints:** textured planes from real screenshots + gold edge glow; camera on a scrubbed spline path; DOF via blur by depth; panels must never cross the text.
+Add a performance section that lets visitors check us rather than trust us.
 
-## Concept C — Make the black hole actually work *(fallback, only if you can hit true quality fast)*
+- Include a **"Run the test yourself"** link to PageSpeed Insights prefilled with one of our live demo sites: `https://pagespeed.web.dev/analysis?url=<URL-encoded demo site URL>`. Use a real, publicly reachable demo site.
+- IMPORTANT accuracy guardrail: real Lighthouse scores move between runs (we have watched /demo swing 95↔100 on image LCP alone). So do NOT print a fixed "100/100" as a standing claim. Either state scores with the date and conditions they were measured under, or — better — show the four category names and let the live link speak. A prefilled test we invite people to run is far stronger proof than a number we typed ourselves.
+- If you judge that no demo site is on a good enough public URL yet to showcase this, say so and stop rather than pointing the link at something unrepresentative.
 
-Keep the concept ONLY if you implement the real physics: full-screen fragment-shader **gravitational lensing** that visibly warps and smears the background starfield around the horizon, **doppler asymmetry** (approaching side of the disk hotter/brighter), a thin **infalling particle stream** spiraling in, copy beats at every stage, and the hole shrinking/slingshotting off-axis before Stage 3 so the finale is clear. If you can't reach that fidelity quickly, build A or B instead.
+## 3. Portal sign-in link
 
-## Decision protocol
+- Add a **Sign in** link to the site header pointing to `https://portal.getyourwebsite.now`.
+- The label is exactly "Sign in" — never "Log in" or "Sign up." Clients are given accounts by us; there is no self-serve registration and the wording must not imply one.
+- Visually it is secondary to the gold "Free Mockup" CTA — that stays the primary action. A quiet text link or ghost button in the nav is right, plus a matching link in the footer.
+- Mobile menu gets it too. Keep it out of the way of the primary conversion path.
 
-Assess A, B, and C against what you can render flawlessly at 60fps. If torn, prototype the top two, screenshot each at 0% / 35% / 70% / 100%, compare like a designer, keep the winner, delete the loser. Jack leans **A**. Whatever wins: verify with fresh screenshots at all four scroll points plus the unpin transition, on desktop and mobile widths, and confirm the reduced-motion fallback and that no element ever overlaps the text or CTAs.
+## 4. Demo accuracy — the dashboard demo is behind the product again
+
+Zane's note: the demo must match the real dashboard. It has drifted a third time — `development` has moved 135 commits and the portal gained major surfaces the demo does not show.
+
+- Source of truth is unchanged: `github.com/GetYourWebsite-now/GetYourWebsiteAdmin`, branch `development`, directory `client/` (NOT `frontend/`, which is the staff admin app).
+- The demo has the right five tabs (Explore, My website, Version tree, Free preview, Assets) but their contents are stale. Study the current code and bring the sandbox up to date — in particular the surfaces behind `HostingPanel.jsx`, `QuickEditPanel.jsx`, `AttachImagesPanel.jsx`, `VersionTreeTab.jsx`, `AssetsTab.jsx`, `AccountTab.jsx` and `Billing.jsx`. Decide which of those belong in a marketing demo; billing and account may be better left out, but that should be a decision you make and note, not an omission by accident.
+- The three capabilities we are now selling hardest MUST be visible and clickable in the demo, because the copy above promises them: **choosing which version is hosted with one button**, **drag-and-drop images onto placeholders**, and **the version tree**.
+- Same rules as always: sandbox only, no backend, no auth, seeded with the fake Rosa's Bakery client, nothing from env files or real client data, and re-derive the "What's different from the real thing" honesty list so every claim in it is true of the new build.
+- **Stop the drift permanently.** Add a check that fails loudly when the demo falls behind — e.g. record the `client/` commit the sandbox was built from and have a suite step compare it against the current `development` head, failing with a clear "demo is N commits behind the portal, rebuild it" message. A stale demo is a credibility problem on the page that exists specifically to prove we are credible.
+
+## Ground rules for all of the above
+
+- Every capability claim must be true of the shipped product today. If something on this list is not fully working yet (registrar flows, asset host, one-click version hosting), say so and leave it out or mark it clearly — do not describe a roadmap as a feature.
+- No superlatives we cannot prove, no invented statistics, no third-party logos implying endorsement.
+- Keep the existing voice: plain, specific, confident. The facts are strong enough without hype.

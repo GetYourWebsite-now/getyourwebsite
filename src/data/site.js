@@ -29,7 +29,11 @@ export const NAV_LINKS = [
   { label: 'Our Work', href: '/work' },
   { label: 'Demo', href: '/demo' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Benefits', href: '/benefits' },
+  // "How it works" took the slot Benefits used to hold. Six links plus the gold
+  // CTA plus Sign in overflowed the header at the width the burger hands over
+  // at — there were 81px of slack before any of this was added. Benefits is
+  // still a live page, linked from the home page and the footer.
+  { label: 'How it works', href: '/how-it-works' },
   { label: 'Why Us', href: '/why-us' },
 ];
 
@@ -194,3 +198,28 @@ export const HEADING_FONT = 'clash';
  * or add to Total Blocking Time.
  */
 export const GOATCOUNTER_ID = '';
+
+/**
+ * The client portal, for the "Sign in" link in the header and footer.
+ *
+ * [EDIT] Set this to https://portal.getyourwebsite.now once that subdomain is
+ * serving. It answered HTTP 522 (Cloudflare reached, origin did not) on every
+ * attempt while this was built, and a Sign in button that lands on an error
+ * page is worse than no button — so the link is built, styled and tested, and
+ * simply doesn't render while this is empty. Filling it in is the whole switch.
+ *
+ * Clients are given accounts by us. The label is "Sign in" and never "Sign up"
+ * or "Log in" — there is no self-serve registration and the wording must not
+ * imply one.
+ */
+export const PORTAL_URL = '';
+
+/**
+ * The live site, used to prefill the PageSpeed Insights link on /how-it-works.
+ *
+ * Deliberately this site and not one of the mock client sites: every mock pulls
+ * its photos from loremflickr.com, a random placeholder service, so its score
+ * would swing on images we don't control and wouldn't represent what a client
+ * actually receives. Point this at a real hosted client site once there is one.
+ */
+export const LIVE_SITE_URL = 'https://getyourwebsite.now';

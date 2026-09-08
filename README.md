@@ -3,8 +3,8 @@
 The marketing site for GetYourWebsite — websites for local businesses, built by
 high school students.
 
-Seven pages (Home, Our Work, Demo, Pricing, Benefits, Why Us, Contact) plus a
-404, a scroll-driven hero where a website assembles itself and launches, six
+Eight pages (Home, Our Work, Demo, Pricing, How it works, Benefits, Why Us,
+Contact) plus a 404, a scroll-driven hero where a website assembles itself and launches, six
 live mock client sites, and an interactive demo of our real client portal.
 
 ---
@@ -50,6 +50,7 @@ src/
   data/
     site.js        ← almost everything you'll want to change lives here
     url.js         link helper (see "Deploying" below)
+    portal-sync.json   the client/ commit the demo sandbox was built against
   styles/
     global.css     the whole design system: colours, type, spacing, components
   scripts/
@@ -305,6 +306,18 @@ can't block a paint or add to Total Blocking Time.
 
 ---
 
+## Where it's deployed
+
+The site is live at **<https://getyourwebsite.now>**, served by the Railway
+service with Cloudflare in front of it. The old `*.up.railway.app` URL no longer
+resolves — don't send anyone to it.
+
+`SITE_URL` in `astro.config.mjs` still defaults to the GitHub Pages address,
+which is only used for `sitemap.xml`, `robots.txt` and canonical tags. Set it to
+`https://getyourwebsite.now` in the deploy environment.
+
+---
+
 ## Deploying
 
 The site is static, so all three free hosts work. Two environment variables
@@ -394,6 +407,7 @@ npm run verify:contrast  # text contrast under the moving ambient gradients, and
                          # the typed request over the prompt bar's own backdrop
 npm run verify:wraps     # how every heading wraps at desktop and mobile
 npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank screen
+npm run verify:portal    # fails if the /demo sandbox has fallen behind the real portal
 npm run shots:ambient    # screenshots of the dark sections, hover and reduced motion
 npm run shots:teaser     # regenerate the home page's portal image from the sandbox
 ```
@@ -441,6 +455,8 @@ Search the project for `[EDIT]` to find them all. In priority order:
 | 7 | **A real statistic with a source**, if you want one on Benefits | `src/pages/benefits.astro`, the `.stat-slot` block |
 | 8 | **Custom domain** when you buy one | see "Deploying" above |
 | 9 | **GoatCounter site code**, if you want visitor stats | `GOATCOUNTER_ID` in `src/data/site.js` |
+| 10 | **Portal URL** — turns the "Sign in" link on. Left empty because `portal.getyourwebsite.now` answered HTTP 522 on every attempt | `PORTAL_URL` in `src/data/site.js` |
+| 11 | **Maintenance plan price**, quoted in the hosting/domain FAQ | `src/pages/pricing.astro` |
 
 ---
 

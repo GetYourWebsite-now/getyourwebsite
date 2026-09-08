@@ -16,7 +16,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/pricing', '/demo', '/work', '/benefits', '/why-us', '/contact'];
+const PAGES = ['/', '/pricing', '/demo', '/work', '/how-it-works', '/benefits', '/why-us', '/contact'];
 
 // Seconds to seek the animations to. The longest ambient cycle is the 19s
 // sheen drift (which alternates, so 38s round trip); these sample across it
