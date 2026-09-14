@@ -28,7 +28,11 @@ import { join } from 'node:path';
 
 const sync = JSON.parse(readFileSync(new URL('../src/data/portal-sync.json', import.meta.url)));
 const { repo, branch, path: dir, commit, date } = sync;
-const url = `https://github.com/${repo}.git`;
+// Try HTTPS first, then SSH. Networks that intercept TLS (school and office
+// filters) break HTTPS to github.com while leaving SSH untouched, so a single
+// transport turns "drift not checked" into the permanent state on those
+// machines — which is exactly when a stale demo slips through unnoticed.
+const urls = [`https://github.com/${repo}.git`, `git@github.com:${repo}.git`];
 
 const git = (args, cwd) =>
   execFileSync('git', args, { cwd, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
@@ -38,7 +42,20 @@ try {
   tmp = mkdtempSync(join(tmpdir(), 'portal-sync-'));
   // blob:none keeps this to commits and trees — we only need history, not the
   // file contents, so it stays quick even as the repo grows.
-  git(['clone', '--bare', '--filter=blob:none', '--single-branch', '-b', branch, url, tmp]);
+  let lastErr;
+  const cloned = urls.some((url) => {
+    try {
+      git(['clone', '--bare', '--filter=blob:none', '--single-branch', '-b', branch, url, tmp]);
+      return true;
+    } catch (err) {
+      lastErr = err;
+      // A failed clone can leave a partial directory that blocks the retry.
+      rmSync(tmp, { recursive: true, force: true });
+      tmp = mkdtempSync(join(tmpdir(), 'portal-sync-'));
+      return false;
+    }
+  });
+  if (!cloned) throw lastErr;
 } catch (err) {
   // git writes progress to stderr, so the first line is "Cloning into..." and
   // tells you nothing. Prefer the line that actually says what went wrong.
