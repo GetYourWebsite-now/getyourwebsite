@@ -605,7 +605,19 @@ function init(root) {
   // -- Attach images ---------------------------------------------------------
   // Drag a library photo onto a slot. Pointer drag for a mouse, tap-then-tap
   // for touch, because a demo nobody can use on a phone proves nothing.
+  //
+  // Edits are STAGED, not applied on drop. The real panel collects everything
+  // you rearrange and sends it on save — and since c220e34 a save that both
+  // frees a slot and fills one goes through a single atomic `replace-images`
+  // call rather than a detach followed by an attach. That closed a logged risk:
+  // two requests meant a mixed save could half-apply if the second failed.
+  //
+  // So dropping a photo onto a slot that already has one is a *replacement*,
+  // and it commits as one action. Applying instantly on drop would have shown
+  // the opposite.
   let armed = null;
+  /** Slot state while the panel is open. Committed to state.slots on save. */
+  let draft = null;
 
   const assetImg = (id) => {
     const i = state.assets.findIndex((a) => a.id === id);
@@ -616,10 +628,18 @@ function init(root) {
     el.attachVersion.textContent = `Version ${state.site.versionNumber}`;
 
     el.slots.innerHTML = '';
-    state.slots.forEach((slot) => {
+    draft.forEach((slot) => {
+      const committed = state.slots.find((x) => x.id === slot.id);
+      const replacing =
+        committed?.assetId && slot.assetId && committed.assetId !== slot.assetId
+          ? state.assets.find((a) => a.id === committed.assetId)
+          : null;
+      const added = !committed?.assetId && slot.assetId;
       const asset = state.assets.find((a) => a.id === slot.assetId);
       const row = document.createElement('div');
-      row.className = `attach-slot${asset ? ' is-filled' : ''}${armed ? ' is-armed' : ''}`;
+      row.className =
+        `attach-slot${asset ? ' is-filled' : ''}${armed ? ' is-armed' : ''}` +
+        `${replacing || added ? ' is-staged' : ''}`;
       row.dataset.slot = slot.id;
       row.innerHTML = `
         ${asset
@@ -630,11 +650,15 @@ function init(root) {
           <div class="attach-slot__state"></div>
         </div>`;
       row.querySelector('.attach-slot__label').textContent = slot.label;
-      row.querySelector('.attach-slot__state').textContent = asset
-        ? asset.name
-        : armed
-          ? 'Tap to place the selected photo'
-          : 'Empty — drag a photo here';
+      row.querySelector('.attach-slot__state').textContent = replacing
+        ? `Replacing ${replacing.name} — saves as one change`
+        : added
+          ? `${asset.name} — not saved yet`
+          : asset
+            ? asset.name
+            : armed
+              ? 'Tap to place the selected photo'
+              : 'Empty — drag a photo here';
       el.slots.appendChild(row);
     });
 
@@ -886,7 +910,7 @@ function init(root) {
   // ── Attach: drag and drop, plus tap-to-place ─────────────────────────────
 
   function placeAsset(slotId, assetId) {
-    const slot = state.slots.find((x) => x.id === slotId);
+    const slot = draft?.find((x) => x.id === slotId);
     if (!slot) return;
     slot.assetId = assetId;
     armed = null;
@@ -1027,6 +1051,8 @@ function init(root) {
     if (t.dataset.photos) {
       el.attach.hidden = false;
       armed = null;
+      // Work on a copy. Cancel has to be able to throw it all away.
+      draft = state.slots.map((x) => ({ ...x }));
       renderAttach();
       return;
     }
@@ -1034,16 +1060,37 @@ function init(root) {
     if (t.hasAttribute('data-attach-close')) {
       el.attach.hidden = true;
       armed = null;
+      draft = null; // discarded, not applied
       return;
     }
 
     if (t.hasAttribute('data-attach-save')) {
+      // Count what the save actually does before committing it. A slot that
+      // swaps one photo for another is a replacement, which the real portal
+      // sends as a single atomic request rather than a detach plus an attach.
+      let added = 0;
+      let replaced = 0;
+      (draft ?? []).forEach((d) => {
+        const was = state.slots.find((x) => x.id === d.id)?.assetId ?? null;
+        if (d.assetId && !was) added++;
+        else if (d.assetId && was && d.assetId !== was) replaced++;
+      });
+
+      if (draft) state.slots = draft;
+      draft = null;
       el.attach.hidden = true;
       armed = null;
+
       const filled = state.slots.filter((s2) => s2.assetId).length;
+      const parts = [];
+      if (added) parts.push(`${added} photo${added === 1 ? '' : 's'} added`);
+      if (replaced) parts.push(`${replaced} replaced`);
       el.success.hidden = false;
-      el.success.textContent =
-        `Photos saved — ${filled} of ${state.slots.length} slots filled on version ${state.site.versionNumber}.`;
+      el.success.textContent = parts.length
+        ? `${parts.join(', ')} — saved together on version ${state.site.versionNumber}. ` +
+          `${filled} of ${state.slots.length} slots filled.`
+        : `No photo changes to save on version ${state.site.versionNumber}.`;
+
       renderHosting();
       renderExplore();
       return;

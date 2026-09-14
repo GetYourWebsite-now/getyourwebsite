@@ -30,6 +30,8 @@
  *   - Sending a change request shows the real success banner, but obviously
  *     doesn't email anyone.
  *   - Assets can't be uploaded; the library is seeded with samples instead.
+ *   - Photo saves always succeed. Staging and the single-request replace are
+ *     real (see c220e34 in the portal); the verification round trip is not.
  *   - Hosting a version updates the demo, but there is no domain behind it.
  *   - Domain search is not faked — a domain is shown already connected.
  *   - Account and Billing are deliberately omitted. They exist in the real
@@ -352,7 +354,8 @@
               </h2>
               <p class="client-revise-hint">
                 Drag a photo from your library onto a slot, then save. On a touch
-                screen, tap a photo and then tap a slot.
+                screen, tap a photo and then tap a slot. Nothing is applied until
+                you save, and everything you changed is saved together.
               </p>
             </div>
             <div class="client-revise-preview-actions">
@@ -1043,6 +1046,10 @@
 
   .sandbox .attach-slot.is-over,
   .sandbox .attach-slot.is-armed { border-color: var(--accent); background: rgba(245, 194, 75, 0.08); }
+
+  /* Staged, not yet saved — the panel collects changes and sends them together. */
+  .sandbox .attach-slot.is-staged { border-color: var(--gold-line); border-style: solid; }
+  .sandbox .attach-slot.is-staged .attach-slot__state { color: var(--accent); }
   .sandbox .attach-slot.is-filled { border-style: solid; }
 
   .sandbox .attach-slot__thumb {

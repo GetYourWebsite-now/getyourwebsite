@@ -104,37 +104,90 @@ versions === 4
   await page.waitForTimeout(400);
   const slots = await page.locator('[data-slot]').count();
 
-  // Two paths, tested two ways.
-  //
-  // Tap-to-place is the touch path and is driven with real clicks. The pointer
-  // drag is driven with synthetic drag events carrying a real DataTransfer,
+  const slotText = (id) =>
+    page.evaluate(
+      (s2) => document.querySelector(`[data-slot="${s2}"] .attach-slot__state`)?.textContent?.trim(),
+      id
+    );
+
+  // Two ways in. Tap-to-place is the touch path and uses real clicks. The
+  // pointer drag uses synthetic drag events carrying a real DataTransfer,
   // because Playwright's dragAndDrop is unreliable against HTML5 drag targets —
   // it picked a neighbouring photo, or none, on roughly half of ten attempts.
-  // That is the harness, not the page: the library's chip positions were
-  // measured pixel-identical from 600ms to 4s, so nothing is moving under it.
+  // That is the harness, not the page: the library's chip positions measured
+  // pixel-identical from 600ms to 4s, so nothing is moving under it.
+  const drop = (asset, slot) =>
+    page.evaluate(
+      ([a, sl]) => {
+        const dt = new DataTransfer();
+        document
+          .querySelector(`[data-asset="${a}"]`)
+          .dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }));
+        const target = document.querySelector(`[data-slot="${sl}"]`);
+        target.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt }));
+        target.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }));
+      },
+      [asset, slot]
+    );
+
   await page.click('[data-asset="a1"]');
   await page.click('[data-slot="s2"]');
   await page.waitForTimeout(200);
-  const tapped = await page.evaluate(
-    () => document.querySelector('[data-slot="s2"] .attach-slot__state')?.textContent?.trim()
-  );
+  const tapped = await slotText('s2');
 
-  const dragged = await page.evaluate(() => {
-    const dt = new DataTransfer();
-    const chip = document.querySelector('[data-asset="a4"]');
-    const slot = document.querySelector('[data-slot="s3"]');
-    chip.dispatchEvent(new DragEvent('dragstart', { bubbles: true, dataTransfer: dt }));
-    slot.dispatchEvent(new DragEvent('dragover', { bubbles: true, cancelable: true, dataTransfer: dt }));
-    slot.dispatchEvent(new DragEvent('drop', { bubbles: true, cancelable: true, dataTransfer: dt }));
-    return document.querySelector('[data-slot="s3"] .attach-slot__state')?.textContent?.trim();
-  });
+  await drop('a4', 's3');
+  await page.waitForTimeout(200);
+  const dragged = await slotText('s3');
 
-  slots >= 3 && tapped === 'Sourdough loaves'
-    ? pass(`photos attach by tap — "${tapped}" landed in the about slot`)
+  slots >= 3 && /Sourdough loaves/.test(tapped ?? '')
+    ? pass(`photos attach by tap — s2 reads "${tapped}"`)
     : fail(`tap-to-place failed (slots=${slots}, slot reads "${tapped}")`);
-  dragged === 'Cinnamon buns'
-    ? pass(`photos attach by drag — "${dragged}" landed in the menu slot`)
+  /Cinnamon buns/.test(dragged ?? '')
+    ? pass(`photos attach by drag — s3 reads "${dragged}"`)
     : fail(`drag-and-drop onto a placeholder failed (slot reads "${dragged}")`);
+
+  // Since c220e34 the real panel stages changes and sends them together, and a
+  // slot that swaps one photo for another goes as a single atomic request
+  // rather than a detach followed by an attach. Three things follow from that,
+  // and the sandbox has to show all three.
+  await drop('a3', 's1'); // s1 already holds a photo, so this is a replacement
+  await page.waitForTimeout(200);
+  const replacing = await slotText('s1');
+  /Replacing .*one change/.test(replacing ?? '')
+    ? pass(`replacing a filled slot reads as one change — "${replacing}"`)
+    : fail(`replacement not shown as a single change: "${replacing}"`);
+
+  // Cancel discards everything staged.
+  await page.click('[data-attach-close]');
+  await page.waitForTimeout(200);
+  await page.click('[data-photos="4"]');
+  await page.waitForSelector('[data-attach]:not([hidden])');
+  await page.waitForTimeout(300);
+  const afterCancel = await slotText('s3');
+  afterCancel === 'Empty — drag a photo here'
+    ? pass('cancel discards staged photo changes')
+    : fail(`cancel left staged changes behind: s3 reads "${afterCancel}"`);
+
+  // Save commits them, and says what it did.
+  await drop('a4', 's3');
+  await drop('a3', 's1');
+  await page.waitForTimeout(200);
+  await page.click('[data-attach-save]');
+  await page.waitForTimeout(400);
+  const banner = await page.evaluate(
+    () => document.querySelector('[data-success]')?.textContent?.trim() ?? ''
+  );
+  /1 photo added/.test(banner) && /1 replaced/.test(banner) && /saved together/.test(banner)
+    ? pass(`save reports the batch — "${banner.slice(0, 60)}…"`)
+    : fail(`save banner wrong: "${banner}"`);
+
+  await page.click('[data-photos="4"]');
+  await page.waitForSelector('[data-attach]:not([hidden])');
+  await page.waitForTimeout(300);
+  const committed = await slotText('s1');
+  committed === 'Counter display'
+    ? pass('saved photo changes persist after the panel closes')
+    : fail(`save did not commit: s1 reads "${committed}"`);
 
   await page.click('[data-attach-close]');
 }
