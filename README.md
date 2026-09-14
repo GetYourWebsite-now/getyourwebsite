@@ -465,6 +465,10 @@ Search the project for `[EDIT]` to find them all. In priority order:
 - **The mock sites use placeholder photos** from `loremflickr.com`, which serves
   a random image per keyword. They occasionally return something odd. When you
   have real client photos, host them in `public/` and swap the `src` attributes.
+- **The demo sandbox has a Fullscreen control.** The portal is a dense app and a
+  page section doesn't do it justice. It uses the Fullscreen API, with a
+  fixed-overlay fallback for iOS Safari on iPhone, which allows element
+  fullscreen only for `<video>`. Both paths are covered by `npm run verify`.
 - **The demo sandbox mirrors our client app** (`GetYourWebsiteAdmin`,
   `development` branch, the **`client/`** workspace — not `frontend/`, which is
   the staff admin app). After changing the sandbox, run `npm run shots:teaser`:

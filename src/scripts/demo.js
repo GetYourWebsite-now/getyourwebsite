@@ -271,6 +271,8 @@ function init(root) {
     ),
     crumb: $('[data-crumb]'),
     burger: $('[data-burger]'),
+    fullscreen: $('[data-fullscreen]'),
+    fullscreenLabel: $('[data-fullscreen-label]'),
     portal: $('[data-portal]'),
     exploreSummary: $('[data-explore-summary]'),
     kpiStatus: $('[data-kpi-status]'),
@@ -928,6 +930,65 @@ function init(root) {
     placeAsset(slot.dataset.slot, armed);
   });
 
+  // ── Fullscreen ───────────────────────────────────────────────────────────
+  //
+  // The portal is a dense application shown inside a page section, which is
+  // fine for a glance and cramped for actually trying it. This gives it the
+  // whole screen.
+  //
+  // Two mechanisms on purpose. The Fullscreen API is the right one and is what
+  // gets used almost everywhere; iOS Safari on iPhone refuses it for anything
+  // that isn't a <video>, so there is a fixed-position fallback that looks
+  // identical. `syncFullscreen` is what keeps the button label and aria-pressed
+  // honest whichever one is in play — including when the visitor leaves
+  // fullscreen with Escape or the browser's own control, which fires no click.
+  let fauxFullscreen = false;
+
+  const inFullscreen = () => document.fullscreenElement === root || fauxFullscreen;
+
+  function syncFullscreen() {
+    const on = inFullscreen();
+    root.classList.toggle('is-fullscreen', fauxFullscreen);
+    el.fullscreen.setAttribute('aria-pressed', String(on));
+    el.fullscreenLabel.textContent = on ? 'Exit fullscreen' : 'Fullscreen';
+    // A fixed overlay would otherwise scroll the page behind it.
+    document.body.style.overflow = fauxFullscreen ? 'hidden' : '';
+    // The tree measures itself, so it has to be redrawn at the new size.
+    if (state.tab === 'version-tree') renderVersionTree();
+  }
+
+  async function toggleFullscreen() {
+    if (inFullscreen()) {
+      if (document.fullscreenElement === root) {
+        await document.exitFullscreen().catch(() => {});
+      }
+      fauxFullscreen = false;
+      syncFullscreen();
+      return;
+    }
+    try {
+      await root.requestFullscreen();
+      // The change event does the syncing; see below.
+    } catch {
+      fauxFullscreen = true;
+      syncFullscreen();
+    }
+  }
+
+  document.addEventListener('fullscreenchange', syncFullscreen);
+
+  // Escape closes the fallback. The real API already handles its own.
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && fauxFullscreen) {
+      fauxFullscreen = false;
+      syncFullscreen();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (inFullscreen() && state.tab === 'version-tree') renderVersionTree();
+  }, { passive: true });
+
   // ── Events ───────────────────────────────────────────────────────────────
 
   root.addEventListener('click', (e) => {
@@ -992,6 +1053,11 @@ function init(root) {
     if (t.dataset.asset) {
       armed = armed === t.dataset.asset ? null : t.dataset.asset;
       renderAttach();
+      return;
+    }
+
+    if (t.hasAttribute('data-fullscreen')) {
+      toggleFullscreen();
       return;
     }
 

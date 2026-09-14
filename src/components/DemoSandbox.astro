@@ -49,7 +49,15 @@
   <p class="sandbox__banner">
     <span class="sandbox__dot" aria-hidden="true"></span>
     Live demo with sample data — this is exactly what you get as a GetYourWebsite client.
-    <button type="button" class="sandbox__reset" data-reset>Reset demo</button>
+    <span class="sandbox__actions">
+      <!-- The portal is a dense app squeezed into a page section. Fullscreen is
+           how you actually judge it, so the control sits with Reset rather than
+           being hidden away. -->
+      <button type="button" class="sandbox__reset" data-fullscreen aria-pressed="false">
+        <span data-fullscreen-label>Fullscreen</span>
+      </button>
+      <button type="button" class="sandbox__reset" data-reset>Reset demo</button>
+    </span>
   </p>
 
   <div class="sandbox__frame">
@@ -1586,6 +1594,52 @@
     font-weight: 500;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
+
+  .sandbox__actions { display: flex; gap: 0.5rem; margin-left: auto; flex-wrap: wrap; }
+
+  /* ── Fullscreen ─────────────────────────────────────────────────────────
+     Two mechanisms, because one is not enough. `:fullscreen` covers the real
+     Fullscreen API; `.is-fullscreen` is the fallback for iOS Safari on iPhone,
+     which refuses requestFullscreen on anything that isn't a <video>. Both end
+     up in the same layout, so there is one set of rules below. */
+
+  .sandbox.is-fullscreen {
+    position: fixed;
+    inset: 0;
+    /* Above the sticky site nav, which is z-index 100. */
+    z-index: 200;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .sandbox:fullscreen,
+  .sandbox.is-fullscreen {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background: var(--black);
+  }
+
+  .sandbox:fullscreen .sandbox__banner,
+  .sandbox.is-fullscreen .sandbox__banner { border-radius: 0; flex-shrink: 0; }
+
+  /* The frame drops its fixed height and takes whatever is left. */
+  .sandbox:fullscreen .sandbox__frame,
+  .sandbox.is-fullscreen .sandbox__frame {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  /* The narration below the portal is page furniture, not part of the product. */
+  .sandbox:fullscreen .sandbox__log,
+  .sandbox.is-fullscreen .sandbox__log { display: none; }
 
   .sandbox__dot {
     width: 8px;

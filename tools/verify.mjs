@@ -5,7 +5,7 @@
  *
  * Sections:
  *   1  every internal link resolves
- *   2  the demo sandbox flow works end to end
+ *   2  the demo sandbox flow works end to end, including fullscreen
  *   2b nothing in the hero scene ever sits behind the copy
  *   3  reduced motion collapses the hero and stills the ambient layers
  *   4  the contact form validates and fails loudly when it can't send
@@ -137,6 +137,72 @@ versions === 4
     : fail(`drag-and-drop onto a placeholder failed (slot reads "${dragged}")`);
 
   await page.click('[data-attach-close]');
+}
+
+// Fullscreen. The portal is a dense app inside a page section, so this is how
+// anyone actually tries it — and it has two code paths, because iOS Safari
+// refuses element fullscreen. Both are checked.
+{
+  const before = await page.evaluate(
+    () => Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height)
+  );
+  await page.click('[data-fullscreen]');
+  await page.waitForTimeout(600);
+  const on = await page.evaluate(() => ({
+    h: Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height),
+    label: document.querySelector('[data-fullscreen-label]').textContent,
+    pressed: document.querySelector('[data-fullscreen]').getAttribute('aria-pressed'),
+    api: document.fullscreenElement === document.querySelector('[data-sandbox]'),
+  }));
+  await page.click('[data-fullscreen]');
+  await page.waitForTimeout(600);
+  const off = await page.evaluate(() => ({
+    h: Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height),
+    label: document.querySelector('[data-fullscreen-label]').textContent,
+  }));
+
+  on.h > before && on.label === 'Exit fullscreen' && on.pressed === 'true' && on.api
+    ? pass(`demo goes fullscreen — frame ${before}px to ${on.h}px`)
+    : fail(`fullscreen did not engage: ${JSON.stringify(on)}`);
+  off.h === before && off.label === 'Fullscreen'
+    ? pass('demo exits fullscreen and restores its inline size')
+    : fail(`exit fullscreen left it at ${JSON.stringify(off)}`);
+}
+
+// The fallback for browsers that refuse element fullscreen — iOS Safari on
+// iPhone allows it only for <video>. Same layout, driven by a class instead.
+{
+  const fs = await ctx.newPage();
+  await fs.addInitScript(() => {
+    Element.prototype.requestFullscreen = () => Promise.reject(new Error('not allowed'));
+  });
+  await fs.goto(`${BASE}/demo`, { waitUntil: 'networkidle' });
+  await fs.waitForTimeout(900);
+  const base = await fs.evaluate(
+    () => Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height)
+  );
+  await fs.click('[data-fullscreen]');
+  await fs.waitForTimeout(500);
+  const on = await fs.evaluate(() => ({
+    h: Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height),
+    faux: document.querySelector('[data-sandbox]').classList.contains('is-fullscreen'),
+    locked: document.body.style.overflow === 'hidden',
+  }));
+  await fs.keyboard.press('Escape');
+  await fs.waitForTimeout(500);
+  const off = await fs.evaluate(() => ({
+    h: Math.round(document.querySelector('.sandbox__frame').getBoundingClientRect().height),
+    faux: document.querySelector('[data-sandbox]').classList.contains('is-fullscreen'),
+    locked: document.body.style.overflow === 'hidden',
+  }));
+
+  on.faux && on.h > base && on.locked
+    ? pass(`fullscreen falls back without the API — frame ${base}px to ${on.h}px`)
+    : fail(`fullscreen fallback failed: ${JSON.stringify(on)}`);
+  !off.faux && off.h === base && !off.locked
+    ? pass('Escape leaves the fallback and unlocks page scroll')
+    : fail(`Escape did not restore: ${JSON.stringify(off)}`);
+  await fs.close();
 }
 
 {
