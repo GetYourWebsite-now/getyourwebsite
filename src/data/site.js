@@ -11,12 +11,14 @@
 export const CONTACT_EMAIL = 'hello@getyourwebsite.example'; // [EDIT: your email]
 
 /**
- * [EDIT] Web3Forms access key. Get a free one in 10 seconds at
- * https://web3forms.com — paste your email, they email you a key.
- * Until this is a real key the contact form shows a friendly error and
- * falls back to the mailto link, so nothing silently disappears.
+ * [EDIT] Formspree form ID — the part after /f/ in the endpoint they give you
+ * (e.g. "xyzabcd" from https://formspree.io/f/xyzabcd). Create a form at
+ * https://formspree.io, point it at CONTACT_EMAIL above, and paste the ID here.
+ * Free plan covers 50 submissions a month.
+ * Until this is a real ID the contact form shows a friendly notice and falls
+ * back to the email address, so nothing silently disappears.
  */
-export const WEB3FORMS_KEY = 'REPLACE_WITH_YOUR_WEB3FORMS_ACCESS_KEY'; // [EDIT]
+export const FORMSPREE_FORM_ID = 'REPLACE_WITH_YOUR_FORMSPREE_FORM_ID'; // [EDIT]
 
 /** [EDIT] Social links. Delete any you don't want — the footer adapts. */
 export const SOCIALS = [

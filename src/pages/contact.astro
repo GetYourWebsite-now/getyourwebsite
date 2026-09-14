@@ -1,17 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL, WEB3FORMS_KEY } from '../data/site.js';
+import { CONTACT_EMAIL, FORMSPREE_FORM_ID } from '../data/site.js';
 import { url } from '../data/url.js';
 
 /**
- * The form posts to Web3Forms (free, no account server-side, works on static
- * hosting). Put your access key in WEB3FORMS_KEY in src/data/site.js.
+ * The form posts to Formspree (works on static hosting, no server of ours).
+ * Put your form ID in FORMSPREE_FORM_ID in src/data/site.js.
  *
  * It is a real <form> with a real action, so it still submits without
- * JavaScript — Web3Forms just redirects to its own thank-you page instead of
- * showing the inline success state. The script at the bottom upgrades it.
+ * JavaScript — Formspree just shows its own thank-you page instead of the
+ * inline success state. The script at the bottom upgrades it, posting FormData
+ * with `Accept: application/json`, which is what Formspree expects.
  */
-const keyIsSet = WEB3FORMS_KEY && !WEB3FORMS_KEY.startsWith('REPLACE_WITH');
+const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WITH');
 ---
 
 <BaseLayout
@@ -65,12 +66,12 @@ const keyIsSet = WEB3FORMS_KEY && !WEB3FORMS_KEY.startsWith('REPLACE_WITH');
       <!-- Form -->
       <div class="contact__form" data-reveal>
         {
-          !keyIsSet && (
+          !formIsSet && (
             <p class="setup-warning">
-              <strong>[EDIT] This form isn't connected yet.</strong> Get a free
-              access key at web3forms.com and put it in
-              <code>WEB3FORMS_KEY</code> in <code>src/data/site.js</code>. Until
-              then submissions will fail and visitors are shown the email
+              <strong>[EDIT] This form isn't connected yet.</strong> Create a
+              free form at formspree.io and put its ID in
+              <code>FORMSPREE_FORM_ID</code> in <code>src/data/site.js</code>.
+              Until then submissions will fail and visitors are shown the email
               address instead.
             </p>
           )
@@ -78,23 +79,21 @@ const keyIsSet = WEB3FORMS_KEY && !WEB3FORMS_KEY.startsWith('REPLACE_WITH');
 
         <form
           id="inquiry"
-          action="https://api.web3forms.com/submit"
+          action={`https://formspree.io/f/${FORMSPREE_FORM_ID}`}
           method="POST"
           novalidate
           data-form
         >
-          <input type="hidden" name="access_key" value={WEB3FORMS_KEY} />
           <input
             type="hidden"
-            name="subject"
+            name="_subject"
             value="New mockup inquiry from getyourwebsite"
           />
-          <input type="hidden" name="from_name" value="GetYourWebsite site" />
 
           <!-- Honeypot. Hidden off-screen; bots fill it, people never see it. -->
           <div class="honeypot" aria-hidden="true">
             <label for="botcheck">Leave this field empty</label>
-            <input id="botcheck" type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+            <input id="botcheck" type="checkbox" name="_gotcha" tabindex="-1" autocomplete="off" />
           </div>
 
           <div class="fields">
