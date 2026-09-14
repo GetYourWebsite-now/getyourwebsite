@@ -8,7 +8,7 @@
  */
 
 /** [EDIT] Where the contact form is delivered and what shows in the footer. */
-export const CONTACT_EMAIL = 'hello@getyourwebsite.example'; // [EDIT: your email]
+export const CONTACT_EMAIL = 'hello@getyourwebsite.now';
 
 /**
  * [EDIT] Formspree form ID — the part after /f/ in the endpoint they give you
@@ -18,7 +18,7 @@ export const CONTACT_EMAIL = 'hello@getyourwebsite.example'; // [EDIT: your emai
  * Until this is a real ID the contact form shows a friendly notice and falls
  * back to the email address, so nothing silently disappears.
  */
-export const FORMSPREE_FORM_ID = 'REPLACE_WITH_YOUR_FORMSPREE_FORM_ID'; // [EDIT]
+export const FORMSPREE_FORM_ID = 'xqpkrbez';
 
 /** [EDIT] Social links. Delete any you don't want — the footer adapts. */
 export const SOCIALS = [
