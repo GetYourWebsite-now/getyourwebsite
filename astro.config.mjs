@@ -14,7 +14,7 @@ import { defineConfig } from 'astro/config';
 //
 // See README.md → "Deploying" for the full story.
 // ---------------------------------------------------------------------------
-const SITE_URL = process.env.SITE_URL ?? 'https://jackw21886-svg.github.io';
+const SITE_URL = process.env.SITE_URL ?? 'https://getyourwebsite.now';
 const BASE_PATH = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
