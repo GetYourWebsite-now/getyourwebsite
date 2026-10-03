@@ -19,7 +19,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/benefits', '/why-us', '/contact'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/benefits', '/why-us', '/contact', '/privacy', '/terms'];
 
 // Budget for the hero timeline to play out after a jump. MIN_PLAY_S is 6.9s.
 //
@@ -772,13 +772,49 @@ await page.waitForTimeout(300);
   : fail('bad email was accepted');
 
 await page.fill('#email', 'rosa@example.com');
+
+// The form posts to a real Formspree endpoint now, so both submit paths are
+// exercised against an intercepted request. Letting the POST through would put
+// a fake Rosa's Bakery inquiry in the real inbox on every verify run — and
+// would make the result depend on Formspree being up.
+const action = await page.getAttribute('[data-form]', 'action');
+/^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/.test(action ?? '') &&
+!/REPLACE_WITH/.test(action ?? '')
+  ? pass(`form posts to a configured Formspree endpoint — ${action}`)
+  : fail(`form action is not a configured Formspree endpoint — ${action}`);
+
+// Rejection first: the visitor has to be pointed at the email address.
+await page.route('https://formspree.io/**', (route) =>
+  route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"no"}' })
+);
 await page.click('[data-submit]');
-await page.waitForTimeout(2500);
-const status = await page.getAttribute('[data-status]', 'data-state');
-const msg = await page.textContent('[data-status]');
-status === 'error' && /email us directly/i.test(msg)
-  ? pass('unset access key fails loudly and points at the email fallback')
-  : fail(`unexpected submit result: ${status} — ${msg}`);
+await page
+  .waitForFunction(() => document.querySelector('[data-status]')?.dataset.state === 'error', null, {
+    timeout: 10000,
+  })
+  .catch(() => {});
+const rejected = await page.textContent('[data-status]');
+/email us directly/i.test(rejected ?? '')
+  ? pass('a rejected send fails loudly and points at the email fallback')
+  : fail(`a rejected send did not point at the email fallback — ${rejected}`);
+await page.unroute('https://formspree.io/**');
+
+// Acceptance: the real field names go up, and the confirmation replaces the form.
+let posted = null;
+await page.route('https://formspree.io/**', async (route) => {
+  posted = route.request().postDataBuffer()?.toString('utf8') ?? '';
+  await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' });
+});
+await page.click('[data-submit]');
+await page.waitForSelector('[data-done]:not([hidden])', { timeout: 10000 }).catch(() => {});
+(await page.isVisible('[data-done]'))
+  ? pass('an accepted send swaps the form for the confirmation')
+  : fail('an accepted send did not show the confirmation');
+
+/Rosa Delgado/.test(posted ?? '') && /rosa@example\.com/.test(posted ?? '')
+  ? pass('the posted body carries the filled-in fields')
+  : fail('the posted body did not carry the filled-in fields');
+await page.unroute('https://formspree.io/**');
 
 // ── 5. Buttons ─────────────────────────────────────────────────────────────
 console.log('\n[5] Buttons');

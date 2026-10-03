@@ -1,0 +1,220 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { url } from '../data/url.js';
+import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
+
+/**
+ * Terms of Service (this is also the "terms and conditions" — one document).
+ *
+ * The billing, hosting and domain sections describe how GetYourWebsiteAdmin
+ * `development` actually behaves as of 2026-09-29:
+ *   - startup = one-time Stripe Checkout, grants revision credits with an expiry
+ *   - maintenance = monthly subscription, grants credits per paid invoice that
+ *     expire at period end; extra revisions metered onto the invoice
+ *   - cancel = at period end, monthly fee not refunded (client/AccountTab.jsx)
+ *   - subscription canceled/unpaid → suspendHostingForBillingLapse takes the
+ *     site offline but keeps the domain registration
+ *   - domains registered via Cloudflare Registrar with the client as registrant
+ * Change the product, change this page. Specific prices deliberately live in
+ * the portal and Stripe, not here, so a price change doesn't need a terms change.
+ */
+---
+
+<LegalLayout
+  title="Terms of Service"
+  description="The terms for GetYourWebsite's mockups, website builds, maintenance plan, hosting and domains: what you pay for, what you own, and how to cancel."
+  eyebrow="Terms"
+  heading="Terms of Service"
+  lead="The deal between you and us: what you pay for, what you get, what you own, and how to leave. Written to be read, not skimmed past."
+>
+  <h2>1. The agreement</h2>
+  <p>
+    These terms are between you and {LEGAL_NAME}, a {LEGAL_STATE} company that
+    runs GetYourWebsite ("we", "us"). They cover getyourwebsite.now, our free
+    mockups, the client portal, and the website, hosting and domain services we
+    provide. By using any of them, or by paying us, you agree to these terms and
+    to our <a href={url('/privacy')}>Privacy Policy</a>.
+  </p>
+  <p>
+    If you're signing up for a business, you're confirming you're allowed to
+    agree to this on the business's behalf, and "you" means the business.
+  </p>
+
+  <h2>2. Free mockups</h2>
+  <p>
+    A mockup is a free, no-obligation preview of what your site could look like.
+    We build it from what you tell us and from your public business listing.
+    Photos in a mockup may be placeholders we don't have the rights to use on a
+    live site; they get replaced before anything goes live. You don't owe us
+    anything for a mockup, and we can take a mockup down at any time.
+  </p>
+
+  <h2>3. Your account</h2>
+  <p>
+    We create client portal accounts for our clients; there's no public sign-up.
+    Keep your password private. You're responsible for what happens in your
+    account, so tell us straight away if you think someone else has got in.
+  </p>
+
+  <h2>4. Prices and payment</h2>
+  <p>
+    Prices on our website are examples. Your actual price is the one shown to you
+    before you pay. Payments are processed by Stripe; prices are in US dollars and
+    don't include any taxes that apply.
+  </p>
+
+  <h3>Startup fee</h3>
+  <p>
+    A one-time payment that covers building your site. It includes a set number of
+    revisions, which expire after the period shown when you buy. If you change your
+    mind before you start your site build in the portal, email us and we'll refund
+    it in full. Once the build has started, the startup fee is non-refundable,
+    because the work has begun.
+  </p>
+
+  <h3>Maintenance plan</h3>
+  <ul>
+    <li>A monthly subscription that covers hosting your site and a set number of revisions each month. You need it for your site to be live.</li>
+    <li>It renews automatically every month and charges the card on file until you cancel.</li>
+    <li>Revisions included in a month don't roll over to the next month.</li>
+    <li>If you use more revisions than your plan includes, each extra one is charged at the per-revision price shown in your account, on your next invoice.</li>
+    <li>You can cancel any time from your account page. Your plan stays active until the end of the month you've paid for. We don't refund partial months, and extra revisions you've already used still appear on the final invoice.</li>
+    <li>If a payment fails and isn't fixed, the plan ends and your site goes offline (see section 6).</li>
+  </ul>
+
+  <h2>5. Building and revising your site</h2>
+  <p>
+    You tell us what you want, we build it, and you request changes through the
+    portal. Each revision request uses one revision. We'll make a genuine effort to
+    deliver what you ask for, but a revision is a change to your existing site,
+    not a rebuild into a completely different one. If a request is outside what we
+    offer, we'll tell you.
+  </p>
+
+  <h2>6. Hosting</h2>
+  <p>
+    While your maintenance plan is active, we host the version of your site you
+    choose to publish. We host on Cloudflare's network and work to keep sites fast
+    and online, but we can't promise the site will never go down.
+  </p>
+  <p>
+    If your maintenance plan ends, for any reason, we take your site offline. We
+    keep your site and its versions for 30 days afterward, and if you restart your
+    plan in that time we can put it back up.
+  </p>
+
+  <h2>7. Domains</h2>
+  <p>
+    If we register a domain for you, it's registered <strong>in your name</strong>
+    — you're the owner — and we pay for it while your maintenance plan is active.
+    If you leave, we stop paying for renewals, and we'll help you transfer the
+    domain to a registrar of your choice. Registrars have their own rules, such as
+    waiting periods after a new registration, which we can't override.
+  </p>
+  <p>
+    If you use a domain you already own, you stay responsible for renewing it and
+    for keeping your account with that registrar in good standing.
+  </p>
+
+  <h2>8. Your content</h2>
+  <p>
+    You own the text, photos, logos and other material you give us. You let us use
+    it to build, host, back up and show your site. You're confirming that you have
+    the right to use everything you give us, and that it doesn't break the law or
+    anyone else's rights.
+  </p>
+
+  <h2>9. Who owns the site</h2>
+  <p>
+    Once you've paid, you're free to use your site's design and content for your
+    business, for as long as you like. We keep ownership of our own tools, portal,
+    templates and reusable code, and some design components come from third
+    parties under their own licenses.
+  </p>
+  <p>
+    We may show your site in our portfolio as an example of our work. If you'd
+    rather we didn't, email us and we'll take it down.
+  </p>
+
+  <h2>10. AI-assisted work</h2>
+  <p>
+    We use AI tools to help design and write sites, and a person on our team
+    reviews them. Even so, AI can get details wrong. Check your site's content,
+    especially prices, hours, services, licenses and any claims about your
+    business, before you publish it. You're responsible for what your published
+    site says.
+  </p>
+
+  <h2>11. What you can't use us for</h2>
+  <p>You can't use our services, or a site we host, to:</p>
+  <ul>
+    <li>break any law, or help someone else break one;</li>
+    <li>publish content that infringes someone's copyright, trademark or privacy;</li>
+    <li>deceive people, including phishing, scams or impersonating someone;</li>
+    <li>publish sexually explicit, hateful or harassing content;</li>
+    <li>send spam or distribute malware;</li>
+    <li>attack, overload or try to break into our systems or anyone else's.</li>
+  </ul>
+  <p>
+    If a site or account breaks these rules, we can remove the content, take the
+    site offline or close the account. Where it's reasonable, we'll warn you first.
+  </p>
+
+  <h2>12. Other companies' services</h2>
+  <p>
+    We rely on other providers, such as Stripe for payments and Cloudflare for
+    hosting and domains. Their own terms apply to their part of the service, and
+    we aren't responsible for their outages or decisions.
+  </p>
+
+  <h2>13. No guarantees</h2>
+  <p>
+    We work hard on every site, but we provide our services "as is". We don't
+    promise any particular search ranking, amount of traffic, number of customers
+    or sales from your website.
+  </p>
+
+  <h2>14. Limits on our liability</h2>
+  <p>
+    To the extent the law allows, we're not liable for indirect or consequential
+    losses, such as lost profits, lost data or lost business. Our total liability
+    for any claim related to our services is limited to the amount you paid us in
+    the 12 months before the claim.
+  </p>
+
+  <h2>15. If someone makes a claim about your content</h2>
+  <p>
+    If someone brings a claim against us because of content you gave us or
+    published on your site, or because you broke these terms, you'll cover our
+    reasonable costs of dealing with it.
+  </p>
+
+  <h2>16. Ending the relationship</h2>
+  <p>
+    You can stop using our services at any time by cancelling your maintenance
+    plan. We can end our services to you if you seriously break these terms or
+    don't pay, and we can stop offering a service to everyone with reasonable
+    notice. Sections 8, 9, 13, 14, 15 and 17 still apply after the relationship
+    ends.
+  </p>
+
+  <h2>17. Law and disputes</h2>
+  <p>
+    These terms are governed by the laws of the State of {LEGAL_STATE}. If we have
+    a dispute, please email us first; most things get sorted out that way. If not,
+    it will be decided by the state or federal courts located in Wayne County,
+    {LEGAL_STATE}.
+  </p>
+
+  <h2>18. Changes to these terms</h2>
+  <p>
+    We may update these terms. We'll change the date at the top, and if a change
+    is significant we'll email clients before it takes effect. Continuing to use
+    our services after that means you accept the new terms.
+  </p>
+
+  <h2>19. Contact</h2>
+  <p>
+    Questions about these terms: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+  </p>
+</LegalLayout>

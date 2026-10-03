@@ -225,3 +225,17 @@ export const PORTAL_URL = '';
  * actually receives. Point this at a real hosted client site once there is one.
  */
 export const LIVE_SITE_URL = 'https://getyourwebsite.now';
+
+/**
+ * Legal pages (/privacy, /terms).
+ *
+ * [EDIT] LEGAL_NAME must match the name on the LLC's Michigan filing exactly.
+ * "Get Your Website LLC" is the Cloudflare account name; Railway calls the team
+ * "GYW LLC". If the LLC isn't actually filed yet, fix that before relying on
+ * these pages — terms that name an entity that doesn't exist protect no one.
+ *
+ * Bump LEGAL_UPDATED whenever either page changes in substance.
+ */
+export const LEGAL_NAME = 'Get Your Website LLC';
+export const LEGAL_STATE = 'Michigan';
+export const LEGAL_UPDATED = 'October 3, 2026';

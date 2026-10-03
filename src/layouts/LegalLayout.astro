@@ -1,0 +1,88 @@
+---
+/**
+ * Shell for /privacy and /terms: the dark page header every page has, then a
+ * narrow, plain reading column. Legal copy is meant to be read, so no reveal
+ * animations and no decoration inside the text.
+ */
+import BaseLayout from './BaseLayout.astro';
+import { LEGAL_UPDATED } from '../data/site.js';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  lead: string;
+}
+
+const { title, description, eyebrow, heading, lead } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <section class="section section--dark has-stars has-glow section--tight">
+    <div class="shell">
+      <div class="section-head">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1>{heading}</h1>
+        <p class="lead">{lead}</p>
+        <p class="legal-updated">Last updated {LEGAL_UPDATED}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow legal">
+      <slot />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal-updated {
+    margin-top: var(--s-4);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--silver);
+  }
+
+  .legal {
+    max-width: 44rem;
+    line-height: 1.7;
+  }
+
+  .legal :global(h2) {
+    font-size: var(--t-h3);
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-3);
+  }
+
+  .legal :global(h2:first-child) { margin-top: 0; }
+
+  .legal :global(h3) {
+    font-size: 1.05rem;
+    margin-top: var(--s-4);
+    margin-bottom: var(--s-2);
+  }
+
+  .legal :global(p + p),
+  .legal :global(ul + p),
+  .legal :global(p + ul) {
+    margin-top: var(--s-3);
+  }
+
+  .legal :global(ul) {
+    list-style: disc;
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .legal :global(strong) { font-weight: 600; }
+
+  .legal :global(a) { text-decoration: underline; text-underline-offset: 0.15em; }
+</style>

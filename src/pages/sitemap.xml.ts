@@ -18,6 +18,8 @@ const PAGES = [
   { path: '/benefits', priority: '0.7' },
   { path: '/why-us', priority: '0.7' },
   { path: '/contact', priority: '0.9' },
+  { path: '/privacy', priority: '0.3' },
+  { path: '/terms', priority: '0.3' },
 ];
 
 export const GET: APIRoute = ({ site }) => {

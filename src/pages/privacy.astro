@@ -1,0 +1,175 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { url } from '../data/url.js';
+import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
+
+/**
+ * Privacy Policy.
+ *
+ * Every statement here was checked against the code on 2026-09-29: this repo,
+ * and GetYourWebsiteAdmin `development` (backend migrations, client/, the
+ * Cloudflare worker, security_audit/DATA_RETENTION.md). If you add a tool that
+ * touches personal data — analytics, a CRM, a new email or AI provider — this
+ * page has to change in the same commit. GOATCOUNTER_ID in particular: filling
+ * it in means the "no analytics" line below stops being true.
+ */
+---
+
+<LegalLayout
+  title="Privacy Policy"
+  description="What GetYourWebsite collects, why, who it goes to, and how to get it deleted. No ads, no tracking cookies, no selling your data."
+  eyebrow="Privacy"
+  heading="Privacy Policy"
+  lead="What we collect, why we collect it, who it goes to, and how to get it removed. The short version: we only collect what we need to build and host your site, and we never sell it."
+>
+  <h2>Who we are</h2>
+  <p>
+    GetYourWebsite is run by {LEGAL_NAME}, a {LEGAL_STATE} company ("we", "us").
+    This policy covers getyourwebsite.now, our client portal, the preview and
+    hosting services we run for client websites, and our sales outreach. Questions
+    go to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+  </p>
+  <p>
+    The websites we build for clients are the client's own. What a client's site
+    collects from its visitors is covered by that business's privacy policy, not
+    this one.
+  </p>
+
+  <h2>What we collect</h2>
+
+  <h3>When you contact us or request a mockup</h3>
+  <p>
+    Your name, business name, type of business, email, phone number (optional),
+    current website (optional), what you're looking for, anything you write in
+    the details box, and how you heard about us. You can also just email us, in
+    which case we get whatever you send.
+  </p>
+
+  <h3>When you become a client</h3>
+  <ul>
+    <li><strong>Account details:</strong> your name, email and a password. We store only a scrambled (hashed) version of the password, never the password itself.</li>
+    <li><strong>Your business and site content:</strong> your answers to our design questions (style, colors, tone, priorities), revision requests, the images and text you upload, and every version of your site.</li>
+    <li><strong>Billing:</strong> payments are handled by Stripe. We never see or store your full card number. We keep a Stripe customer reference and a record of what you bought and when.</li>
+    <li><strong>Domain registration:</strong> if we register a domain for you, the law and the domain registry require the owner's name, organization, address, phone and email. We collect those and pass them to the registrar (Cloudflare). We request that your details are hidden from the public WHOIS lookup.</li>
+  </ul>
+
+  <h3>Business information we gather for outreach</h3>
+  <p>
+    We look for local businesses that could use a website. To do that we collect
+    publicly listed business information from Google Maps: business name,
+    address, phone number, website, category, hours, rating and public reviews.
+    If we call you, we note the outcome of the call, the name and email you give
+    us, and whether you're interested. If you'd rather we didn't contact you,
+    tell us and we'll mark you as do-not-contact.
+  </p>
+
+  <h3>Technical information</h3>
+  <p>
+    Like almost every website, our hosting providers automatically log basic
+    request details, such as your IP address, browser type and the pages
+    requested, to keep the service running and secure.
+  </p>
+
+  <h2>Cookies and tracking</h2>
+  <p>
+    <strong>We don't use analytics, advertising or tracking cookies, and we don't
+    track you across other websites.</strong> Because there is nothing to track,
+    we don't respond differently to "Do Not Track" browser signals.
+  </p>
+  <p>We only use storage that the service needs to work:</p>
+  <ul>
+    <li>The client portal keeps your sign-in in your browser's local storage so you stay logged in. Signing out clears it.</li>
+    <li>Private site previews set a short-lived cookie (a few hours at most) so only you can see your unpublished site.</li>
+  </ul>
+  <p>
+    Our pages load fonts from Google Fonts, and some of our example sites load
+    placeholder photos from third-party image services. Those providers can see
+    your IP address when your browser requests the file, the same as any website
+    that uses them.
+  </p>
+
+  <h2>How we use it</h2>
+  <ul>
+    <li>To reply to you and make the free mockup you asked for.</li>
+    <li>To build, revise, preview and host your website, and register your domain.</li>
+    <li>To take payments and keep the records the law requires.</li>
+    <li>To send you emails about your account and your site (for example, your login invite, or that your mockup is ready).</li>
+    <li>To find and contact businesses that might want a website.</li>
+    <li>To keep the service secure and fix problems.</li>
+  </ul>
+  <p>We don't sell your personal information, and we don't share it for advertising.</p>
+
+  <h2>AI tools</h2>
+  <p>
+    We use AI models to help write and design mockups and websites. That means
+    your business information, design answers, revision requests and site
+    content are sent to AI providers (through OpenRouter and Anthropic) to
+    generate your site. We don't send your password or payment details. A person
+    on our team reviews sites before they go live.
+  </p>
+
+  <h2>Who we share it with</h2>
+  <p>We use a small number of service providers who handle data on our behalf:</p>
+  <ul>
+    <li><strong>Formspree</strong> — receives the contact form and forwards it to us.</li>
+    <li><strong>Stripe</strong> — payments.</li>
+    <li><strong>Cloudflare</strong> — hosting for client sites and previews, file storage, DNS and domain registration.</li>
+    <li><strong>Railway</strong> — hosts our website, client portal and database.</li>
+    <li><strong>Resend</strong> — sends account emails.</li>
+    <li><strong>OpenRouter and Anthropic</strong> — AI models used to generate sites.</li>
+    <li><strong>Google</strong> — business listing data (Google Maps) and web fonts.</li>
+  </ul>
+  <p>
+    We also share information if the law requires it, to protect our rights or
+    someone's safety, or with a buyer if the business is ever sold (they'd be
+    bound by this policy).
+  </p>
+
+  <h2>How long we keep it</h2>
+  <ul>
+    <li><strong>Client accounts and sites:</strong> while your account is active, and for 30 days after you cancel or ask us to delete it, so a mistake can be undone. Then we delete it, except that copies can remain in our hosting providers' backups until those expire.</li>
+    <li><strong>Billing records:</strong> as long as tax and accounting law requires.</li>
+    <li><strong>Contact form messages and outreach notes:</strong> until they're no longer useful, or sooner if you ask.</li>
+    <li><strong>Server logs:</strong> for our hosting providers' standard retention periods.</li>
+  </ul>
+
+  <h2>Your choices</h2>
+  <p>
+    Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we'll:
+  </p>
+  <ul>
+    <li>tell you what we hold about you and send you a copy,</li>
+    <li>correct anything that's wrong,</li>
+    <li>delete your information (unless we have to keep it, like billing records), or</li>
+    <li>stop contacting you.</li>
+  </ul>
+  <p>
+    We'll confirm it's really you before acting, and we don't charge for any of
+    this. Wherever you live, you get these same options.
+  </p>
+
+  <h2>Security</h2>
+  <p>
+    Connections are encrypted, passwords are hashed, previews of unpublished sites
+    are locked to the account that owns them, and access to our systems is limited
+    to the people who need it. No system is perfectly secure, but if something
+    goes wrong that affects your information, we'll tell you.
+  </p>
+
+  <h2>Children</h2>
+  <p>
+    Our services are for businesses and aren't directed at children under 13. We
+    don't knowingly collect information from them. If you think we have, email us
+    and we'll delete it.
+  </p>
+
+  <h2>Changes</h2>
+  <p>
+    If we change this policy we'll update the date at the top. If the change is
+    significant, we'll email clients before it takes effect.
+  </p>
+
+  <p>
+    See also our <a href={url('/terms')}>Terms of Service</a>.
+  </p>
+</LegalLayout>
