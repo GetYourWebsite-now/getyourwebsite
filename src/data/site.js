@@ -230,12 +230,16 @@ export const LIVE_SITE_URL = 'https://getyourwebsite.now';
  * Legal pages (/privacy, /terms).
  *
  * [EDIT] LEGAL_NAME must match the name on the LLC's Michigan filing exactly.
- * "Get Your Website LLC" is the Cloudflare account name; Railway calls the team
- * "GYW LLC". If the LLC isn't actually filed yet, fix that before relying on
+ * One word, as the business is written everywhere else. Michigan's registry
+ * displays every entity name in capitals whatever case it was filed in, so
+ * "GETYOURWEBSITE LLC" in a search result does not contradict this. Check the
+ * filing itself if it ever matters in a dispute. (The Cloudflare account says
+ * "Get Your Website LLC" and Railway calls the team "GYW LLC"; neither is the
+ * filing.) If the LLC isn't actually filed yet, fix that before relying on
  * these pages — terms that name an entity that doesn't exist protect no one.
  *
  * Bump LEGAL_UPDATED whenever either page changes in substance.
  */
-export const LEGAL_NAME = 'Get Your Website LLC';
+export const LEGAL_NAME = 'GetYourWebsite LLC';
 export const LEGAL_STATE = 'Michigan';
 export const LEGAL_UPDATED = 'October 3, 2026';
