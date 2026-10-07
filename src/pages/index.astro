@@ -1,29 +1,105 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import TierCard from '../components/TierCard.astro';
-import { FEATURED_PROJECTS, TIERS, PRICING_DISCLAIMER } from '../data/site.js';
+import { FEATURED_PROJECTS, TIERS, PRICING_DISCLAIMER, PROOF } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
 <BaseLayout
   title="GetYourWebsite"
-  description="Custom websites for local businesses, built by high school students. Request a free mockup — no commitment, no cost."
-  transparentNav
-  bleed
+  description="Websites for local businesses. We build you a free mock first, then the real site — hosted, maintained, and with every version kept so you choose what's live."
 >
-  <Hero />
+  <!-- 1. Hero ------------------------------------------------------------
+       Left: the offer in one sentence. Right: a real screenshot of the
+       client portal, not an illustration of one — see tools/portal-shots.mjs.
+  -->
+  <section class="section section--hero">
+    <div class="shell hero">
+      <div class="hero__copy">
+        <p class="eyebrow">Websites for local businesses</p>
+        <h1 class="hero__title">Your business. Online, your way.</h1>
+        <p class="lead hero__lead">
+          We build you a free mock first. If you like it, we build the real
+          site, put it on your domain, and keep it running — with every
+          version saved, so you decide which one the world sees.
+        </p>
+        <div class="btn-row hero__cta">
+          <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a free mock</a>
+          <a
+            class="btn btn--secondary btn--lg"
+            href="https://allergyrescuekit.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            See a live client site
+            <span class="sr-only">— Allergy Rescue Kit (opens in a new tab)</span>
+          </a>
+        </div>
+      </div>
 
-  <!-- 1. Our Work ------------------------------------------------------- -->
+      <figure class="hero__shot">
+        <div class="browser">
+          <div class="browser__bar" aria-hidden="true">
+            <span></span><span></span><span></span>
+            <div class="browser__url">portal.getyourwebsite.now</div>
+          </div>
+          <picture>
+            <source
+              media="(max-width: 860px)"
+              srcset={url('/shots/portal-version-tree-narrow.webp')}
+            />
+            <img
+              src={url('/shots/portal-version-tree.webp')}
+              alt="The client portal's version tree: First build, Warmer photos and Online orders in a row, with Online orders marked as the live version and branching into Christmas and Spring menu."
+              width="2880"
+              height="1320"
+              fetchpriority="high"
+              decoding="async"
+            />
+          </picture>
+        </div>
+        <figcaption class="hero__caption">
+          Your version tree in the client portal. Every revision is kept, and
+          one button decides which one is live.
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 2. Proof strip -----------------------------------------------------
+       Three numbers, each countable by a visitor from a public source. No
+       logo wall, no invented statistics — PROOF in src/data/site.js records
+       where each figure comes from and when it was last checked.
+  -->
+  <section class="section section--alt section--tight">
+    <div class="shell">
+      <ul class="proof" data-reveal-group>
+        {
+          PROOF.figures.map((f) => (
+            <li class="proof__item" data-reveal>
+              <span class="proof__num stat-num">{f.value}</span>
+              <span class="proof__label">{f.label}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="proof__source">{PROOF.source}</p>
+    </div>
+  </section>
+
+  <!-- 3. Our Work ---------------------------------------------------------
+       Still the concept sites. Phase 3 replaces this with the two real
+       client case studies.
+  -->
   <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Our work</p>
         <h2>Concept sites, built like real ones.</h2>
         <p class="lead">
-          Every one of these is a full, working site — not a mock-up in a design tool.
-          Open them and click around.
+          Every one of these is a full, working site — not a mock-up in a
+          design tool. Open them and click around.
         </p>
       </div>
 
@@ -37,48 +113,151 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 2. Demo ----------------------------------------------------------- -->
-  <section class="section section--dark has-stars">
-    <div class="shell demo-teaser">
-      <div class="demo-teaser__copy" data-reveal>
-        <p class="eyebrow">The demo</p>
-        <h2>See what it's like to be our client.</h2>
+  <!-- 4. How it works — three steps, typography only --------------------- -->
+  <section class="section section--alt">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">How it works</p>
+        <h2>Three steps, and the first one is free.</h2>
+      </div>
+
+      <ol class="steps" data-reveal-group>
+        <li class="step" data-reveal>
+          <span class="step__num">01</span>
+          <h3>A free mock</h3>
+          <p>
+            Tell us about your business in your own words. We build a real
+            homepage concept for it — your name, your services, your photos —
+            and send you a link. No card, no commitment, and you keep the link
+            either way.
+          </p>
+        </li>
+        <li class="step" data-reveal>
+          <span class="step__num">02</span>
+          <h3>Approve and start</h3>
+          <p>
+            If you want the full site, a 50% deposit starts the build and the
+            balance is due at launch. We confirm the price with you after we
+            have seen your mock, so you are agreeing to a number rather than a
+            range.
+          </p>
+        </li>
+        <li class="step" data-reveal>
+          <span class="step__num">03</span>
+          <h3>You choose what's live</h3>
+          <p>
+            We build the site, register your domain and point it at it. After
+            that every change you ask for is saved as its own version, and you
+            pick which one the world sees.
+          </p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. Platform --------------------------------------------------------- -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">The platform</p>
+        <h2>The site is the easy part. Running it is what we built.</h2>
         <p class="lead">
-          When we build your site you get a private portal: open your website,
-          click any part of it, and tell us what to change. No email chains, no
-          "third paragraph, second sentence".
-        </p>
-        <p class="lead">
-          We rebuilt that portal here with sample data so you can try it before
-          you ever contact us.
-        </p>
-        <p class="demo-teaser__cta">
-          <a class="btn btn--gold" href={url('/demo')}>Try the client demo</a>
+          The screenshots below are the portal a client actually gets. You can
+          click through the same thing in the demo, without an account.
         </p>
       </div>
 
-      <!-- A stylised browser frame around a screenshot of the real sandbox -->
-      <div class="demo-teaser__frame" data-reveal>
-        <div class="browser">
-          <div class="browser__bar" aria-hidden="true">
-            <span></span><span></span><span></span>
-            <div class="browser__url">portal.getyourwebsite</div>
-          </div>
+      <!-- Row 1: versioning -->
+      <div class="feature" data-reveal>
+        <div class="feature__copy">
+          <h3>Press host on last year's Christmas site</h3>
+          <p>
+            Every revision becomes a new version of your site. Nothing is ever
+            overwritten and nothing is lost. Ask for a Christmas version in
+            November, approve it and press host; in January press host on the
+            everyday one and you are back. Build the theme once, reuse it
+            every year.
+          </p>
+          <p class="feature__link">
+            <a class="link-arrow" href={url('/demo')}>Try the client demo</a>
+          </p>
+        </div>
+        <figure class="feature__shot shot">
           <img
-            src={url('/shots/demo.webp')}
-            alt="The GetYourWebsite client portal, showing a website version list with Open and Request changes buttons."
-            width="1280"
-            height="896"
+            src={url('/shots/portal-my-website.webp')}
+            alt="The My website tab in the client portal, showing the live version, a list of approved versions, and Open, Quick edit, Request changes and Attach images buttons on each."
+            width="2560"
+            height="1800"
             loading="lazy"
             decoding="async"
           />
+        </figure>
+      </div>
+
+      <!-- Row 2: images -->
+      <div class="feature feature--flip" data-reveal>
+        <div class="feature__copy">
+          <h3>Your photos, dragged into place</h3>
+          <p>
+            Drop your own pictures onto the photo slots in your site and save.
+            No file names, no emailing files back and forth, no waiting on us.
+            We host and manage the files for you, optimised and served from
+            the same network as the site.
+          </p>
         </div>
+        <figure class="feature__shot shot">
+          <img
+            src={url('/shots/portal-assets.webp')}
+            alt="The Assets tab in the client portal: an upload form and a grid of the client's own photos, each marked public or private."
+            width="2560"
+            height="1720"
+            loading="lazy"
+            decoding="async"
+          />
+        </figure>
+      </div>
+
+      <!-- Rows 3 and 4: no screenshot, because neither one is a screen -->
+      <div class="grid grid-2 feature-pair" data-reveal-group>
+        <article class="card" data-reveal>
+          <h3>Hosting and the domain, handled</h3>
+          <p>
+            We register your domain and point it at your site, in your
+            business's name. You never touch a registrar or a DNS record. The
+            site is hosted on Cloudflare's network, which by Cloudflare's own
+            published figures spans hundreds of cities in 100+ countries and
+            reaches roughly 95% of the Internet-connected population in under
+            50 milliseconds — so it loads fast for the people near you, and it
+            stays up.
+          </p>
+          <p class="card__note">
+            <a href="https://www.cloudflare.com/network/" target="_blank" rel="noopener noreferrer">
+              Check those figures on Cloudflare's network page
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </p>
+        </article>
+
+        <article class="card" data-reveal>
+          <h3>Not one prompt into a chatbot</h3>
+          <p>
+            Building a site starts with research: web searches about your
+            specific business and its industry. The draft is assembled from
+            curated component libraries by several specialised agents that
+            write, critique and refine it in turn. Then a person reviews every
+            site before you ever see it — and keeps reviewing every revision
+            after that.
+          </p>
+          <p class="card__note">
+            <a class="link-arrow" href={url('/how-it-works')}>How all of it works</a>
+          </p>
+        </article>
       </div>
     </div>
   </section>
 
-  <!-- 3. Benefits ------------------------------------------------------- -->
-  <section class="section">
+  <!-- 6. Why a website ---------------------------------------------------- -->
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Why a website</p>
@@ -113,8 +292,8 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 4. Pricing -------------------------------------------------------- -->
-  <section class="section section--dark has-stars">
+  <!-- 7. Pricing teaser --------------------------------------------------- -->
+  <section class="section">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Pricing</p>
@@ -134,16 +313,17 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 5. Why Us --------------------------------------------------------- -->
-  <section class="section">
+  <!-- 8. Why us ------------------------------------------------------------ -->
+  <section class="section section--alt">
     <div class="shell why-teaser">
       <div class="why-teaser__copy" data-reveal>
         <p class="eyebrow">Why us</p>
-        <h2>We're students. That's the point.</h2>
+        <h2>You talk to the people who build it.</h2>
         <p class="lead">
-          We build websites for businesses in our town because they deserve to be
-          online, and because we're putting ourselves through college. You get our
-          full attention — our reputation here is the only one we have.
+          We are a small team and your project is not one of forty. You deal
+          with whoever is writing your site rather than an account manager
+          relaying messages, which is why a change you ask for on Tuesday is
+          usually live that week.
         </p>
         <p class="section-more">
           <a class="link-arrow" href={url('/why-us')}>What makes us different</a>
@@ -160,67 +340,16 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 6. How it works — the platform, in brief ------------------------- -->
-  <!-- The full treatment is /how-it-works. This is the teaser: lead with the
-       version switch, because it's the capability nobody expects and the one
-       that separates us from someone who hands over a folder of HTML. -->
-  <section class="section">
-    <div class="shell">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">How it works</p>
-        <h2>The site is the easy part. Running it is what we built.</h2>
-        <p class="lead">
-          Every change you ask for is saved as its own version of your site, and
-          you decide which one the world sees.
-        </p>
-      </div>
-
-      <div class="grid grid-3" data-reveal-group>
-        <article class="card" data-reveal>
-          <h3>Switch versions with one button</h3>
-          <p>
-            Ask for a Christmas version in November and press host. Press host
-            on the old one in January and you're back. Build it once, reuse it
-            every year — nothing is ever overwritten.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>Hosting and the domain, handled</h3>
-          <p>
-            We register your domain and point it at your site, served from
-            Cloudflare's network so it's quick for the people near you. You
-            never see a DNS record.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>Your photos, dragged into place</h3>
-          <p>
-            Drop your own pictures onto the photo slots in your site and save.
-            No emailing files back and forth, no waiting on us.
-          </p>
-        </article>
-      </div>
-
-      <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/how-it-works')}>
-          How all of it works
-        </a>
-      </p>
-    </div>
-  </section>
-
-  <!-- 7. Final CTA ------------------------------------------------------ -->
-  <section class="section section--dark has-stars has-glow cta-band">
+  <!-- 9. Final CTA --------------------------------------------------------- -->
+  <section class="section cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2 class="cta-band__title">
-        Your business deserves a website that's above and beyond.
-      </h2>
+      <h2 class="cta-band__title">See your business online before you pay anything.</h2>
       <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send back a free mockup of your homepage. No
+        Tell us about it and we'll send back a free mock of your homepage. No
         commitment, no cost, no catch.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
+        <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a free mock</a>
       </div>
     </div>
   </section>
@@ -231,55 +360,173 @@ import { url } from '../data/url.js';
   .section-head--center + .grid + .section-more,
   .compare + .section-more { text-align: center; }
 
-  /* Demo teaser ---------------------------------------------------------- */
+  /* Hero ----------------------------------------------------------------- */
 
-  .demo-teaser {
+  /* Tighter at the top than a standard section: the nav is already a band of
+     white above it, so a full --section-y leaves the headline floating. */
+  .section--hero {
+    padding-top: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+  }
+
+  .hero {
     display: grid;
     gap: var(--s-6);
     align-items: center;
   }
 
-  .demo-teaser__cta { margin-top: var(--s-5); }
-  .demo-teaser .lead + .lead { margin-top: var(--s-3); }
+  /* Capped below --t-display's 72px. The headline shares the row with the
+     product shot, so it never gets the full measure a full-width hero would,
+     and at 72px in this column "Your business. / Online, / your way." broke
+     to three lines with the middle one orphaned. 64px holds two. */
+  .hero__title {
+    font-size: clamp(2.5rem, 1.5rem + 3.4vw, 4rem);
+    margin-top: var(--s-2);
+  }
 
+  .hero__lead {
+    max-width: 34rem;
+    margin-top: var(--s-4);
+  }
+
+  .hero__cta { margin-top: var(--s-5); }
+
+  .hero__shot { min-width: 0; }
+
+  .hero__caption {
+    margin-top: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 34rem;
+  }
+
+  /* A light browser frame around a product screenshot. The chrome is the one
+     place the shadow token is used — it lifts the shot off the page so it
+     reads as a thing rather than a picture of one. */
   .browser {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     overflow: hidden;
-    border: 1px solid var(--line-dark);
-    background: var(--panel);
-    box-shadow: var(--shadow-dark);
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: var(--shadow-shot);
   }
 
   .browser__bar {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.7rem 0.9rem;
-    background: #16161d;
-    border-bottom: 1px solid var(--line-dark);
+    padding: 0.6rem 0.8rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
   }
 
   .browser__bar > span {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(230, 231, 235, 0.22);
+    background: #d2d5db;
   }
 
   .browser__url {
     flex: 1;
     margin-left: 0.5rem;
-    padding: 0.2rem 0.7rem;
-    border-radius: var(--radius-pill);
-    background: rgba(230, 231, 235, 0.06);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid var(--line);
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--silver);
+    color: var(--ink-muted);
   }
 
   .browser img { width: 100%; height: auto; }
 
-  /* Benefits compare ----------------------------------------------------- */
+  /* Proof strip ----------------------------------------------------------- */
+
+  .proof {
+    display: grid;
+    gap: var(--s-5);
+    grid-template-columns: 1fr;
+  }
+
+  .proof__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: var(--s-4);
+    border-left: 2px solid var(--accent);
+  }
+
+  .proof__label {
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+    max-width: 18rem;
+  }
+
+  .proof__source {
+    margin-top: var(--s-5);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: none;
+  }
+
+  /* How it works ---------------------------------------------------------- */
+
+  .steps {
+    display: grid;
+    gap: var(--s-5);
+  }
+
+  .step {
+    display: grid;
+    gap: 0.4rem;
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+
+  /* Numbers set in mono at body size, not in a filled circle. A numeral in a
+     disc is the decoration this design is removing, and the sequence is
+     already obvious from the numbers. */
+  .step__num {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    padding-top: 0.15rem;
+  }
+
+  .step p { color: var(--ink-soft); }
+
+  /* Platform rows --------------------------------------------------------- */
+
+  .feature {
+    display: grid;
+    gap: var(--s-5);
+    align-items: center;
+    padding-block: var(--s-6);
+  }
+
+  .feature + .feature { border-top: 1px solid var(--line); }
+
+  .feature__copy h3 {
+    font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
+    margin-bottom: var(--s-3);
+  }
+
+  .feature__copy p { color: var(--ink-soft); }
+  .feature__link { margin-top: var(--s-4); }
+  .feature__shot { min-width: 0; }
+  .feature__shot img { width: 100%; height: auto; }
+
+  .feature-pair {
+    margin-top: var(--s-6);
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .card__note { margin-top: var(--s-4); font-size: var(--t-small); }
+
+  /* Benefits compare ------------------------------------------------------ */
 
   .compare {
     display: grid;
@@ -288,39 +535,41 @@ import { url } from '../data/url.js';
 
   .compare__col {
     padding: var(--s-5);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--line-light);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
   }
 
   .compare__col--without {
-    background: #fafafb;
+    background: var(--bg);
     color: var(--ink-soft);
   }
 
+  /* Was an inverted black card. The footer is the only dark surface now, so
+     an accent edge carries the contrast between the two columns instead. */
   .compare__col--with {
-    background: var(--black);
-    border-color: var(--black);
-    color: var(--silver-light);
+    background: var(--bg);
+    border-color: var(--accent);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .compare__label {
     font-family: var(--font-mono);
     font-size: var(--t-label);
     font-weight: 500;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     margin-bottom: var(--s-4);
+    color: var(--ink-muted);
   }
 
-  .compare__col--without .compare__label { color: var(--ink-soft); }
-  .compare__col--with .compare__label { color: var(--gold); }
+  .compare__col--with .compare__label { color: var(--accent); }
 
   .compare__list { display: flex; flex-direction: column; gap: var(--s-3); }
 
   .compare__list li {
     position: relative;
-    padding-left: 1.7rem;
-    font-size: 1.05rem;
+    padding-left: 1.6rem;
+    font-size: var(--t-body);
     line-height: 1.5;
   }
 
@@ -329,13 +578,12 @@ import { url } from '../data/url.js';
     left: 0;
     top: -0.05rem;
     font-family: var(--font-mono);
-    font-size: 1.05rem;
   }
 
-  .compare__col--without li::before { content: '×'; color: #b0b4bc; }
-  .compare__col--with li::before { content: '✓'; color: var(--gold); }
+  .compare__col--without li::before { content: '×'; color: var(--ink-muted); }
+  .compare__col--with li::before { content: '✓'; color: var(--accent); }
 
-  /* Why us teaser -------------------------------------------------------- */
+  /* Why us teaser --------------------------------------------------------- */
 
   .why-teaser {
     display: grid;
@@ -347,47 +595,72 @@ import { url } from '../data/url.js';
     display: grid;
     place-items: center;
     aspect-ratio: 4 / 3;
-    border-radius: var(--radius-lg);
-    border: 1px dashed rgba(10, 10, 12, 0.22);
-    background:
-      repeating-linear-gradient(
-        -45deg,
-        #f6f6f8 0 12px,
-        #fdfdfe 12px 24px
-      );
-    color: var(--ink-soft);
+    border-radius: var(--radius);
+    border: 1px dashed var(--line-input);
+    background: var(--bg);
+    color: var(--ink-muted);
     font-family: var(--font-mono);
     font-size: var(--t-small);
     letter-spacing: 0.08em;
   }
 
-  /* Pricing note --------------------------------------------------------- */
+  /* Pricing note ---------------------------------------------------------- */
 
   .pricing-note {
     max-width: 44rem;
     margin: var(--s-5) auto 0;
     text-align: center;
     font-size: var(--t-small);
-    color: var(--silver);
+    color: var(--ink-muted);
   }
 
-  /* Final CTA ------------------------------------------------------------ */
+  /* Final CTA ------------------------------------------------------------- */
 
   .cta-band__title {
-    /* Sized so this sentence holds two lines at desktop and three on a phone.
-       It sits in .shell-narrow (780px), which is the tightest measure any
-       heading this large has to live in, so it's the first thing to break when
-       the heading face gets wider — it ran to three and four lines
-       respectively before this came down from 3.4rem. tools/wraps.mjs. */
-    font-size: clamp(1.85rem, 1.25rem + 2.8vw, 3.1rem);
+    font-size: clamp(1.75rem, 1.25rem + 2.2vw, 2.6rem);
     margin-bottom: var(--s-4);
   }
 
-  /* Two-up layouts kick in at tablet width ------------------------------- */
+  /* Two-up layouts -------------------------------------------------------- */
 
   @media (min-width: 860px) {
-    .demo-teaser { grid-template-columns: 0.9fr 1.1fr; gap: var(--s-8); }
-    .why-teaser { grid-template-columns: 1.1fr 0.9fr; gap: var(--s-8); }
+    .proof { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+
+    /* Subgrid, so the three numbers, the three headings and the three
+       paragraphs each sit on a shared row. Without it a heading that wraps
+       to two lines — which the third one did at several widths — pushes only
+       its own paragraph down and the row stops reading as a row. Shortening
+       the copy would fix today's width and break at the next one. */
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto auto;
+      gap: var(--s-4) var(--s-5);
+    }
+
+    .step {
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      gap: 0.4rem;
+    }
+
+    .feature { grid-template-columns: 1fr 1.2fr; gap: var(--s-7); }
+    .feature--flip .feature__copy { order: 2; }
+    .feature--flip .feature__shot { order: 1; }
+
     .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+    .why-teaser { grid-template-columns: 1.1fr 0.9fr; gap: var(--s-8); }
+  }
+
+  /* The hero goes two-up later than everything else, at 1100 rather than 860.
+     Between those two widths the copy column is ~400px while the headline is
+     still ~55px, which breaks "Your business. / Online, / your way." into
+     three lines with the middle one orphaned. Stacked, it has the full
+     measure and holds two. Measured, not guessed — the squeeze is only about
+     200px wide and is easy to miss by checking 1440 and 390 alone. */
+  @media (min-width: 1100px) {
+    .hero {
+      grid-template-columns: 1.1fr 1fr;
+      gap: var(--s-7);
+    }
   }
 </style>

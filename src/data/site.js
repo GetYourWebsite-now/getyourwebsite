@@ -97,6 +97,34 @@ export const PROJECTS = [
   },
 ];
 
+/**
+ * The home page proof strip. Three numbers and nothing else.
+ *
+ * The rule from CLAUDE.md applies here harder than anywhere: no invented
+ * statistics. Every figure below has to be something a visitor could check
+ * themselves from a public source, and `source` says where. If a number
+ * cannot be sourced it does not go on the page — which is why there is
+ * nothing here about accessibility audits, Lighthouse scores or build
+ * rounds: those are real, but we have no public artefact to point at.
+ *
+ * Re-check these when a client site changes. The page counts come straight
+ * from a sitemap, so they go stale silently.
+ */
+export const PROOF = {
+  figures: [
+    { value: '2', label: 'client projects live — Allergy Rescue Kit and the ChemEd 2027 interest map' },
+    { value: '65', label: 'pages on the larger of them, all indexed' },
+    { value: '51', label: 'of those generated from one verified state-law dataset — every state plus DC' },
+  ],
+  // Checkable today. Do not add "both are linked from Work" until Work
+  // actually links them — the whole point of this line is that a visitor can
+  // verify it in one click, so a clause that does not hold costs more than
+  // the three figures earn.
+  source:
+    'Counted from allergyrescuekit.com/sitemap-0.xml on 7 October 2026 — 65 URLs, ' +
+    '51 of them per-state. Open the sitemap and count them yourself.',
+};
+
 /** Just the three we lead with on the home page. */
 export const FEATURED_PROJECTS = PROJECTS.filter((p) => p.featured);
 
@@ -173,19 +201,27 @@ export const PRICING_DISCLAIMER =
 /**
  * Which typeface the headings use. Body and mono are unaffected.
  *
- *   'outfit'  — the current one, loaded from Google Fonts with the others
+ *   'inter'   — the default, and also the body face. Headings are separated
+ *               from body text by size, weight and Inter's optical-size axis
+ *               rather than by being a different family. That restraint is
+ *               the point: one grotesque, set well, is what the fintech sites
+ *               this design follows actually do.
  *   'clash'   — Clash Display, self-hosted (Fontshare, ITF Free Font License)
  *   'cabinet' — Cabinet Grotesk, self-hosted (Fontshare, ITF Free Font License)
  *   'sora'    — Sora, self-hosted (Google Fonts, SIL Open Font License 1.1)
  *
- * The three alternatives are variable fonts sitting in `public/fonts/`, all
- * under 45KB. Changing this line is the whole switch: BaseLayout preloads the
- * right file and points `--font-display` at it, and every heading follows.
- * Whichever is picked keeps Outfit behind it in the stack.
+ * The three alternatives are kept for comparison only. Changing this line is
+ * the whole switch: BaseLayout preloads the right file and points
+ * `--font-display` at it, and every heading follows. Each face can carry its
+ * own `track`, because a wider face has to be set tighter to hold the same
+ * line counts.
  *
- * Run `node tools/font-compare.mjs` to see them side by side.
+ * Run `node tools/font-compare.mjs` to see them side by side, and
+ * `npm run verify:wraps` after any change — swapping the face changes the
+ * width of every heading on the site, which is a question about forty
+ * headings rather than the one you happened to look at.
  */
-export const HEADING_FONT = 'clash';
+export const HEADING_FONT = 'inter';
 
 /**
  * GoatCounter site code, for privacy-friendly visitor counts.

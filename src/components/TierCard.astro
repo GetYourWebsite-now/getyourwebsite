@@ -32,11 +32,6 @@ const { tier, condensed = false, reveal = false } = Astro.props;
   class:list={['tier', { 'tier--popular': tier.popular }]}
   data-reveal={reveal ? '' : undefined}
 >
-  {/* The specular sweep needs its own clipping box: .tier can't take
-      overflow:hidden because the "Most popular" flag hangs over the top edge
-      on purpose. Styled in global.css §6 with the rest of the ambient layers. */}
-  <span class="tier__sheen" aria-hidden="true"></span>
-
   {tier.popular && <span class="tier__flag">Most popular</span>}
 
   <header class="tier__head">
@@ -76,7 +71,7 @@ const { tier, condensed = false, reveal = false } = Astro.props;
   </p>
 
   <a
-    class:list={['btn', tier.popular ? 'btn--gold' : 'btn--ghost', 'tier__cta']}
+    class:list={['btn', tier.popular ? 'btn--primary' : 'btn--secondary', 'tier__cta']}
     href={url('/contact')}
   >
     Start with a free mockup
@@ -89,62 +84,58 @@ const { tier, condensed = false, reveal = false } = Astro.props;
     display: flex;
     flex-direction: column;
     padding: var(--s-5);
-    background: var(--panel);
-    border: 1px solid var(--line-dark);
-    border-radius: var(--radius-lg);
-    transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease),
-      box-shadow var(--dur) var(--ease);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color var(--dur) var(--ease);
   }
 
-  .tier:hover {
-    transform: translateY(-4px);
-    border-color: var(--gold-line);
-    box-shadow: var(--shadow-dark);
-  }
+  .tier:hover { border-color: #d2d5db; }
 
-  /* The recommended tier gets the gold outline — the one moment of emphasis
-     in the row. */
+  /* The recommended tier is marked with the accent — the one moment of
+     emphasis in the row, and the only place colour does the work. */
   .tier--popular {
-    border-color: var(--gold);
-    background: linear-gradient(180deg, rgba(245, 194, 75, 0.07), transparent 40%), var(--panel);
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
   }
+
+  .tier--popular:hover { border-color: var(--accent); }
 
   .tier__flag {
     position: absolute;
-    top: -0.72rem;
+    top: -0.7rem;
     left: var(--s-5);
-    padding: 0.25rem 0.75rem;
-    background: var(--gold);
-    color: var(--black);
+    padding: 0.22rem 0.6rem;
+    background: var(--accent);
+    color: #fff;
     font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
   }
 
   .tier__head { margin-bottom: var(--s-4); }
 
   .tier__name {
-    font-size: 1.4rem;
-    color: var(--white);
-    margin-bottom: 0.35rem;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
   }
 
   .tier__price {
     font-family: var(--font-mono);
-    font-size: 2.5rem;
-    font-weight: 700;
-    letter-spacing: -0.05em;
+    font-size: 2.25rem;
+    font-weight: 600;
+    letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--gold);
+    color: var(--ink);
     margin-bottom: var(--s-3);
   }
 
   .tier__tagline {
-    color: var(--silver);
-    font-size: 0.98rem;
+    color: var(--ink-soft);
+    font-size: var(--t-small);
     line-height: 1.5;
   }
 
@@ -152,16 +143,16 @@ const { tier, condensed = false, reveal = false } = Astro.props;
   .tier__features {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.55rem;
     margin-bottom: var(--s-4);
   }
 
   .tier__quick li,
   .tier__features li {
     position: relative;
-    padding-left: 1.5rem;
-    font-size: 0.96rem;
-    color: var(--silver-light);
+    padding-left: 1.4rem;
+    font-size: var(--t-small);
+    color: var(--ink-soft);
     line-height: 1.5;
   }
 
@@ -170,17 +161,17 @@ const { tier, condensed = false, reveal = false } = Astro.props;
     content: '✓';
     position: absolute;
     left: 0;
-    color: var(--gold);
+    color: var(--accent);
     font-family: var(--font-mono);
   }
 
   .tier__spec {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.5rem;
     padding-block: var(--s-3);
     margin-bottom: var(--s-3);
-    border-block: 1px solid var(--line-dark);
+    border-block: 1px solid var(--line);
   }
 
   .tier__spec > div {
@@ -192,39 +183,28 @@ const { tier, condensed = false, reveal = false } = Astro.props;
 
   .tier__spec dt {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--silver);
+    color: var(--ink-muted);
     flex-shrink: 0;
   }
 
   .tier__spec dd {
     text-align: right;
-    font-size: 0.92rem;
-    color: var(--silver-light);
+    font-size: var(--t-small);
+    color: var(--ink-soft);
     line-height: 1.4;
   }
 
   .tier__like {
     margin-top: auto;
     padding-top: var(--s-3);
-    font-size: 0.9rem;
-    color: var(--silver);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
   }
 
-  .tier__like a {
-    color: var(--gold);
-    text-decoration: none;
-    border-bottom: 1px solid var(--gold-line);
-    padding-bottom: 1px;
-  }
-
-  .tier__like a:hover { border-bottom-color: var(--gold); }
+  .tier__like a { color: var(--accent); }
 
   .tier__cta { margin-top: var(--s-4); width: 100%; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tier:hover { transform: none; }
-  }
 </style>

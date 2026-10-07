@@ -36,7 +36,7 @@ const FAQ = [
   title="Pricing"
   description="Three straightforward tiers for a local business website, starting with a free homepage mockup. Example pricing plus a personal quote after we review your inquiry."
 >
-  <section class="section section--dark has-stars has-glow section--tight">
+  <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Pricing</p>
@@ -58,7 +58,7 @@ const FAQ = [
             how every project here starts.
           </p>
         </div>
-        <a class="btn btn--gold btn--lg free__cta" href={url('/contact')}>Request yours</a>
+        <a class="btn btn--primary btn--lg free__cta" href={url('/contact')}>Request yours</a>
       </div>
 
       <div class="grid grid-3 tiers" data-reveal-group>
@@ -92,7 +92,7 @@ const FAQ = [
     </div>
   </section>
 
-  <section class="section section--dark has-stars has-glow">
+  <section class="section section--alt">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2>Still not sure which one you need?</h2>
       <p class="lead" style="margin-inline:auto">
@@ -101,7 +101,7 @@ const FAQ = [
         cheapest one.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Get a personal quote</a>
+        <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a personal quote</a>
       </div>
     </div>
   </section>
@@ -117,19 +117,22 @@ const FAQ = [
     align-items: flex-start;
     padding: var(--s-5);
     margin-bottom: var(--s-5);
+    /* Gold here is deliberate and is the only gold on the page: this strip
+       IS the free-mock offer, which is the one thing besides the brand mark
+       the colour is reserved for. Flat, not a gradient. */
     border: 1px solid var(--gold);
-    border-radius: var(--radius-lg);
-    background: linear-gradient(120deg, rgba(245, 194, 75, 0.12), rgba(245, 194, 75, 0.02) 55%);
+    border-radius: var(--radius);
+    background: var(--bg);
   }
 
   .free__title {
     font-size: clamp(1.8rem, 1.3rem + 1.8vw, 2.6rem);
-    color: var(--white);
+    color: var(--ink);
     margin: var(--s-3) 0 var(--s-2);
   }
 
   .free p {
-    color: var(--silver-light);
+    color: var(--ink-soft);
     max-width: 44rem;
   }
 
@@ -141,21 +144,21 @@ const FAQ = [
     max-width: 46rem;
     margin: var(--s-6) auto 0;
     padding: var(--s-3) var(--s-4);
-    border-left: 2px solid var(--gold);
+    border-left: 2px solid var(--line-input);
     text-align: left;
     font-size: var(--t-small);
-    color: var(--silver-light);
-    background: rgba(230, 231, 235, 0.04);
+    color: var(--ink-muted);
+    background: var(--bg);
   }
 
   /* FAQ ------------------------------------------------------------------ */
 
   .faq {
-    border-top: 1px solid var(--line-light);
+    border-top: 1px solid var(--line);
   }
 
   .faq__item {
-    border-bottom: 1px solid var(--line-light);
+    border-bottom: 1px solid var(--line);
   }
 
   .faq__item summary {
@@ -174,7 +177,7 @@ const FAQ = [
   }
 
   .faq__item summary::-webkit-details-marker { display: none; }
-  .faq__item summary:hover { color: var(--gold-deep); }
+  .faq__item summary:hover { color: var(--accent); }
 
   /* A plus that becomes a minus when the item is open. */
   .faq__mark {
@@ -192,7 +195,7 @@ const FAQ = [
     left: 0;
     width: 100%;
     height: 1.5px;
-    background: var(--gold-deep);
+    background: var(--accent);
     transition: transform var(--dur) var(--ease);
   }
 

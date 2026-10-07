@@ -52,10 +52,10 @@ is not real about it goes in the "What's different from the real thing" list on
 ## Before pushing
 
 ```bash
-npm run verify && npm run verify:pacing && npm run verify:contrast \
-  && npm run verify:wraps && npm run verify:voids && npm run verify:portal
+npm run verify && npm run verify:contrast && npm run verify:wraps \
+  && npm run verify:voids && npm run verify:portal
 ```
 
-The README explains what each one measures, and why several of them have
-counter-intuitively generous timeouts (headless rendering advances the hero's
-animation clock at roughly 0.6x wall time).
+The README explains what each one measures. `verify:contrast` is the one to
+respect: the light palette has pairings with under half a point of AA
+headroom, so it is load-bearing rather than a formality.

@@ -8,9 +8,9 @@ import { url } from '../data/url.js';
   title="Lost in space"
   description="That page doesn't exist — but the rest of the site does."
 >
-  <section class="section section--dark has-stars lost">
+  <section class="section section--alt lost">
     <div class="shell-narrow lost__inner">
-      <p class="lost__code">404</p>
+      <p class="lost__code" aria-hidden="true">404</p>
       <h1>Lost in space.</h1>
       <p class="lead">
         There's nothing at this address. It might have moved, or the link might
@@ -18,8 +18,8 @@ import { url } from '../data/url.js';
       </p>
 
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/')}>Back to Earth</a>
-        <a class="btn btn--ghost btn--lg" href={url('/contact')}>Send us a signal</a>
+        <a class="btn btn--primary btn--lg" href={url('/')}>Back to Earth</a>
+        <a class="btn btn--secondary btn--lg" href={url('/contact')}>Send us a signal</a>
       </div>
 
       <nav class="lost__links" aria-label="All pages">
@@ -38,7 +38,11 @@ import { url } from '../data/url.js';
 
   .lost__inner { text-align: center; }
 
-  /* A big ghosted number behind the headline. */
+  /* A big ghosted number behind the headline. Outlined, not filled — the
+     fill is transparent and the stroke draws the glyph. Decorative: it
+     repeats the page title and the h1, so it is aria-hidden and exempt from
+     the text-contrast rule. It still has to be visible, which on a light
+     surface means a grey stroke rather than the old gold one. */
   .lost__code {
     font-family: var(--font-mono);
     font-size: clamp(6rem, 4rem + 16vw, 14rem);
@@ -46,7 +50,7 @@ import { url } from '../data/url.js';
     line-height: 0.85;
     letter-spacing: -0.06em;
     color: transparent;
-    -webkit-text-stroke: 1.5px rgba(245, 194, 75, 0.42);
+    -webkit-text-stroke: 1.5px #d2d5db;
     margin-bottom: var(--s-3);
     user-select: none;
   }
@@ -60,15 +64,15 @@ import { url } from '../data/url.js';
     gap: var(--s-2) var(--s-4);
     margin-top: var(--s-7);
     padding-top: var(--s-5);
-    border-top: 1px solid var(--line-dark);
+    border-top: 1px solid var(--line);
   }
 
   .lost__links a {
     font-size: 0.95rem;
-    color: var(--silver);
+    color: var(--ink-muted);
     text-decoration: none;
     transition: color var(--dur) var(--ease);
   }
 
-  .lost__links a:hover { color: var(--gold); }
+  .lost__links a:hover { color: var(--accent-hover); }
 </style>

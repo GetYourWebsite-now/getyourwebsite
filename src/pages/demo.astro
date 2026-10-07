@@ -8,7 +8,7 @@ import { url } from '../data/url.js';
   title="Demo"
   description="Try the GetYourWebsite client portal for yourself. Open a website version, click any part of it, and send us a change request — with sample data, no sign-up."
 >
-  <section class="section section--dark has-stars has-glow section--tight">
+  <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">The client demo</p>
@@ -27,7 +27,7 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <section class="section section--dark section--tight" style="padding-top:0">
+  <section class="section section--alt section--tight" style="padding-top:0">
     <div class="shell">
       <ol class="try" data-reveal>
         <li><span>1</span> Open the <strong>My website</strong> tab</li>
@@ -117,7 +117,7 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <section class="section section--dark has-stars has-glow">
+  <section class="section section--alt">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2>Want this for your business?</h2>
       <p class="lead" style="margin-inline:auto">
@@ -125,8 +125,8 @@ import { url } from '../data/url.js';
         about your business and we'll get started.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup →</a>
-        <a class="btn btn--ghost btn--lg" href={url('/work')}>See our work</a>
+        <a class="btn btn--primary btn--lg" href={url('/contact')}>Request a free mockup →</a>
+        <a class="btn btn--secondary btn--lg" href={url('/work')}>See our work</a>
       </div>
     </div>
   </section>
@@ -139,20 +139,20 @@ import { url } from '../data/url.js';
     display: grid;
     gap: var(--s-3);
     padding: var(--s-4) var(--s-5);
-    border: 1px solid var(--line-dark);
-    border-radius: var(--radius-lg);
-    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg-alt);
   }
 
   .try li {
     display: flex;
     align-items: center;
     gap: 0.7rem;
-    color: var(--silver);
+    color: var(--ink-muted);
     font-size: 0.95rem;
   }
 
-  .try strong { color: var(--white); font-weight: 600; }
+  .try strong { color: var(--ink); font-weight: 600; }
 
   .try span {
     display: grid;
@@ -161,8 +161,8 @@ import { url } from '../data/url.js';
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    background: var(--gold);
-    color: var(--black);
+    background: var(--accent);
+    color: #fff;
     font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 700;
@@ -178,7 +178,7 @@ import { url } from '../data/url.js';
 
   .diffs li {
     padding-left: var(--s-4);
-    border-left: 2px solid var(--gold);
+    border-left: 2px solid var(--accent);
     color: var(--ink-soft);
   }
 
@@ -188,7 +188,7 @@ import { url } from '../data/url.js';
     font-size: 1.1rem;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: var(--black);
+    color: var(--ink);
     margin-bottom: 0.2rem;
   }
 
@@ -197,7 +197,7 @@ import { url } from '../data/url.js';
     padding: var(--s-4);
     border-radius: var(--radius);
     background: #fafafb;
-    border: 1px solid var(--line-light);
+    border: 1px solid var(--line);
     color: var(--ink-soft);
     font-size: 0.98rem;
   }

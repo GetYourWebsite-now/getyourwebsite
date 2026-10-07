@@ -53,7 +53,7 @@ const VIEWS = [
   { id: 'hero', path: '/', selector: null, settle: 2600 },
   { id: 'pricing', path: '/pricing', selector: null, settle: 900 },
   // A white section, to see the face on light as well as dark.
-  { id: 'white', path: '/benefits', selector: '.section:not(.section--dark)', settle: 900 },
+  { id: 'white', path: '/benefits', selector: '.section', settle: 900 },
   // The headline on its own, near native size — this is where the character of
   // a face actually shows, and it's invisible in a downscaled page shot.
   { id: 'letterforms', path: '/', selector: '.hero__title', settle: 2600, width: 860 },

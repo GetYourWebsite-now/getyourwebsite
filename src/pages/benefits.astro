@@ -60,7 +60,7 @@ const OUTCOMES = [
   title="Benefits"
   description="What a website actually changes for a local business: more revenue, more new clients, and a lot fewer phone calls answering the same five questions."
 >
-  <section class="section section--dark has-stars has-glow section--tight">
+  <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Why a website</p>
@@ -114,7 +114,7 @@ const OUTCOMES = [
   </section>
 
   <!-- Three outcomes -->
-  <section class="section section--dark has-stars">
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">What changes</p>
@@ -167,7 +167,7 @@ const OUTCOMES = [
     </div>
   </section>
 
-  <section class="section section--dark has-stars has-glow">
+  <section class="section section--alt">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2>See what your business would look like online — it costs nothing.</h2>
       <p class="lead" style="margin-inline:auto">
@@ -176,8 +176,8 @@ const OUTCOMES = [
         you instead of an argument.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
-        <a class="btn btn--ghost btn--lg" href={url('/work')}>See our work</a>
+        <a class="btn btn--primary btn--lg" href={url('/contact')}>Request a free mockup</a>
+        <a class="btn btn--secondary btn--lg" href={url('/work')}>See our work</a>
       </div>
     </div>
   </section>
@@ -193,16 +193,19 @@ const OUTCOMES = [
 
   .split__col {
     padding: var(--s-5);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--line-light);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
   }
 
-  .split__col--without { background: #fafafb; }
+  .split__col--without { background: var(--bg-alt); }
 
+  /* The affirmative column used to be an inverted black card. The footer is
+     the only dark surface on the site now, so the weight that made the
+     comparison land comes from an accent edge and accent ticks instead. */
   .split__col--with {
-    background: var(--black);
-    border-color: var(--black);
-    color: var(--silver-light);
+    background: var(--bg);
+    border-color: var(--accent);
+    box-shadow: inset 2px 0 0 var(--accent);
   }
 
   .split__head {
@@ -213,15 +216,12 @@ const OUTCOMES = [
     text-transform: uppercase;
     padding-bottom: var(--s-3);
     margin-bottom: var(--s-4);
-    border-bottom: 1px solid var(--line-light);
+    border-bottom: 1px solid var(--line);
   }
 
   .split__col--without .split__head { color: var(--ink-soft); }
 
-  .split__col--with .split__head {
-    color: var(--gold);
-    border-bottom-color: rgba(230, 231, 235, 0.18);
-  }
+  .split__col--with .split__head { color: var(--accent); }
 
   .split__col ul {
     display: flex;
@@ -244,7 +244,7 @@ const OUTCOMES = [
   }
 
   .split__col--without li::before { content: '×'; color: #a9aeb7; }
-  .split__col--with li::before { content: '✓'; color: var(--gold); }
+  .split__col--with li::before { content: '✓'; color: var(--accent); }
 
   .split__col strong {
     display: block;
@@ -255,7 +255,7 @@ const OUTCOMES = [
     margin-bottom: 0.2rem;
   }
 
-  .split__col--with strong { color: var(--white); }
+  .split__col--with strong { color: var(--ink); }
 
   .split__col span {
     font-size: 0.98rem;
@@ -263,7 +263,7 @@ const OUTCOMES = [
   }
 
   .split__col--without span { color: var(--ink-soft); }
-  .split__col--with span { color: var(--silver); }
+  .split__col--with span { color: var(--ink-muted); }
 
   /* Outcomes -------------------------------------------------------------- */
 
@@ -277,7 +277,7 @@ const OUTCOMES = [
     display: grid;
     gap: var(--s-3);
     padding-top: var(--s-5);
-    border-top: 1px solid var(--line-dark);
+    border-top: 1px solid var(--line);
   }
 
   .outcome__label {
@@ -285,17 +285,17 @@ const OUTCOMES = [
     font-size: 0.9rem;
     font-weight: 500;
     letter-spacing: 0.14em;
-    color: var(--gold);
+    color: var(--ink-muted);
   }
 
   .outcome h3 {
     font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.1rem);
-    color: var(--white);
+    color: var(--ink);
     margin-bottom: var(--s-3);
   }
 
   .outcome__body > p {
-    color: var(--silver);
+    color: var(--ink-muted);
     font-size: var(--t-lead);
     max-width: 44rem;
   }
@@ -310,7 +310,7 @@ const OUTCOMES = [
   .outcome__body li {
     position: relative;
     padding-left: 1.5rem;
-    color: var(--silver-light);
+    color: var(--ink-soft);
     font-size: 1rem;
   }
 
@@ -319,7 +319,7 @@ const OUTCOMES = [
     position: absolute;
     left: 0;
     font-family: var(--font-mono);
-    color: var(--gold);
+    color: var(--accent);
   }
 
   /* Stat placeholder ------------------------------------------------------ */
@@ -327,7 +327,7 @@ const OUTCOMES = [
   .stat-slot {
     padding: var(--s-5);
     border: 1px dashed rgba(10, 10, 12, 0.24);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     background: #fafafb;
   }
 
@@ -337,10 +337,10 @@ const OUTCOMES = [
     font-size: var(--t-small);
     font-weight: 500;
     letter-spacing: 0.08em;
-    color: var(--gold-deep);
-    background: var(--gold-soft);
-    border: 1px solid var(--gold-line);
-    border-radius: var(--radius-pill);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     padding: 0.25rem 0.8rem;
     margin-bottom: var(--s-3);
   }

@@ -19,7 +19,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
   title="Contact"
   description="Request a free website mockup for your business, or ask us anything. We read every inquiry and reply personally."
 >
-  <section class="section section--dark has-stars has-glow section--tight">
+  <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Get in touch</p>
@@ -188,7 +188,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
           <!-- Live region: screen readers announce success and errors. -->
           <p class="status" data-status role="status" aria-live="polite" hidden></p>
 
-          <button class="btn btn--gold btn--lg submit" type="submit" data-submit>
+          <button class="btn btn--primary btn--lg submit" type="submit" data-submit>
             Send my inquiry
           </button>
 
@@ -208,7 +208,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
           <div class="btn-row" style="margin-top:var(--s-4)">
-            <a class="btn btn--outline" href={url('/work')}>See our work while you wait</a>
+            <a class="btn btn--secondary" href={url('/work')}>See our work while you wait</a>
           </div>
         </div>
       </div>
@@ -227,14 +227,14 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
 
   .note {
     padding: var(--s-4);
-    border-left: 2px solid var(--gold);
-    background: var(--gold-soft);
+    border-left: 2px solid var(--accent);
+    background: var(--accent-soft);
     border-radius: 0 var(--radius) var(--radius) 0;
   }
 
   .note strong { display: block; margin-bottom: 0.3rem; }
   .note p { color: var(--ink-soft); font-size: 0.98rem; }
-  .note strong { color: var(--black); }
+  .note strong { color: var(--ink); }
 
   .direct { margin-top: var(--s-5); }
 
@@ -253,7 +253,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
     font-size: 1.2rem;
     font-weight: 600;
     letter-spacing: -0.02em;
-    color: var(--gold-deep);
+    color: var(--accent);
     word-break: break-all;
   }
 
@@ -269,7 +269,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
     gap: var(--s-3);
     margin-top: var(--s-5);
     padding-top: var(--s-5);
-    border-top: 1px solid var(--line-light);
+    border-top: 1px solid var(--line);
   }
 
   .next li {
@@ -287,8 +287,8 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: var(--black);
-    color: var(--gold);
+    background: var(--accent);
+    color: #fff;
     font-family: var(--font-mono);
     font-size: 0.78rem;
   }
@@ -298,9 +298,9 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
   .setup-warning {
     padding: var(--s-3) var(--s-4);
     margin-bottom: var(--s-4);
-    border: 1px dashed var(--gold-deep);
+    border: 1px dashed var(--accent);
     border-radius: var(--radius);
-    background: var(--gold-soft);
+    background: var(--accent-soft);
     font-size: 0.92rem;
     color: var(--ink-soft);
   }
@@ -318,7 +318,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
     gap: var(--s-4);
   }
 
-  .req { color: var(--gold-deep); }
+  .req { color: var(--accent); }
 
   .opt {
     font-weight: 400;
@@ -350,6 +350,14 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
   .contact__form .field + .field,
   .want + .field { margin-top: var(--s-4); }
 
+  /* …except inside .fields, which is a grid and already spaces its children
+     with `gap`. The margin there stacked on top of the gap and, because the
+     first field has no preceding sibling to trigger it, pushed every other
+     field in the row down by 24px — so the two columns of the first row sat
+     on different baselines. Pre-existing; it only became obvious once the
+     field borders were dark enough to see. */
+  .fields > .field + .field { margin-top: 0; }
+
   .status {
     margin-top: var(--s-4);
     padding: var(--s-3) var(--s-4);
@@ -364,8 +372,8 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
   }
 
   .status[data-state='sending'] {
-    background: var(--silver-light);
-    border: 1px solid var(--line-light);
+    background: var(--ink-soft);
+    border: 1px solid var(--line);
     color: var(--ink-soft);
   }
 
@@ -382,9 +390,9 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
 
   .done {
     padding: var(--s-6) var(--s-5);
-    border: 1px solid var(--gold);
-    border-radius: var(--radius-lg);
-    background: var(--gold-soft);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--accent-soft);
     text-align: center;
   }
 
@@ -397,15 +405,15 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
     height: 54px;
     margin: 0 auto var(--s-4);
     border-radius: 50%;
-    background: var(--gold);
-    color: var(--black);
+    background: var(--accent);
+    color: #fff;
     font-size: 1.6rem;
     font-weight: 700;
   }
 
   .done h2 { margin-bottom: var(--s-3); }
   .done p { color: var(--ink-soft); max-width: 34rem; margin-inline: auto; }
-  .done a { color: var(--gold-deep); font-weight: 600; }
+  .done a { color: var(--accent); font-weight: 600; }
   .done .btn-row { justify-content: center; }
 
   @media (min-width: 700px) {

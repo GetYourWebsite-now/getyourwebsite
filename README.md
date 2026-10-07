@@ -95,6 +95,12 @@ The grid picks it up automatically.
 
 ## Design system
 
+> **Stale — rewritten in the redesign's final pass.** The palette is now
+> light-first with a single indigo accent, the type is Inter and JetBrains
+> Mono, and there is no dark-section atmosphere and no scroll hero. The
+> sections below still describe the old design; `src/styles/global.css` is
+> the accurate source until they are rewritten.
+
 Four colours and nothing else — white, black, silver and gold. They're defined
 at the top of `src/styles/global.css` along with a couple of derived colours
 that exist purely for contrast:
@@ -399,28 +405,37 @@ tests now rather than things to remember. They live in `tools/` and each one
 needs `npm run dev` running in another terminal.
 
 ```bash
-npm run verify           # 36 checks: links, the demo flow, hero copy clearance,
-                         # reduced motion, the contact form, buttons, ambient layers
-npm run verify:pacing    # flick-scroll the hero in 3s; every line readable ≥0.8s,
-                         # and the request finishes typing and rests before it sends
-npm run verify:contrast  # text contrast under the moving ambient gradients, and
-                         # the typed request over the prompt bar's own backdrop
+npm run verify           # links, the demo flow, hero copy clearance, reduced
+                         # motion, the contact form, buttons, light surfaces
+npm run verify:contrast  # every text node on every page against the surface it
+                         # is actually painted on, plus button and form-control
+                         # edges against theirs (WCAG 1.4.3 and 1.4.11)
 npm run verify:wraps     # how every heading wraps at desktop and mobile
 npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank screen
 npm run verify:portal    # fails if the /demo sandbox has fallen behind the real portal
-npm run shots:ambient    # screenshots of the dark sections, hover and reduced motion
-npm run shots:teaser     # regenerate the home page's portal image from the sandbox
+npm run shots:portal     # regenerate the home page's client-portal screenshots
+npm run shots:teaser     # regenerate the /demo teaser image from the sandbox
 ```
+
+One note while the redesign is in flight: the sections of this README
+describing the old dark-section atmosphere, the four-colour palette and the
+scroll hero are stale, and are rewritten in the final pass. The hero,
+`tools/pacing.mjs` and `tools/ambient-shots.mjs` are already gone.
+
+`npm run shots:portal` needs the client portal running locally — see the
+header of `tools/portal-shots.mjs`. It screenshots the real portal with seeded
+Rosa's Bakery data and no backend, so the pictures on the home page are of the
+product rather than of a mock-up of it.
 
 `tools/shots.mjs` is a general screenshot harness if you want to eyeball
 something: `node tools/shots.mjs .shots "pricing=/pricing" "hero70=/@0.7"`, where
 `@0.7` scrubs the hero to 70% of its scroll.
 
-One thing to know before you trust a failure: headless Chrome renders this site
-at roughly 6fps, and `hero.js` deliberately clamps each frame's time step, so the
-hero's timeline advances at about 0.6× wall time in these tests. That's why the
-settle waits look absurdly long (12 seconds). Shorten them and the hero tests
-start failing on half-finished frames that look exactly like real bugs.
+One thing to know before you trust a screenshot: a large WebP can report
+`complete` with a real `naturalWidth` and still not be rasterised when a
+capture happens, so it shoots as an empty box that looks exactly like a broken
+image path. `tools/shots.mjs` awaits `img.decode()` on everything first. If you
+write your own capture, do the same.
 
 ### And by hand
 

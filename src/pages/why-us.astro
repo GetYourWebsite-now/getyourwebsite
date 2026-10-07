@@ -33,7 +33,7 @@ const STEPS = [
   title="Why Us"
   description="We're high school students building real websites for local businesses — to help our community get online and to pay for college. Here's what that means for you."
 >
-  <section class="section section--dark has-stars has-glow section--tight">
+  <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">What makes us different</p>
@@ -106,7 +106,7 @@ const STEPS = [
   </section>
 
   <!-- Promises -->
-  <section class="section section--dark has-stars">
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">What it means for you</p>
@@ -153,7 +153,7 @@ const STEPS = [
     </div>
   </section>
 
-  <section class="section section--dark has-stars has-glow">
+  <section class="section section--alt">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2>Let us build you something.</h2>
       <p class="lead" style="margin-inline:auto">
@@ -161,7 +161,7 @@ const STEPS = [
         the two minutes it takes to tell us about your business.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
+        <a class="btn btn--primary btn--lg" href={url('/contact')}>Request a free mockup</a>
       </div>
     </div>
   </section>
@@ -207,10 +207,10 @@ const STEPS = [
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.1em;
-    color: var(--gold-deep);
-    background: var(--gold-soft);
-    border: 1px solid var(--gold-line);
-    border-radius: var(--radius-pill);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
     padding: 0.1rem 0.6rem;
     margin-right: 0.5rem;
   }
@@ -219,7 +219,7 @@ const STEPS = [
     display: grid;
     place-items: center;
     aspect-ratio: 4 / 5;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     border: 1px dashed rgba(10, 10, 12, 0.22);
     background: repeating-linear-gradient(-45deg, #f6f6f8 0 12px, #fdfdfe 12px 24px);
     color: var(--ink-soft);
@@ -244,7 +244,7 @@ const STEPS = [
 
   .flow__step {
     padding-top: var(--s-4);
-    border-top: 2px solid var(--gold);
+    border-top: 2px solid var(--accent);
   }
 
   .flow__n {
@@ -253,7 +253,7 @@ const STEPS = [
     font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: -0.04em;
-    color: var(--gold-deep);
+    color: var(--accent);
     line-height: 1;
     margin-bottom: var(--s-3);
   }
