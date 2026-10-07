@@ -80,11 +80,12 @@ import { url } from '../data/url.js';
             <li class="proof__item" data-reveal>
               <span class="proof__num stat-num">{f.value}</span>
               <span class="proof__label">{f.label}</span>
+              <span class="proof__note">{f.note}</span>
             </li>
           ))
         }
       </ul>
-      <p class="proof__source">{PROOF.source}</p>
+      <p class="proof__footnote">{PROOF.footnote}</p>
     </div>
   </section>
 
@@ -313,9 +314,14 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 8. Why us ------------------------------------------------------------ -->
+  <!-- 8. Why us ------------------------------------------------------------
+       One column on purpose. There was a dashed [EDIT: team photo] box here;
+       a placeholder for a photo that does not exist is worse than no photo,
+       because it is a visible reminder that the page is unfinished. The text
+       stands alone until there is a real one to drop in.
+  -->
   <section class="section section--alt">
-    <div class="shell why-teaser">
+    <div class="shell">
       <div class="why-teaser__copy" data-reveal>
         <p class="eyebrow">Why us</p>
         <h2>You talk to the people who build it.</h2>
@@ -329,14 +335,6 @@ import { url } from '../data/url.js';
           <a class="link-arrow" href={url('/why-us')}>What makes us different</a>
         </p>
       </div>
-
-      <figure class="why-teaser__photo" data-reveal>
-        <!-- [EDIT] Replace with a real team photo: public/team.webp, then swap
-             this placeholder block for an <img>. -->
-        <div class="photo-placeholder" role="img" aria-label="Placeholder for a team photo">
-          <span>[EDIT: team photo]</span>
-        </div>
-      </figure>
     </div>
   </section>
 
@@ -442,6 +440,9 @@ import { url } from '../data/url.js';
 
   /* Proof strip ----------------------------------------------------------- */
 
+  /* auto-fit rather than a fixed three, because the strip carries whatever
+     we can actually stand behind — two figures today. A hardcoded 3 would
+     leave a visible hole the moment one of them could not be sourced. */
   .proof {
     display: grid;
     gap: var(--s-5);
@@ -451,20 +452,28 @@ import { url } from '../data/url.js';
   .proof__item {
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.3rem;
     padding-left: var(--s-4);
     border-left: 2px solid var(--accent);
   }
 
   .proof__label {
-    font-size: var(--t-small);
-    color: var(--ink-soft);
-    max-width: 18rem;
+    font-size: var(--t-body);
+    color: var(--ink);
+    font-weight: 550;
+    max-width: 20rem;
   }
 
-  .proof__source {
-    margin-top: var(--s-5);
+  .proof__note {
     font-size: var(--t-small);
+    color: var(--ink-soft);
+    max-width: 22rem;
+  }
+
+  .proof__footnote {
+    margin-top: var(--s-6);
+    font-size: var(--t-label);
+    line-height: 1.5;
     color: var(--ink-muted);
     max-width: none;
   }
@@ -583,27 +592,6 @@ import { url } from '../data/url.js';
   .compare__col--without li::before { content: '×'; color: var(--ink-muted); }
   .compare__col--with li::before { content: '✓'; color: var(--accent); }
 
-  /* Why us teaser --------------------------------------------------------- */
-
-  .why-teaser {
-    display: grid;
-    gap: var(--s-6);
-    align-items: center;
-  }
-
-  .photo-placeholder {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius);
-    border: 1px dashed var(--line-input);
-    background: var(--bg);
-    color: var(--ink-muted);
-    font-family: var(--font-mono);
-    font-size: var(--t-small);
-    letter-spacing: 0.08em;
-  }
-
   /* Pricing note ---------------------------------------------------------- */
 
   .pricing-note {
@@ -624,7 +612,7 @@ import { url } from '../data/url.js';
   /* Two-up layouts -------------------------------------------------------- */
 
   @media (min-width: 860px) {
-    .proof { grid-template-columns: repeat(3, 1fr); gap: var(--s-6); }
+    .proof { grid-template-columns: repeat(auto-fit, minmax(16rem, 22rem)); gap: var(--s-7); }
 
     /* Subgrid, so the three numbers, the three headings and the three
        paragraphs each sit on a shared row. Without it a heading that wraps
@@ -648,7 +636,6 @@ import { url } from '../data/url.js';
     .feature--flip .feature__shot { order: 1; }
 
     .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
-    .why-teaser { grid-template-columns: 1.1fr 0.9fr; gap: var(--s-8); }
   }
 
   /* The hero goes two-up later than everything else, at 1100 rather than 860.

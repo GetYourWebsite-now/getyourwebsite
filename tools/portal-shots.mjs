@@ -102,11 +102,33 @@ const SITE = {
 // A few files in the library. Thumbnails are served from our own bakery
 // screenshot by the image route below, so the tab renders with real pictures
 // without reaching the network or touching a real client's uploads.
-const ASSETS = [
-  { id: 1, name: 'shopfront-morning.jpg', displayName: 'Shopfront morning', isPublic: true, createdAt: iso('03-11'), url: 'https://assets.invalid/1.jpg' },
-  { id: 2, name: 'sourdough-loaves.jpg', displayName: 'Sourdough loaves', isPublic: true, createdAt: iso('03-11'), url: 'https://assets.invalid/2.jpg' },
-  { id: 3, name: 'cinnamon-buns.jpg', displayName: 'Cinnamon buns', isPublic: true, createdAt: iso('04-02'), url: 'https://assets.invalid/3.jpg' },
-  { id: 4, name: 'counter-display.jpg', displayName: 'Counter display', isPublic: false, createdAt: iso('06-18'), url: 'https://assets.invalid/4.jpg' },
+const ASSET_DATES = ['03-11', '04-02', '06-18'];
+const ASSET_PUBLIC = [true, true, false];
+
+// Thumbnails for the asset library: three photographic regions of our own
+// Rosa's Bakery concept site, named for what they actually show.
+//
+// Two earlier attempts were worse in instructive ways. Four crops of four
+// DIFFERENT concept sites put a dentist and a restaurant in a bakery's photo
+// library under labels like "Sourdough loaves". Four quadrants of the bakery
+// page fixed the subject but two of the quadrants were page headlines and
+// buttons, so a "photo library" was showing screenshots of a web page. Only
+// these regions are actual photographs.
+const THUMB_SOURCES = [
+  { label: 'Baker at the bench', region: { left: 540, top: 150, width: 300, height: 190 } },
+  { label: 'Early shift', region: { left: 700, top: 165, width: 240, height: 180 } },
+  { label: 'Morning dough', region: { left: 640, top: 378, width: 300, height: 150 } },
+];
+
+const ASSETS_FIXTURE = [
+  ...THUMB_SOURCES.map((t, i) => ({
+    id: i + 1,
+    name: t.label.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '.jpg',
+    displayName: t.label,
+    isPublic: ASSET_PUBLIC[i],
+    createdAt: iso(ASSET_DATES[i]),
+    url: `https://assets.invalid/${i + 1}.jpg`,
+  }))
 ];
 
 // Every endpoint the dashboard and the version tree touch. Anything not listed
@@ -121,7 +143,7 @@ const ROUTES = [
     hosting: { status: 'live', domain: 'rosasbakery.example', hostedVersionNumber: 3, ssl: 'active' },
   }],
   [/\/api\/client\/revision-notes/, { notes: [] }],
-  [/\/api\/client\/assets$/, { assets: ASSETS }],
+  [/\/api\/client\/assets$/, { assets: ASSETS_FIXTURE }],
   [/\/api\/client\/mock-websites$/, { websites: [] }],
   // `remainingRevisions` matters: without it the Request changes button
   // renders as "Request changes (undefined left)".
@@ -132,23 +154,36 @@ const ROUTES = [
 
 await mkdir(OUT, { recursive: true });
 
-// Thumbnails for the asset library: four different crops of sites we built
-// ourselves, so the library reads as four photos rather than one repeated.
-const THUMB_SOURCES = ['bakery', 'restaurant', 'landscaping', 'dental'];
 const THUMBS = await Promise.all(
-  THUMB_SOURCES.map((name) =>
-    sharp(`public/shots/${name}.webp`)
-      .resize(480, 480, { fit: 'cover', position: 'attention' })
-      .jpeg({ quality: 80 })
+  THUMB_SOURCES.map(({ region }) =>
+    sharp('public/shots/bakery.webp')
+      .extract(region)
+      .resize(480, 480, { fit: 'cover' })
+      .jpeg({ quality: 82 })
       .toBuffer()
   )
 );
+
+
+
 
 const browser = await chromium.launch({
   args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'],
 });
 
-async function capture({ width, height, out, tab = 'version-tree', clip, expandMap = false }) {
+/**
+ * `cropTo` narrows the capture to the surface that actually demonstrates the
+ * claim next to it, measured from the live layout rather than from guessed
+ * pixel offsets. A full-tab screenshot shrunk into a column on the home page
+ * reads as "a dark admin thing"; the panel on its own reads as the feature.
+ *
+ * Note the portal has no light theme — index.css sets --bg: var(--black) and
+ * there is no prefers-color-scheme block, no data-theme and no toggle — so
+ * these are dark by necessity, not by choice.
+ */
+async function capture({
+  width, height, out, tab = 'version-tree', clip, expandMap = false, cropTo,
+}) {
   const ctx = await browser.newContext({
     viewport: { width, height },
     deviceScaleFactor: 2,   // the shot is displayed at roughly half size
@@ -250,6 +285,43 @@ async function capture({ width, height, out, tab = 'version-tree', clip, expandM
     })
   );
 
+  if (cropTo) {
+    const all = cropTo.hasText
+      ? page.locator(cropTo.selector, { hasText: cropTo.hasText })
+      : page.locator(cropTo.selector);
+    const n = await all.count();
+    if (!n) throw new Error(`cropTo matched nothing: ${JSON.stringify(cropTo)}`);
+
+    await all.first().scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400);
+
+    // `union: true` takes the bounding box of every match rather than the
+    // first one's container. A grid element is as wide as its column track
+    // whatever is in it, so cropping to the container left the asset library
+    // with 40% dead black space to the right of its three thumbnails.
+    let box;
+    if (cropTo.union) {
+      const boxes = [];
+      for (let i = 0; i < n; i++) boxes.push(await all.nth(i).boundingBox());
+      const live = boxes.filter(Boolean);
+      box = {
+        x: Math.min(...live.map((b) => b.x)),
+        y: Math.min(...live.map((b) => b.y)),
+        width: Math.max(...live.map((b) => b.x + b.width)) - Math.min(...live.map((b) => b.x)),
+        height: Math.max(...live.map((b) => b.y + b.height)) - Math.min(...live.map((b) => b.y)),
+      };
+    } else {
+      box = await all.first().boundingBox();
+    }
+    const pad = cropTo.pad ?? 16;
+    clip = {
+      x: Math.max(0, box.x - pad),
+      y: Math.max(0, box.y - pad),
+      width: Math.min(width - Math.max(0, box.x - pad), box.width + pad * 2),
+      height: Math.min(height - Math.max(0, box.y - pad), box.height + pad * 2),
+    };
+  }
+
   const png = await page.screenshot({ clip, animations: 'disabled' });
   await sharp(png).webp({ quality: 88 }).toFile(out);
   const meta = await sharp(png).metadata();
@@ -266,8 +338,16 @@ const wide = await capture({
 
 // The platform rows on the home page. One capture per capability we claim, so
 // each claim is illustrated by the surface that actually delivers it.
-await capture({ width: 1280, height: 900, out: `${OUT}/portal-my-website.webp`, tab: 'real-site' });
-await capture({ width: 1280, height: 860, out: `${OUT}/portal-assets.webp`, tab: 'assets' });
+// Cropped to the panel each claim is about: the list of approved versions
+// with their per-version actions, and the photo library itself.
+await capture({
+  width: 1280, height: 1000, out: `${OUT}/portal-my-website.webp`, tab: 'real-site',
+  cropTo: { selector: '.dash-resource-panel', hasText: 'Approved versions' },
+});
+await capture({
+  width: 1280, height: 1000, out: `${OUT}/portal-assets.webp`, tab: 'assets',
+  cropTo: { selector: '.assets-grid > *', union: true, pad: 20 },
+});
 
 // The narrow shot is a CROP of the same capture, not a second render. Scaled
 // into a phone-width browser frame the full tree's labels come out about 5px

@@ -98,31 +98,46 @@ export const PROJECTS = [
 ];
 
 /**
- * The home page proof strip. Three numbers and nothing else.
+ * The home page proof strip. Facts about us, not page counts.
  *
  * The rule from CLAUDE.md applies here harder than anywhere: no invented
- * statistics. Every figure below has to be something a visitor could check
- * themselves from a public source, and `source` says where. If a number
- * cannot be sourced it does not go on the page — which is why there is
- * nothing here about accessibility audits, Lighthouse scores or build
- * rounds: those are real, but we have no public artefact to point at.
+ * statistics. Every figure has to be something we can stand behind, and
+ * `note` says on what basis.
  *
- * Re-check these when a client site changes. The page counts come straight
- * from a sitemap, so they go stale silently.
+ * Two things are deliberately NOT here:
+ *
+ *   Page counts. The first version of this strip was "2 / 65 / 51", but two
+ *   of those three were page counts of a single client's site, which reads
+ *   as one fact padded out to three.
+ *
+ *   An accessibility claim. Both client sites were measured — 66 pages,
+ *   7,180 text nodes — and the handful of flags were false positives of a
+ *   colour-only method (white headings over photographs, which pixel-sample
+ *   at 3.6–3.7:1 and pass as large text, plus visually-hidden skip links).
+ *   That is good evidence, but it is not a WCAG AA conformance claim: AA
+ *   covers alt text, focus order, labels and landmarks, none of which was
+ *   tested. Measure those properly and this can become a third figure.
+ *
+ * Re-check when a client project changes.
  */
 export const PROOF = {
   figures: [
-    { value: '2', label: 'client projects live — Allergy Rescue Kit and the ChemEd 2027 interest map' },
-    { value: '65', label: 'pages on the larger of them, all indexed' },
-    { value: '51', label: 'of those generated from one verified state-law dataset — every state plus DC' },
+    {
+      value: '2',
+      label: 'live client projects',
+      note: 'Allergy Rescue Kit and the ChemEd 2027 interest map',
+    },
+    {
+      value: 'Sept 2026',
+      label: 'first client site went live',
+      note: 'Allergy Rescue Kit',
+    },
   ],
-  // Checkable today. Do not add "both are linked from Work" until Work
-  // actually links them — the whole point of this line is that a visitor can
-  // verify it in one click, so a clause that does not hold costs more than
-  // the three figures earn.
-  source:
-    'Counted from allergyrescuekit.com/sitemap-0.xml on 7 October 2026 — 65 URLs, ' +
-    '51 of them per-state. Open the sitemap and count them yourself.',
+  // A footnote, not body copy, and not hover-only — a title attribute would
+  // hide the sourcing from anyone on a phone or a keyboard.
+  footnote:
+    'Both projects are publicly reachable; allergyrescuekit.com is linked ' +
+    'from the hero above. Checked 7 October 2026.',
 };
 
 /** Just the three we lead with on the home page. */
