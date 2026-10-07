@@ -135,9 +135,7 @@ export const PROOF = {
   ],
   // A footnote, not body copy, and not hover-only — a title attribute would
   // hide the sourcing from anyone on a phone or a keyboard.
-  footnote:
-    'Both projects are publicly reachable; allergyrescuekit.com is linked ' +
-    'from the hero above. Checked 7 October 2026.',
+  footnote: 'Both projects are linked from the hero above. Checked 7 October 2026.',
 };
 
 /** Just the three we lead with on the home page. */

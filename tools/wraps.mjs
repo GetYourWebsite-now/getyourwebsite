@@ -54,7 +54,7 @@ for (const vp of VIEWPORTS) {
     const found = await page.evaluate(
       ([widowAt]) => {
         const out = [];
-        const els = document.querySelectorAll('h1, h2, h3, .hero__title, .hero__closing');
+        const els = document.querySelectorAll('h1, h2, h3');
 
         for (const el of els) {
           // Skip anything inside the demo sandbox — it deliberately runs its

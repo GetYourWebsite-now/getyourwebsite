@@ -54,10 +54,8 @@ src/
   styles/
     global.css     the whole design system: colours, type, spacing, components
   scripts/
-    hero.js        the build-and-launch hero, drawn on a 2D canvas
     buttons.js     the button press interaction
     reveal.js      the scroll-reveal animation
-    ambient.js     starts the dark sections' ambient drift, pauses it off screen
     demo.js        the demo sandbox
 
 tools/             checks and screenshot harnesses — see "Verifying changes"
@@ -95,11 +93,12 @@ The grid picks it up automatically.
 
 ## Design system
 
-> **Stale — rewritten in the redesign's final pass.** The palette is now
-> light-first with a single indigo accent, the type is Inter and JetBrains
-> Mono, and there is no dark-section atmosphere and no scroll hero. The
-> sections below still describe the old design; `src/styles/global.css` is
-> the accurate source until they are rewritten.
+> **Partly stale — rewritten in the redesign's final pass.** The palette is
+> now light-first with a single indigo accent and the type is Inter and
+> JetBrains Mono; the sections describing the old dark-section atmosphere and
+> the scroll hero have been removed, but the colour and type notes below
+> still describe the old design. `src/styles/global.css` is the accurate
+> source until they are rewritten.
 
 Four colours and nothing else — white, black, silver and gold. They're defined
 at the top of `src/styles/global.css` along with a couple of derived colours
@@ -141,45 +140,9 @@ the values: `--h-track` to -0.055em, `--t-h3` down from 1.6rem, the final CTA
 heading down from 3.4rem, and `--t-display`'s mobile end down so "Websites that
 are" stops breaking across two lines and orphaning "are".
 
-Sections alternate: `.section` for white, `.section--dark` for black. Add
-`.has-stars` for the star texture and `.has-glow` for the gold halo.
-
-### Dark-section atmosphere
-
-Every dark section drifts, very slightly, in the same visual language as the
-hero — so the site reads as one thing rather than a space hero bolted onto a
-normal website. It's all in `global.css` §6, all CSS, and there are four layers:
-
-| Layer | What it is | Cycle |
-| --- | --- | --- |
-| the section's own `background-image` | four stars that never move | — |
-| `::before` | five more stars, breathing | 13s |
-| `::after` | a gold and a silver lobe drifting across the section | 19s |
-| `.card::after` / `.tier__sheen::before` | a narrow gold band crossing a card, like a reflection travelling over metal | 14s |
-| gold `.btn--gold::after` on dark | a white glint | 12s |
-
-Three knobs control the whole thing, at the top of §6: `--sheen-gold`,
-`--sheen-silver` and `--spec-a`. Turn those down and everything gets subtler
-together. `.has-glow` sections raise `--sheen-gold` on their own.
-
-Four rules if you touch any of it:
-
-1. **White sections stay clean.** Nothing here applies to `.section`.
-2. **Text must stay readable.** The sheens lighten the background, so contrast
-   is a real constraint, not a formality. `npm run verify:contrast` freezes the
-   animations at ten points in the cycle, hides all the content, and measures
-   the brightest backdrop each dark band ever reaches against `--silver`. It
-   currently passes at about 7.8:1 against a 4.5:1 requirement — that's the
-   headroom you'd be spending.
-3. **Background level only.** Every layer sits at `z-index: -1` behind the
-   content, which is why the sections and cards need `isolation: isolate`.
-   `.tier` can't take `overflow: hidden` (the "Most popular" flag hangs over
-   its top edge), so the pricing card uses a `.tier__sheen` span to clip instead.
-4. **Motion is opt-in.** `src/scripts/ambient.js` adds `ambient-live` to
-   `<html>` after load, and only then does anything animate; it also pauses
-   sections while they're off screen. With JS off, or under
-   `prefers-reduced-motion`, you get the same gradients holding still — which is
-   a design state we checked, not a fallback.
+Sections alternate: `.section` for white and `.section--alt` for the grey
+surface. The footer is the only dark surface on the site, and `npm run verify`
+fails if a second one appears.
 
 ### Buttons
 
@@ -201,104 +164,6 @@ pressing collapses a ring inward instead of the usual outward ripple. All of it
 is decoration — `src/scripts/buttons.js` never touches the click, and none of
 it runs under reduced motion, where the colour and focus changes carry the
 feedback on their own.
-
-### The hero
-
-The animation is the pitch, in five stages: fragments of a website drift in
-space, you ask for what you want, the pieces assemble into a mockup, it
-launches, and the CTAs land on clean black. `src/scripts/hero.js` draws it on a
-2D canvas — no 3D library, no textures, no images.
-
-| Stage | What happens | Copy |
-| --- | --- | --- |
-| `open` | fragments drift in a ring around the headline | Websites that are out of this world. |
-| `prompt` | a bar rises, a request types itself in, the send button presses, the bar lifts off | You tell us what you want. |
-| `build` | the pieces come back down and assemble | We design it. We build it. |
-| `launch` | the mockup flies up out of frame | Then we launch it. |
-| `close` | empty frame, CTAs on clean black | Above and beyond. |
-
-Things to edit:
-
-- **`LAYOUT`** — the assembled site. Each entry is one piece, positioned in
-  normalised coordinates (`-0.5` to `0.5` across the mockup) so it scales with
-  the viewport. `g` is the assembly group: lower numbers fly in first, which
-  is what makes the build legible.
-- **`BEATS_VH`** — the scroll windows for the five lines of copy.
-- **`REQUEST`** — the sentence that types into the prompt bar. Keep it short
-  (it has to fit the bar at 390px wide) and keep it tied to a real client — it
-  names Rosa's Bakery, whose site is the one that assembles immediately after.
-
-**The prompt stage** has its own windows: `BAR_IN_VH`, `TYPE_VH`, `PRESS_VH`,
-`LIFT_VH`. The gap between `TYPE_VH` ending and `PRESS_VH` starting is the
-important one — the typed request is copy, so it has to be finished and then
-sit still long enough to read before the send fires, and that gap is what
-guarantees it. The pieces are deliberately stowed above the frame while the bar
-is up and come back down through the point it exits, so the build reads as an
-answer to the request rather than something that was always going to happen.
-
-Two rules the scene must never break, both from design review:
-
-1. **Nothing sits behind or crosses the copy.** The opening beat scatters
-   fragments into a ring *around* the headline, the middle beats put the copy
-   at the bottom with the mockup above it, and by the finale everything has
-   physically left the frame. The `clearOfCopy()` helper enforces the first of
-   those by measuring the real headline box and pushing any overlapping piece
-   outward, and there's an automated test for all three (see "Verifying").
-2. **No stretch of the scroll is visually empty.** There is always the mockup,
-   the debris field, or both, in motion.
-
-On desktop the scene also drifts gently with the mouse, so it feels alive
-before you scroll.
-
-**Pacing.** Scroll-linked opacity on its own can't keep copy readable — flick
-through the hero and every line is gone before you've read it, however wide
-the windows are. So the timeline has a speed limit: `MIN_PLAY_S` in
-`hero.js` is the fewest seconds the whole sequence can take. Scroll slower
-than that and it's a pure scrub, frame for frame; scroll faster and it plays
-at that pace rather than skipping. The hold windows are sized against it, so
-every beat gets at least ~0.9s of full-opacity reading time even for someone
-who flicks the entire hero in one go.
-
-**The scroll gate.** While the sequence is unfinished, downward scrolling can't
-carry you past the end of the pin — otherwise a hard flick lands you in Our Work
-having never seen the prompt bar, the assembly or the launch. It is once per
-visit; after the hero has played through, scrolling behaves normally forever.
-
-It works by *preventing* the scroll, not correcting it. Wheel, touch and key
-input are intercepted with non-passive listeners and cancelled the moment a
-gesture would cross the pin, and the swallowed distance is fed into the
-catch-up boost so pushing harder finishes the sequence sooner. The rAF clamp is
-still there, but only as a backstop for dragging the scrollbar, which produces
-no cancellable event.
-
-The obvious-looking version — let it scroll, then put it back in the render
-loop — is wrong, and wrong in a way that a test reading the DOM in rAF cannot
-see: the browser paints the section below the hero and only then gets moved
-back, so the correction is always one frame late. On video that is a white band
-sliding up behind "Above and beyond." and then snapping away. `verify.mjs`
-measures it from the scroll event and from real screenshots of the fold for
-exactly that reason.
-
-Two smaller traps, both of which produced visible glitches:
-
-- The last event *before* the wall is the one that jumps it. Intercepting only
-  once already at the pin let a 900px wheel tick arriving 450px short scroll the
-  full 900. Deltas are clamped to the remaining room instead.
-- Releasing the moment the timeline finishes releases mid-flick, and whatever
-  the browser still has queued lands in one frame. The gate waits for input to
-  go quiet (`GATE_QUIET_MS`) and throws the swallowed delta away, so the page
-  resumes from rest.
-
-`MIN_PLAY_S` scales with the sequence, and this is the easiest thing to get
-wrong. It's 6.9s for 450vh of scroll. Add a stage without raising it in
-proportion and you haven't added anything — you've just sped every existing
-beat up to pay for the new one.
-
-If you retime the beats, re-run the pacing check (below) — the two are a
-matched pair, and widening a hold without checking the limit is how copy
-starts flashing past again.
-
----
 
 ## Analytics
 
@@ -420,7 +285,8 @@ npm run shots:teaser     # regenerate the /demo teaser image from the sandbox
 One note while the redesign is in flight: the sections of this README
 describing the old dark-section atmosphere, the four-colour palette and the
 scroll hero are stale, and are rewritten in the final pass. The hero,
-`tools/pacing.mjs` and `tools/ambient-shots.mjs` are already gone.
+`tools/pacing.mjs`, `tools/ambient-shots.mjs`, `src/scripts/hero.js` and
+`src/scripts/ambient.js` are already gone.
 
 `npm run shots:portal` needs the client portal running locally — see the
 header of `tools/portal-shots.mjs`. It screenshots the real portal with seeded
@@ -439,13 +305,10 @@ write your own capture, do the same.
 
 ### And by hand
 
-For the hero there are two things worth checking yourself, because they're about
-feel: flick-scroll the whole hero in a couple of seconds and confirm you can
-actually read all four lines, and scroll it slowly to confirm it still tracks
-your finger rather than playing on its own. If you changed the hero, scroll it
-slowly from top to bottom and watch for stutter, then turn on "Reduce motion" in
-**System Settings → Accessibility → Display** and reload to confirm the static
-fallback still shows the headline and both buttons.
+Turn on "Reduce motion" in **System Settings → Accessibility → Display** and
+reload the home page: the version tree in the hero should be fully drawn and
+completely still, with the Live badge on Online orders. `npm run verify`
+checks that nothing is animating, but not that what's left looks deliberate.
 
 Lighthouse: run it against `npm run preview`, not the dev server. Expect 100 on
 accessibility, best practices and SEO, and 0ms Total Blocking Time, everywhere.

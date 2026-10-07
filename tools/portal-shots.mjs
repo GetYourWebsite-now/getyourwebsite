@@ -24,7 +24,7 @@
  * Before running:
  *   cd ~/Developer/GetYourWebsiteAdmin/client && npm install && npm run dev
  *
- * Output: public/shots/portal-version-tree.webp (+ -390 for the narrow crop).
+ * Output: public/shots/portal-my-website.webp and portal-assets.webp.
  */
 import { chromium } from 'playwright';
 import sharp from 'sharp';
@@ -182,7 +182,7 @@ const browser = await chromium.launch({
  * these are dark by necessity, not by choice.
  */
 async function capture({
-  width, height, out, tab = 'version-tree', clip, expandMap = false, cropTo,
+  width, height, out, tab = 'explore', clip, cropTo,
 }) {
   const ctx = await browser.newContext({
     viewport: { width, height },
@@ -250,20 +250,6 @@ async function capture({
   // the root and the fork — the one thing the picture exists to show — sits
   // off the right edge. The portal's own fullscreen control gives the map the
   // whole panel, which is how a client would look at it too.
-  if (expandMap) {
-    await page.click('.version-tree-stage__toolbar button');
-    await page.waitForTimeout(900);
-    // In fullscreen the selected-node panel is an overlay along the bottom,
-    // and it covers the lower branch. Dismissing it leaves the lineage on its
-    // own, which is the one thing this picture is for. The live tip keeps its
-    // gold highlight either way — that comes from being hosted, not selected.
-    const dismiss = page.locator('[aria-label="Dismiss details"]');
-    if (await dismiss.count()) {
-      await dismiss.first().click();
-      await page.waitForTimeout(700);
-    }
-  }
-
   // Park the pointer somewhere harmless: a hovered node or + stub picks up a
   // hover state and the shot reads as mid-interaction.
   await page.mouse.move(2, 2);
@@ -272,18 +258,6 @@ async function capture({
   if (unmocked.length) {
     console.log(`  ! unmocked API calls: ${[...new Set(unmocked)].join(', ')}`);
   }
-
-  // Node geometry, so a crop can be measured off the real layout rather than
-  // guessed from a screenshot. In CSS pixels; multiply by deviceScaleFactor.
-  const nodes = await page.$$eval('.version-tree-node', (els) =>
-    els.map((el) => {
-      const r = el.getBoundingClientRect();
-      return {
-        label: (el.textContent || '').trim().split('\n')[0].slice(0, 24),
-        x: r.left, y: r.top, w: r.width, h: r.height,
-      };
-    })
-  );
 
   if (cropTo) {
     const all = cropTo.hasText
@@ -328,16 +302,16 @@ async function capture({
   console.log(`  ✓ ${out}  ${meta.width}x${meta.height}`);
 
   await ctx.close();
-  return { nodes, scale: meta.width / width };
 }
 
 console.log('\nCapturing the client portal (seeded, no backend, no network)\n');
-const wide = await capture({
-  width: 1440, height: 660, out: `${OUT}/portal-version-tree.webp`, expandMap: true,
-});
+// The hero's version tree is DRAWN now (src/components/VersionTree.astro),
+// not screenshotted: the portal is dark-only and its node labels came out at
+// about 5px once a 2880px capture was scaled into a 600px column. The two
+// captures that fed it, and the fullscreen-map and fork-crop machinery that
+// existed only for them, went with it. Everything below is still a real
+// screenshot of a real surface.
 
-// The platform rows on the home page. One capture per capability we claim, so
-// each claim is illustrated by the surface that actually delivers it.
 // Cropped to the panel each claim is about: the list of approved versions
 // with their per-version actions, and the photo library itself.
 await capture({
@@ -348,42 +322,6 @@ await capture({
   width: 1280, height: 1000, out: `${OUT}/portal-assets.webp`, tab: 'assets',
   cropTo: { selector: '.assets-grid > *', union: true, pad: 20 },
 });
-
-// The narrow shot is a CROP of the same capture, not a second render. Scaled
-// into a phone-width browser frame the full tree's labels come out about 5px
-// tall; the fork on its own stays readable and is the part that carries the
-// idea. Same pixels, same data, just the half that survives the size.
-{
-  const src = `${OUT}/portal-version-tree.webp`;
-  const meta = await sharp(src).metadata();
-
-  // The fork: the three rightmost nodes — the live tip and the two branches
-  // off it. Taken from the measured layout, so it keeps working when the
-  // seeded history or the portal's node sizes change.
-  const byX = [...wide.nodes].sort((a, b) => b.x - a.x).slice(0, 3);
-  if (byX.length < 3) throw new Error('expected at least 3 nodes to crop the fork');
-  const PAD = 28;
-  const box = {
-    x0: Math.min(...byX.map((n) => n.x)) - PAD * 3,   // room for the inbound edge
-    y0: Math.min(...byX.map((n) => n.y)) - PAD,
-    x1: Math.max(...byX.map((n) => n.x + n.w)) + PAD * 2, // room for the + stubs
-    y1: Math.max(...byX.map((n) => n.y + n.h)) + PAD,
-  };
-  const S = wide.scale;
-  const crop = {
-    left: Math.max(0, Math.round(box.x0 * S)),
-    top: Math.max(0, Math.round(box.y0 * S)),
-    width: Math.round((box.x1 - box.x0) * S),
-    height: Math.round((box.y1 - box.y0) * S),
-  };
-  crop.width = Math.min(crop.width, meta.width - crop.left);
-  crop.height = Math.min(crop.height, meta.height - crop.top);
-  await sharp(src).extract(crop).webp({ quality: 90 }).toFile(`${OUT}/portal-version-tree-narrow.webp`);
-  console.log(
-    `  ✓ ${OUT}/portal-version-tree-narrow.webp  ${crop.width}x${crop.height} ` +
-    `(crop around ${byX.map((n) => n.label).reverse().join(' → ')})`
-  );
-}
 
 await browser.close();
 console.log();

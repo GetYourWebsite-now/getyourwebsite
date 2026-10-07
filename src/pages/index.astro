@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
 import { FEATURED_PROJECTS, TIERS, PRICING_DISCLAIMER, PROOF } from '../data/site.js';
 import { url } from '../data/url.js';
@@ -18,11 +19,16 @@ import { url } from '../data/url.js';
     <div class="shell hero">
       <div class="hero__copy">
         <p class="eyebrow">Websites for local businesses</p>
-        <h1 class="hero__title">Your business. Online, your way.</h1>
+        {/* Non-breaking space before the em dash: without it the line broke
+            as "Your business online / — built, hosted, and", starting a line
+            with a dash. A dash binds to the word before it. */}
+        <h1 class="hero__title">
+          Your business online&nbsp;— built, hosted, and kept current for you.
+        </h1>
         <p class="lead hero__lead">
-          We build you a free mock first. If you like it, we build the real
-          site, put it on your domain, and keep it running — with every
-          version saved, so you decide which one the world sees.
+          We build you a free mock first, and the real site only if you like
+          it. After that we host it, keep every version, and make the changes
+          you ask for.
         </p>
         <div class="btn-row hero__cta">
           <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a free mock</a>
@@ -36,6 +42,13 @@ import { url } from '../data/url.js';
             <span class="sr-only">— Allergy Rescue Kit (opens in a new tab)</span>
           </a>
         </div>
+        <p class="hero__live">
+          Live for <a href="https://allergyrescuekit.com" target="_blank" rel="noopener noreferrer">Allergy
+          Rescue Kit</a> and the <a
+            href="https://chemed-interest-map-production.up.railway.app/"
+            target="_blank"
+            rel="noopener noreferrer">ChemEd 2027 Interest Map</a>.
+        </p>
       </div>
 
       <figure class="hero__shot">
@@ -44,20 +57,7 @@ import { url } from '../data/url.js';
             <span></span><span></span><span></span>
             <div class="browser__url">portal.getyourwebsite.now</div>
           </div>
-          <picture>
-            <source
-              media="(max-width: 860px)"
-              srcset={url('/shots/portal-version-tree-narrow.webp')}
-            />
-            <img
-              src={url('/shots/portal-version-tree.webp')}
-              alt="The client portal's version tree: First build, Warmer photos and Online orders in a row, with Online orders marked as the live version and branching into Christmas and Spring menu."
-              width="2880"
-              height="1320"
-              fetchpriority="high"
-              decoding="async"
-            />
-          </picture>
+          <VersionTree />
         </div>
         <figcaption class="hero__caption">
           Your version tree in the client portal. Every revision is kept, and
@@ -372,12 +372,13 @@ import { url } from '../data/url.js';
     align-items: center;
   }
 
-  /* Capped below --t-display's 72px. The headline shares the row with the
-     product shot, so it never gets the full measure a full-width hero would,
-     and at 72px in this column "Your business. / Online, / your way." broke
-     to three lines with the middle one orphaned. 64px holds two. */
+  /* Well below --t-display's 72px, for two reasons. The headline shares the
+     row with the version tree, so it never gets the full measure a
+     full-width hero would; and it is now a sentence that says what we do
+     rather than a three-word slogan, so it wants to be read rather than
+     declaimed. At 48px it runs to three comfortable lines in this column. */
   .hero__title {
-    font-size: clamp(2.5rem, 1.5rem + 3.4vw, 4rem);
+    font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
     margin-top: var(--s-2);
   }
 
@@ -388,7 +389,22 @@ import { url } from '../data/url.js';
 
   .hero__cta { margin-top: var(--s-5); }
 
-  .hero__shot { min-width: 0; }
+  /* Quiet, and deliberately below the buttons: it is corroboration for
+     someone already interested, not a competing call to action. */
+  .hero__live {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 30rem;
+  }
+
+  .hero__live a { color: var(--ink-soft); text-decoration-color: var(--line-input); }
+  .hero__live a:hover { color: var(--accent); text-decoration-color: currentColor; }
+
+  /* Capped so the stacked hero does not render the tree at 1100px wide with
+     24px labels. Has no effect in the two-column layout, where the column is
+     already narrower than this. */
+  .hero__shot { min-width: 0; max-width: 700px; }
 
   .hero__caption {
     margin-top: var(--s-3);
@@ -435,8 +451,6 @@ import { url } from '../data/url.js';
     font-size: 0.72rem;
     color: var(--ink-muted);
   }
-
-  .browser img { width: 100%; height: auto; }
 
   /* Proof strip ----------------------------------------------------------- */
 
@@ -638,15 +652,19 @@ import { url } from '../data/url.js';
     .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
   }
 
-  /* The hero goes two-up later than everything else, at 1100 rather than 860.
-     Between those two widths the copy column is ~400px while the headline is
-     still ~55px, which breaks "Your business. / Online, / your way." into
-     three lines with the middle one orphaned. Stacked, it has the full
-     measure and holds two. Measured, not guessed — the squeeze is only about
-     200px wide and is easy to miss by checking 1440 and 390 alone. */
-  @media (min-width: 1100px) {
+  /* The hero goes two-up at 1240, much later than the 860 everything else
+     uses. Below that the image column is under ~520px, and because the tree
+     is an SVG its labels scale with the box — at 1100 they rendered at
+     10.6px, which is the illegibility the drawn tree exists to fix. Stacked,
+     the tree gets the full shell (capped above) and reads at ~14px.
+     Measured across eleven widths, not guessed. */
+  @media (min-width: 1240px) {
     .hero {
-      grid-template-columns: 1.1fr 1fr;
+      /* The tree needs the wider half. Its text scales with the SVG viewBox,
+         so a narrow column shrinks the labels — which is the one thing this
+         hero cannot afford. The headline is a sentence at 48px and reads
+         fine in the smaller half. */
+      grid-template-columns: 1fr 1.25fr;
       gap: var(--s-7);
     }
   }
