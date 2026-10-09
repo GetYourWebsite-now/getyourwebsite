@@ -27,6 +27,7 @@ interface Props {
     href: string;
     shot: string;
     shotPhone?: string;
+    linkLabel?: string;
     shotNote?: string;
     blurb: string;
     built?: string[];
@@ -36,16 +37,26 @@ interface Props {
   flip?: boolean;
   /** Home page version: no bullets, tighter. */
   compact?: boolean;
+  /**
+   * Landing-page version: shot, sector, name and blurb, and nothing that
+   * leaves the page. /free-mock exists to collect one email address, and a
+   * link out to a client's site is an exit dressed as proof. The shot and
+   * the name do the proving there.
+   */
+  thumb?: boolean;
   /** /work puts these under the page h1, so they are h2 there and h3 on home. */
   level?: 2 | 3;
 }
 
-const { project: p, flip = false, compact = false, level = 2 } = Astro.props;
+const { project: p, flip = false, compact = false, thumb = false, level = 2 } = Astro.props;
 const Heading = `h${level}`;
-const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
+// A raw hostname in monospace reads as a dev artefact rather than a case
+// study — and ChemEd's Railway URL is 48 characters of it. Projects carry
+// their own phrasing; the hostname is only the fallback.
+const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
 ---
 
-<article class:list={['case', { 'case--flip': flip, 'case--compact': compact }]}>
+<article class:list={['case', { 'case--flip': flip, 'case--compact': compact || thumb, 'case--thumb': thumb }]}>
   <figure class="case__shots">
     <div class="case__desktop shot">
       <img
@@ -80,7 +91,7 @@ const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
     <p class="case__blurb">{p.blurb}</p>
 
     {
-      !compact && p.built && (
+      !compact && !thumb && p.built && (
         <ul class="case__built">
           {p.built.map((item) => (
             <li>{item}</li>
@@ -89,14 +100,18 @@ const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
       )
     }
 
-    {p.outcome && <p class="case__outcome">{p.outcome}</p>}
+    {p.outcome && !thumb && <p class="case__outcome">{p.outcome}</p>}
 
-    <p class="case__link">
-      <a class="link-arrow" href={p.href} target="_blank" rel="noopener noreferrer">
-        {host}
-        <span class="sr-only">— visit {p.name} (opens in a new tab)</span>
-      </a>
-    </p>
+    {
+      !thumb && (
+        <p class="case__link">
+          <a class="link-arrow" href={p.href} target="_blank" rel="noopener noreferrer">
+            {linkLabel}
+            <span class="sr-only">— {p.name} (opens in a new tab)</span>
+          </a>
+        </p>
+      )
+    }
 
     {p.shotNote && <p class="case__note">{p.shotNote}</p>}
   </div>
@@ -209,11 +224,7 @@ const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
 
   .case__link { margin-top: var(--s-4); }
 
-  .case__link .link-arrow {
-    font-family: var(--font-mono);
-    font-size: var(--t-small);
-    letter-spacing: -0.01em;
-  }
+  .case__link .link-arrow { font-size: var(--t-small); }
 
   .case__note {
     margin-top: var(--s-3);
@@ -231,6 +242,13 @@ const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
   .case--compact .case__phone { width: 26%; max-width: 92px; }
   .case--compact .case__blurb { font-size: var(--t-body); }
   .case--compact .case__outcome { font-size: var(--t-label); }
+
+  /* Thumbnail (landing page) ---------------------------------------------- */
+
+  .case--thumb { align-items: start; }
+  .case--thumb .case__name { font-size: 1.125rem; margin-bottom: var(--s-2); }
+  .case--thumb .case__blurb { font-size: var(--t-small); }
+  .case--thumb .case__note { margin-top: var(--s-2); }
 
   @media (min-width: 860px) {
     /* Full width: shot and body side by side, alternating. */

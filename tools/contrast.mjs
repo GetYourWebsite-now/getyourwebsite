@@ -40,7 +40,8 @@ import { chromium } from 'playwright';
 const BASE = process.env.BASE ?? 'http://localhost:4321';
 const PAGES = [
   '/', '/work', '/pricing', '/how-it-works', '/benefits',
-  '/why-us', '/contact', '/demo', '/privacy', '/terms', '/404',
+  '/why-us', '/contact', '/free-mock', '/free-mock/thanks',
+  '/demo', '/privacy', '/terms', '/404',
 ];
 
 let failures = 0;

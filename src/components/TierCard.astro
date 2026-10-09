@@ -1,7 +1,13 @@
 ---
 /**
- * A pricing tier card. Used twice: condensed on the home page teaser, and in
- * full on /pricing. Tier content lives in TIERS in src/data/site.js.
+ * One build tier. Used twice — condensed on the home teaser, in full on
+ * /pricing — and both read the same entry in TIERS, so a price can only be
+ * wrong in one place.
+ *
+ * There is no `delivery` row any more, on purpose: see the note above TIERS
+ * in src/data/site.js. And `examples` only ever points at real client work,
+ * so a tier with nothing shipped under it yet shows nothing rather than
+ * borrowing a concept site.
  */
 import { url } from '../data/url.js';
 
@@ -10,22 +16,26 @@ interface Props {
     id: string;
     name: string;
     price: string;
+    period?: string;
     tagline: string;
-    pages: string;
-    revisions: string;
-    design: string;
-    delivery: string;
-    like: string;
-    likeHref: string;
     popular?: boolean;
     features: string[];
+    examples?: { name: string; href: string }[];
   };
-  /** Home page version: fewer lines, no spec table */
+  /** Home page version: tagline and a short feature list, no examples. */
   condensed?: boolean;
   reveal?: boolean;
 }
 
 const { tier, condensed = false, reveal = false } = Astro.props;
+
+// Custom is scoped per project, so "Start with a free mock" is the wrong
+// first step for it — that conversation starts with the project.
+const isCustom = tier.id === 'custom';
+const ctaLabel = isCustom ? 'Tell us about the project' : 'Start with a free mock';
+const ctaHref = isCustom ? '/contact' : '/free-mock';
+
+const features = condensed ? tier.features.slice(0, 4) : tier.features;
 ---
 
 <article
@@ -36,45 +46,39 @@ const { tier, condensed = false, reveal = false } = Astro.props;
 
   <header class="tier__head">
     <h3 class="tier__name">{tier.name}</h3>
-    <p class="tier__price">{tier.price}</p>
+    <p class="tier__price">
+      {tier.price}
+      {tier.period && <span class="tier__period">{tier.period}</span>}
+    </p>
     <p class="tier__tagline">{tier.tagline}</p>
   </header>
 
-  {
-    condensed ? (
-      <ul class="tier__quick">
-        <li>{tier.pages}</li>
-        <li>{tier.revisions}</li>
-        <li>{tier.delivery}</li>
-      </ul>
-    ) : (
-      <>
-        <dl class="tier__spec">
-          <div><dt>Pages</dt><dd>{tier.pages}</dd></div>
-          <div><dt>Revisions</dt><dd>{tier.revisions}</dd></div>
-          <div><dt>Design</dt><dd>{tier.design}</dd></div>
-          <div><dt>Delivery</dt><dd>{tier.delivery}</dd></div>
-        </dl>
+  <ul class="tier__features">
+    {features.map((f) => <li>{f}</li>)}
+  </ul>
 
-        <ul class="tier__features">
-          {tier.features.map((f) => <li>{f}</li>)}
-        </ul>
-      </>
+  {
+    !condensed && tier.examples && tier.examples.length > 0 && (
+      <p class="tier__example">
+        Built this way:{' '}
+        {tier.examples.map((ex, i) => (
+          <>
+            {i > 0 && ', '}
+            <a href={ex.href} target="_blank" rel="noopener noreferrer">
+              {ex.name}
+              <span class="sr-only"> (opens in a new tab)</span>
+            </a>
+          </>
+        ))}
+      </p>
     )
   }
 
-  <p class="tier__like">
-    <a href={url(tier.likeHref)} target="_blank" rel="noopener noreferrer">
-      {tier.like}
-      <span class="sr-only">(opens in a new tab)</span>
-    </a>
-  </p>
-
   <a
     class:list={['btn', tier.popular ? 'btn--primary' : 'btn--secondary', 'tier__cta']}
-    href={url('/contact')}
+    href={url(ctaHref)}
   >
-    Start with a free mockup
+    {ctaLabel}
   </a>
 </article>
 
@@ -92,8 +96,6 @@ const { tier, condensed = false, reveal = false } = Astro.props;
 
   .tier:hover { border-color: #d2d5db; }
 
-  /* The recommended tier is marked with the accent — the one moment of
-     emphasis in the row, and the only place colour does the work. */
   .tier--popular {
     border-color: var(--accent);
     box-shadow: inset 0 0 0 1px var(--accent);
@@ -120,17 +122,29 @@ const { tier, condensed = false, reveal = false } = Astro.props;
 
   .tier__name {
     font-size: 1.125rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.6rem;
   }
 
   .tier__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    flex-wrap: wrap;
     font-family: var(--font-mono);
-    font-size: 2.25rem;
+    font-size: clamp(2.5rem, 2.1rem + 1.4vw, 3rem);
     font-weight: 600;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     line-height: 1;
     color: var(--ink);
     margin-bottom: var(--s-3);
+  }
+
+  .tier__period {
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--ink-muted);
   }
 
   .tier__tagline {
@@ -139,15 +153,13 @@ const { tier, condensed = false, reveal = false } = Astro.props;
     line-height: 1.5;
   }
 
-  .tier__quick,
   .tier__features {
     display: flex;
     flex-direction: column;
-    gap: 0.55rem;
+    gap: 0.6rem;
     margin-bottom: var(--s-4);
   }
 
-  .tier__quick li,
   .tier__features li {
     position: relative;
     padding-left: 1.4rem;
@@ -156,7 +168,6 @@ const { tier, condensed = false, reveal = false } = Astro.props;
     line-height: 1.5;
   }
 
-  .tier__quick li::before,
   .tier__features li::before {
     content: '✓';
     position: absolute;
@@ -165,46 +176,16 @@ const { tier, condensed = false, reveal = false } = Astro.props;
     font-family: var(--font-mono);
   }
 
-  .tier__spec {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding-block: var(--s-3);
-    margin-bottom: var(--s-3);
-    border-block: 1px solid var(--line);
-  }
-
-  .tier__spec > div {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--s-3);
-    align-items: baseline;
-  }
-
-  .tier__spec dt {
-    font-family: var(--font-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-muted);
-    flex-shrink: 0;
-  }
-
-  .tier__spec dd {
-    text-align: right;
-    font-size: var(--t-small);
-    color: var(--ink-soft);
-    line-height: 1.4;
-  }
-
-  .tier__like {
+  .tier__example {
     margin-top: auto;
     padding-top: var(--s-3);
     font-size: var(--t-small);
     color: var(--ink-muted);
   }
 
-  .tier__like a { color: var(--accent); }
-
   .tier__cta { margin-top: var(--s-4); width: 100%; }
+
+  /* With no example, the button still has to sit at the bottom of the card
+     so a row of tiers lines up. */
+  .tier:not(:has(.tier__example)) .tier__cta { margin-top: auto; }
 </style>

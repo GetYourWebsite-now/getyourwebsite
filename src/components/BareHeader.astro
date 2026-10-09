@@ -1,0 +1,39 @@
+---
+/**
+ * The header for landing pages: the logo, and nothing else.
+ *
+ * Deliberately not the site nav. A page that paid traffic lands on has one
+ * job, and every nav link is a way to leave before doing it. The logo still
+ * goes home, because a page with no way out at all reads as a trap.
+ */
+import { url } from '../data/url.js';
+import Wordmark from './Wordmark.astro';
+---
+
+<header class="bare-head">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="shell">
+    <a class="bare-head__brand" href={url('/')} aria-label="GetYourWebsite — home">
+      <Wordmark />
+    </a>
+  </div>
+</header>
+
+<style>
+  .bare-head {
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bare-head .shell {
+    display: flex;
+    align-items: center;
+    min-height: 68px;
+  }
+
+  .bare-head__brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+</style>

@@ -65,6 +65,7 @@ export const PROJECTS = [
     type: 'Emergency medical equipment',
     sector: 'Emergency medical equipment',
     href: 'https://allergyrescuekit.com',
+    linkLabel: 'Open allergyrescuekit.com',
     shot: '/shots/ark-desktop.webp',
     shotPhone: '/shots/ark-phone.webp',
     blurb:
@@ -83,6 +84,7 @@ export const PROJECTS = [
     type: 'Academic conference',
     sector: 'Academic conference',
     href: 'https://chemed-interest-map-production.up.railway.app/',
+    linkLabel: 'Open the interest map',
     shot: '/shots/chemed-desktop.webp',
     shotPhone: '/shots/chemed-phone.webp',
     // The live map is seeded with sample attendees until registration opens,
@@ -176,74 +178,172 @@ export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
 export const FEATURED_PROJECTS = CLIENT_PROJECTS;
 
 /**
- * Pricing tiers. All prices are [EDIT] placeholders — change the `price`
- * strings here and the pricing page and home teaser both update.
+ * Pricing.
+ *
+ * Three one-time build tiers and one recurring Care plan. This is the only
+ * place in the repo that holds a price — /pricing and the home teaser both
+ * read it, so they cannot drift apart again.
+ *
+ * Three rules that shaped what is NOT here:
+ *
+ *   No delivery times. The only real data point we have is Allergy Rescue
+ *   Kit at 24 build rounds, which supports no defensible "1–2 weeks". A
+ *   timeline we invent is a timeline we miss.
+ *
+ *   Examples point at real client work only, never at a concept site. A
+ *   tier with no real example yet renders none — see Growth. Allergy Rescue
+ *   Kit sits under Custom rather than Growth because it is 65 pages, 51 of
+ *   them generated from a state-law dataset; "up to 10 pages" would be the
+ *   first thing a sceptical reader checked and caught.
+ *
+ *   The Care plan's "switchable from the portal" is deliberate wording and
+ *   it is true today: the client portal's HostingPanel has a "Host this
+ *   version" button wired to POST /api/client/hosting/version. If that ever
+ *   stops being client-facing, soften this to "we switch it for you on
+ *   request" rather than leaving it.
  */
 export const TIERS = [
   {
     id: 'launch',
+    kind: 'build',
     name: 'Launch',
-    price: '$150', // [EDIT: e.g. $150]
-    tagline: 'Everything a small business actually needs, done properly.',
-    pages: 'Up to 3 pages',
-    revisions: '2 revision rounds',
-    design: 'Clean template-based design, customised to your brand',
-    delivery: '1–2 weeks',
-    like: "A site like Rosa's Bakery",
-    likeHref: '/bakery.html',
+    price: '$900',
+    period: 'one-time',
+    tagline: 'A proper site for a business that mainly needs to be findable and contactable.',
     features: [
-      'Up to 3 pages',
+      'Up to 5 pages, built from your free mock',
       '2 revision rounds',
-      'Template-based design customised to your brand',
-      'Contact form that reaches your inbox',
-      'Mobile-friendly on every screen',
+      'A contact form that reaches your inbox',
+      'Mobile-first, on every screen',
+      'Basic on-page SEO: titles, descriptions, sitemap',
+      'Launched on your own domain',
     ],
   },
   {
-    id: 'orbit',
-    name: 'Orbit',
-    price: '$350', // [EDIT: e.g. $350]
-    tagline: 'A fully custom site with room to show everything you offer.',
-    pages: 'Up to 6 pages',
-    revisions: '4 revision rounds',
-    design: 'Fully custom design, built around your brand',
-    delivery: '2–3 weeks',
-    like: 'A site like Bright Smile Dental',
-    likeHref: '/dental.html',
+    id: 'growth',
+    kind: 'build',
+    name: 'Growth',
+    price: '$1,600',
+    period: 'one-time',
     popular: true,
+    tagline: 'For a business that sells from the site — bookings, quotes, and copy that works.',
     features: [
-      'Up to 6 pages',
+      'Everything in Launch',
+      'Up to 10 pages',
+      'Booking, scheduling or quote-form integration',
+      'A copywriting pass on every page',
+      'Google Business Profile tune-up',
       '4 revision rounds',
-      'Fully custom design — no template',
-      'Extra sections: menus, galleries, booking links',
-      'Basic SEO setup so you turn up on Google',
-      'Contact form that reaches your inbox',
+      'We handle your photos and assets',
     ],
   },
   {
-    id: 'deep-space',
-    name: 'Deep Space',
-    price: '$600+', // [EDIT: e.g. $600+]
-    tagline: 'The full build, with the details that make people stay.',
-    pages: '8+ pages',
-    revisions: '6 revision rounds',
-    design: 'Fully custom design with animation and advanced features',
-    delivery: 'Priority turnaround',
-    like: 'A site like Iron Forge Gym — and beyond',
-    likeHref: '/gym.html',
+    id: 'custom',
+    kind: 'build',
+    name: 'Custom',
+    price: 'from $3,000',
+    period: 'one-time',
+    tagline: 'When the site is really an application.',
     features: [
-      '8+ pages',
-      '6 revision rounds',
-      'Fully custom design with animation',
-      'Advanced features built to order',
-      'Full SEO setup',
-      'Priority turnaround',
+      'Web apps and data-driven sites: interactive maps, state-by-state content, calculators, client portals',
+      'Integrations with the tools you already use',
+      'Scoped and quoted per project',
     ],
+    examples: [
+      { name: 'Allergy Rescue Kit', href: 'https://allergyrescuekit.com' },
+      {
+        name: 'ChemEd 2027 Interest Map',
+        href: 'https://chemed-interest-map-production.up.railway.app/',
+      },
+    ],
+  },
+  {
+    id: 'care',
+    kind: 'care',
+    name: 'Care plan',
+    price: '$49',
+    period: '/mo',
+    priceYearly: '$490',
+    periodYearly: '/yr',
+    yearlyNote: 'two months free',
+    tagline: 'Required to host with us.',
+    features: [
+      "Hosting on Cloudflare's network",
+      'Domain and SSL managed for you',
+      'Every version of your site kept, and switchable from the portal',
+      'One revision credit a month, rolling over up to three',
+      'Uptime monitoring',
+      'Email support, reply within one business day',
+    ],
+    footnote: 'Required to host with us. Cancel any time; we hand over the files.',
   },
 ];
 
+/** The three one-time tiers, for the cards and the comparison table. */
+export const BUILD_TIERS = TIERS.filter((t) => t.kind === 'build');
+
+/** The Care plan, which is a different shape and gets its own card. */
+export const CARE_PLAN = TIERS.find((t) => t.kind === 'care');
+
+/** The four things that are true whichever tier someone picks. */
+export const EVERY_PLAN_INCLUDES = [
+  'Your own domain',
+  'Every version kept',
+  'A person reviews every change',
+  'No templates, no page builders',
+];
+
+/**
+ * The comparison table. Rows are rendered in order; each row's `cells` are
+ * in BUILD_TIERS order. `true` renders a check, `false` renders a dash,
+ * a string renders as-is.
+ */
+export const PRICING_COMPARISON = [
+  { label: 'Pages', cells: ['Up to 5', 'Up to 10', 'Scoped per project'] },
+  { label: 'Revision rounds', cells: ['2', '4', 'Scoped per project'] },
+  { label: 'Contact form', cells: [true, true, true] },
+  { label: 'Booking / quote integration', cells: [false, true, true] },
+  { label: 'Copywriting pass', cells: [false, true, true] },
+  { label: 'Google Business Profile', cells: [false, true, true] },
+  { label: 'Custom features & integrations', cells: [false, false, true] },
+  { label: 'Hosting & domain', cells: ['via Care plan', 'via Care plan', 'via Care plan'] },
+  { label: 'Who builds it', cells: ['Us, by hand', 'Us, by hand', 'Us, by hand'] },
+];
+
 export const PRICING_DISCLAIMER =
-  'Example pricing. Every business is different — send an inquiry and we’ll reply with a personal quote after we review it.';
+  "Final quote after we've seen your free mock. Most businesses land in Launch " +
+  "or Growth; we'll tell you which before you pay anything.";
+
+/**
+ * The pricing FAQ. Plain answers to the things people actually ask before
+ * they pay, including the ones it would be more comfortable to leave out.
+ */
+export const PRICING_FAQ = [
+  {
+    q: 'What do I pay, and when?',
+    a: "50% deposit when you approve the mock and pick a tier; the balance when the site goes live on your domain. Paid by card through a Stripe checkout link we send you.",
+  },
+  {
+    q: 'Do I have to take the Care plan?',
+    a: "Only if you want us to host it. Custom domains are tied to the Care plan because that's what pays for hosting, SSL and keeping every version. If you'd rather host it yourself, we hand over the files and you're done.",
+  },
+  {
+    q: 'What counts as a revision round?',
+    a: 'One batch of changes, sent together, that we apply as a new version. Three small tweaks in one message is one round; three messages on three days is three.',
+  },
+  {
+    q: 'Can I change tiers later?',
+    a: "Yes. Going up is the price difference; going down isn't a thing, because the work is already done.",
+  },
+  {
+    q: 'What if I already have a website?',
+    a: 'We rebuild it from scratch, moving across whatever is worth keeping. You keep your domain, and nothing goes offline during the switch.',
+  },
+  {
+    q: 'Who owns the site?',
+    a: 'You do, once it\'s paid for. Code, content, domain. The portal is ours; the site is yours.',
+  },
+];
 
 /**
  * Which typeface the headings use. Body and mono are unaffected.

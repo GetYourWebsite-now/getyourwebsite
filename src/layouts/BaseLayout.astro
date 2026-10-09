@@ -8,6 +8,8 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import BareHeader from '../components/BareHeader.astro';
+import BareFooter from '../components/BareFooter.astro';
 import { url } from '../data/url.js';
 import { HEADING_FONT, GOATCOUNTER_ID } from '../data/site.js';
 
@@ -43,9 +45,17 @@ const headingFace = HEADING_FACES[HEADING_FONT];
 interface Props {
   title: string;
   description: string;
+  /**
+   * Landing-page chrome: logo only, no nav, and a footer with nothing but
+   * the legal links. For pages that paid traffic lands on, where every
+   * other link is a way out.
+   */
+  bare?: boolean;
+  /** Keep the page out of search. Ads traffic only. */
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
+const { title, description, bare = false, noindex = false } = Astro.props;
 
 const fullTitle = title === 'GetYourWebsite'
   ? 'GetYourWebsite — websites for local businesses'
@@ -68,6 +78,7 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <!-- Social card -->
     <meta property="og:type" content="website" />
@@ -151,13 +162,13 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
   </head>
 
   <body>
-    <Nav />
+    {bare ? <BareHeader /> : <Nav />}
 
     <main id="main">
       <slot />
     </main>
 
-    <Footer />
+    {bare ? <BareFooter /> : <Footer />}
 
     <script>
       import '../scripts/reveal.js';

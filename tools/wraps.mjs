@@ -21,7 +21,7 @@
 import { chromium } from 'playwright';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/benefits', '/why-us', '/contact'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/benefits', '/why-us', '/contact', '/free-mock'];
 
 // A last line under this fraction of the widest line reads as an orphan.
 const WIDOW_AT = 0.3;

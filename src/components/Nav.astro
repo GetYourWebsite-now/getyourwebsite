@@ -42,7 +42,7 @@ const here = Astro.url.pathname;
       )
     }
 
-    <a class="btn btn--primary btn--sm nav__cta" href={url('/contact')}>Get a free mock</a>
+    <a class="btn btn--primary btn--sm nav__cta" href={url('/free-mock')}>Get a free mock</a>
 
     <button
       class="nav__burger"
@@ -79,7 +79,7 @@ const here = Astro.url.pathname;
       >
         Benefits
       </a>
-      <a class="btn btn--primary nav__drawer-cta" href={url('/contact')}>Get a free mock</a>
+      <a class="btn btn--primary nav__drawer-cta" href={url('/free-mock')}>Get a free mock</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
       {PORTAL_URL && (

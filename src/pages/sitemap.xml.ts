@@ -5,6 +5,11 @@
  * indexing — they're the portfolio. 404 is deliberately left out.
  *
  * If you add a page, add it to PAGES below.
+ *
+ * /free-mock is deliberately absent and must stay that way: it is the ad
+ * landing page, it carries <meta name="robots" content="noindex">, and
+ * listing it here would ask search engines to index a page we have told
+ * them not to.
  */
 import type { APIRoute } from 'astro';
 import { PROJECTS } from '../data/site.js';

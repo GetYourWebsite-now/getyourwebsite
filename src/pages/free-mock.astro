@@ -1,0 +1,258 @@
+---
+/**
+ * The ad landing page.
+ *
+ * One job: get a business name and an email address. No site nav, no
+ * footer links beyond the legal ones, and noindex — this is where paid
+ * traffic lands, not something to rank.
+ *
+ * It works with JavaScript switched off, start to finish: the form is a
+ * plain POST to Formspree, and `_next` sends people to /free-mock/thanks
+ * afterwards. No fetch, no event handlers, nothing to fail.
+ *
+ * The thank-you is a separate PAGE rather than this page reading `?sent=1`,
+ * and that is not a style preference. This site builds to static output, so
+ * `Astro.url.searchParams` is empty at run time — the page is rendered once
+ * at build and serves the same HTML to every request. A `?sent=1` branch
+ * compiles, deploys, and silently shows the form again to everyone who just
+ * submitted it. A second page is the only version of this that actually
+ * works without JavaScript on a static host.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseStudy from '../components/CaseStudy.astro';
+import { CLIENT_PROJECTS, FORMSPREE_FORM_ID } from '../data/site.js';
+import { url } from '../data/url.js';
+
+// Formspree wants an absolute URL to send people on to.
+const nextUrl = new URL(
+  url('/free-mock/thanks'),
+  Astro.site ?? 'https://getyourwebsite.now'
+).href;
+
+const action = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
+---
+
+<BaseLayout
+  title="Get a free mock"
+  description="Tell us about your business and we'll build you a real homepage mock, free. No cost, no card, no commitment."
+  bare
+  noindex
+>
+  <section class="section section--tight">
+    <div class="shell fm">
+      <!-- Left: the pitch -->
+      <div class="fm__pitch">
+        <h1 class="fm__title">See your business online before you pay anything.</h1>
+
+        <ol class="fm__steps">
+          <li>You tell us about the business — a sentence is plenty.</li>
+          <li>We build a real homepage mock for it, not a template preview.</li>
+          <li>You decide. Keep the link either way.</li>
+        </ol>
+
+        <p class="fm__proof-label">Two we have already built:</p>
+        <div class="fm__proof">
+          {
+            CLIENT_PROJECTS.map((project) => (
+              <CaseStudy project={project} thumb level={2} />
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Right: the form, or the thank-you in its place -->
+      <div class="fm__form-col">
+        <form class="fm__form" action={action} method="POST">
+            <h2 class="fm__form-title">Build my free mock</h2>
+
+            {/* Tells the inbox where the enquiry came from, so ad traffic
+                can be told apart from the contact page. */}
+            <input type="hidden" name="source" value="free-mock" />
+            <input type="hidden" name="_subject" value="Free mock request (ad landing page)" />
+            <input type="hidden" name="_next" value={nextUrl} />
+
+            {/* Formspree's honeypot. Bots fill it; people never see it. */}
+            <div class="honeypot" aria-hidden="true">
+              <label for="gotcha">Leave this field empty</label>
+              <input id="gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="business">Business name</label>
+              <input class="input" id="business" name="business" type="text" required autocomplete="organization" />
+            </div>
+
+            <div class="field">
+              <label for="name">Your name</label>
+              <input class="input" id="name" name="name" type="text" required autocomplete="name" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input class="input" id="email" name="email" type="email" required autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone <span class="opt">optional</span></label>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" />
+            </div>
+
+            <div class="field">
+              <label for="website">Current website, if any <span class="opt">optional</span></label>
+              <input class="input" id="website" name="website" type="url" placeholder="https://" />
+            </div>
+
+            <div class="field">
+              <label for="about">One line about the business <span class="opt">optional</span></label>
+              <textarea
+                class="textarea fm__about"
+                id="about"
+                name="about"
+                placeholder="e.g. Plumbing, Livonia, 15 years"
+              />
+            </div>
+
+            <button class="btn btn--primary btn--lg fm__submit" type="submit">
+              Build my free mock
+            </button>
+
+          <p class="fm__smallprint">
+          No cost, no card, no commitment. We'll email you within one
+          business day.
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .fm {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  .fm__title {
+    font-size: clamp(1.9rem, 1.3rem + 2.4vw, 2.75rem);
+    max-width: 18ch;
+  }
+
+  .fm__steps {
+    display: grid;
+    gap: var(--s-3);
+    margin-top: var(--s-5);
+    counter-reset: fm-step;
+    max-width: 32rem;
+  }
+
+  .fm__steps li {
+    position: relative;
+    padding-left: 2rem;
+    color: var(--ink-soft);
+    counter-increment: fm-step;
+  }
+
+  .fm__steps li::before {
+    content: counter(fm-step);
+    position: absolute;
+    left: 0;
+    top: 0.08em;
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+  }
+
+  .fm__proof-label {
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-4);
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  /* align-items:start so the two line up at the top — the two screenshots
+     are different shapes and centring them staggered the headings. */
+  .fm__proof {
+    display: grid;
+    gap: var(--s-5);
+    align-items: start;
+  }
+
+  /* Form ------------------------------------------------------------------ */
+
+  .fm__form,
+  .fm__done {
+    padding: var(--s-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+
+  .fm__form-title {
+    font-size: var(--t-h3);
+    margin-bottom: var(--s-4);
+  }
+
+  .fm__form .field + .field { margin-top: var(--s-4); }
+
+  .opt {
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+
+  .fm__about { min-height: 5.5rem; }
+
+  .fm__submit {
+    width: 100%;
+    margin-top: var(--s-5);
+  }
+
+  .fm__smallprint {
+    margin-top: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+  }
+
+  /* Thank-you -------------------------------------------------------------- */
+
+  .fm__done { text-align: center; }
+
+  .fm__done-mark {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    margin: 0 auto var(--s-4);
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+
+  .fm__done h2 {
+    font-size: var(--t-h3);
+    margin-bottom: var(--s-3);
+  }
+
+  .fm__done p {
+    color: var(--ink-soft);
+    margin-inline: auto;
+  }
+
+  @media (min-width: 900px) {
+    .fm {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--s-8);
+    }
+
+    /* The pair of case studies stacks in this column rather than sitting
+       side by side — at this width each would be about 240px wide and the
+       screenshots would be unreadable. */
+    .fm__proof { grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+  }
+</style>

@@ -1,0 +1,191 @@
+---
+/**
+ * The build tiers, side by side.
+ *
+ * One <table> at desktop and a stack of per-tier blocks below 760px — the
+ * same data rendered twice, with the one not in use hidden from assistive
+ * tech as well as from view, so nothing is announced twice.
+ *
+ * A table is NOT allowed to scroll sideways here. The site's rule is that
+ * the body never scrolls horizontally, and a pricing comparison that a
+ * phone user has to drag is a pricing comparison they do not read.
+ */
+import { BUILD_TIERS, PRICING_COMPARISON } from '../data/site.js';
+
+/** true → check, false → dash, string → itself. */
+const cell = (v: unknown) => (v === true ? '✓' : v === false ? '—' : String(v));
+const cellClass = (v: unknown) =>
+  v === true ? 'is-yes' : v === false ? 'is-no' : 'is-text';
+---
+
+<div class="cmp">
+  <table class="cmp__table">
+    <caption class="sr-only">What each build tier includes</caption>
+    <thead>
+      <tr>
+        <th scope="col">
+          <span class="sr-only">Feature</span>
+        </th>
+        {
+          BUILD_TIERS.map((t) => (
+            <th scope="col" class:list={{ 'is-popular': t.popular }}>
+              <span class="cmp__tier">{t.name}</span>
+              <span class="cmp__price">{t.price}</span>
+            </th>
+          ))
+        }
+      </tr>
+    </thead>
+    <tbody>
+      {
+        PRICING_COMPARISON.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            {row.cells.map((v, i) => (
+              <td
+                class:list={[cellClass(v), { 'is-popular': BUILD_TIERS[i].popular }]}
+              >
+                {cell(v)}
+              </td>
+            ))}
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+
+  <!-- The same thing, stacked, for narrow screens. -->
+  <div class="cmp__stack">
+    {
+      BUILD_TIERS.map((t, i) => (
+        <section class:list={['cmp__card', { 'is-popular': t.popular }]}>
+          <h3 class="cmp__card-name">
+            {t.name} <span class="cmp__card-price">{t.price}</span>
+          </h3>
+          <dl>
+            {PRICING_COMPARISON.map((row) => (
+              <div class="cmp__row">
+                <dt>{row.label}</dt>
+                <dd class={cellClass(row.cells[i])}>{cell(row.cells[i])}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  /* Which rendering is live. `hidden` rather than display:none on the
+     wrapper so neither copy is ever read out twice. */
+  .cmp__table { display: none; }
+  .cmp__stack { display: grid; gap: var(--s-5); }
+
+  @media (min-width: 760px) {
+    .cmp__table { display: table; }
+    .cmp__stack { display: none; }
+  }
+
+  /* Table ----------------------------------------------------------------- */
+
+  .cmp__table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .cmp__table th,
+  .cmp__table td {
+    padding: 0.85rem var(--s-3);
+    border-bottom: 1px solid var(--line);
+    vertical-align: baseline;
+  }
+
+  .cmp__table thead th {
+    border-bottom: 1px solid var(--line-input);
+    padding-bottom: var(--s-3);
+  }
+
+  .cmp__tier {
+    display: block;
+    font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .cmp__price {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+
+  .cmp__table tbody th {
+    font-weight: 450;
+    color: var(--ink-soft);
+    font-size: var(--t-small);
+    width: 34%;
+  }
+
+  .cmp__table td {
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+    width: 22%;
+  }
+
+  .is-yes { color: var(--accent); font-family: var(--font-mono); }
+  .is-no { color: var(--ink-muted); font-family: var(--font-mono); }
+
+  /* The highlighted column, marked the same way the card is. */
+  .cmp__table .is-popular { background: var(--accent-soft); }
+  .cmp__table thead th.is-popular { border-bottom-color: var(--accent); }
+
+  /* --accent-soft composites to rgb(230,232,246), which is dark enough that
+     --ink-muted on it measures 4.09:1 — under AA. Inside the highlighted
+     column the price steps up to --ink-soft. Caught by verify:contrast; the
+     tint is easy to add and the knock-on easy to miss. */
+  .cmp__table th.is-popular .cmp__price { color: var(--ink-soft); }
+
+  /* Stacked ---------------------------------------------------------------- */
+
+  .cmp__card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: var(--s-4);
+    background: var(--bg);
+  }
+
+  .cmp__card.is-popular {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent);
+  }
+
+  .cmp__card-name {
+    font-size: var(--t-body);
+    margin-bottom: var(--s-3);
+    padding-bottom: var(--s-3);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .cmp__card-price {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+
+  .cmp__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--s-3);
+    padding-block: 0.45rem;
+    font-size: var(--t-small);
+  }
+
+  .cmp__row + .cmp__row { border-top: 1px solid var(--line); }
+  .cmp__row dt { color: var(--ink-soft); }
+  .cmp__row dd { text-align: right; color: var(--ink); font-weight: 500; }
+</style>

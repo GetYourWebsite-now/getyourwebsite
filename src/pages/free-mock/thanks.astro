@@ -1,0 +1,68 @@
+---
+/**
+ * Where Formspree sends people after the free-mock form posts.
+ *
+ * Its own page rather than a `?sent=1` branch on /free-mock, because this
+ * site builds to static output: `Astro.url.searchParams` is empty at run
+ * time, so a query-string branch would serve the form again to everyone who
+ * had just submitted it. See the note at the top of ../free-mock.astro.
+ *
+ * Same bare chrome, same noindex, and no JavaScript involved anywhere.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CONTACT_EMAIL } from '../../data/site.js';
+import { url } from '../../data/url.js';
+---
+
+<BaseLayout
+  title="Thanks — your free mock is on its way"
+  description="We've got your request and we'll email you within one business day."
+  bare
+  noindex
+>
+  <section class="section">
+    <div class="shell-narrow thanks">
+      <p class="thanks__mark" aria-hidden="true">✓</p>
+      <h1>That's with us.</h1>
+      <p class="lead">
+        We'll email you within one business day with a link to your mock.
+        Nothing to pay, and nothing else to do.
+      </p>
+      <p class="thanks__aside">
+        If something is urgent in the meantime, write to
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+      </p>
+      <p class="thanks__back">
+        <a class="link-arrow" href={url('/work')}>Have a look at what we've built</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks { text-align: center; }
+
+  .thanks__mark {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto var(--s-5);
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .thanks .lead { margin-inline: auto; }
+
+  .thanks__aside {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    margin-inline: auto;
+  }
+
+  .thanks__back { margin-top: var(--s-6); }
+</style>

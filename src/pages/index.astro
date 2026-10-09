@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
 import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
-import { CLIENT_PROJECTS, TIERS, PRICING_DISCLAIMER } from '../data/site.js';
+import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN, PRICING_DISCLAIMER } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
@@ -31,7 +31,7 @@ import { url } from '../data/url.js';
           you ask for.
         </p>
         <div class="btn-row hero__cta">
-          <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a free mock</a>
+          <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
           <a
             class="btn btn--secondary btn--lg"
             href="https://allergyrescuekit.com"
@@ -274,7 +274,11 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 7. Pricing teaser --------------------------------------------------- -->
+  <!-- 7. Pricing teaser ---------------------------------------------------
+       Reads BUILD_TIERS, the same array /pricing renders, so the two can
+       never drift apart again. They did before: this section was still
+       quoting the old placeholder prices long after the real ones were set.
+  -->
   <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
@@ -284,8 +288,12 @@ import { url } from '../data/url.js';
       </div>
 
       <div class="grid grid-3" data-reveal-group>
-        {TIERS.map((tier) => <TierCard tier={tier} condensed reveal />)}
+        {BUILD_TIERS.map((tier) => <TierCard tier={tier} condensed reveal />)}
       </div>
+
+      <p class="care-line" data-reveal>
+        Hosting and upkeep: {CARE_PLAN.name}, {CARE_PLAN.price}{CARE_PLAN.period}.
+      </p>
 
       <p class="pricing-note" data-reveal>{PRICING_DISCLAIMER}</p>
 
@@ -328,7 +336,7 @@ import { url } from '../data/url.js';
         commitment, no cost, no catch.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/contact')}>Get a free mock</a>
+        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
       </div>
     </div>
   </section>
@@ -554,9 +562,18 @@ import { url } from '../data/url.js';
 
   /* Pricing note ---------------------------------------------------------- */
 
+  .care-line {
+    margin: var(--s-5) auto 0;
+    text-align: center;
+    font-size: var(--t-small);
+    font-weight: 550;
+    color: var(--ink);
+    max-width: none;
+  }
+
   .pricing-note {
     max-width: 44rem;
-    margin: var(--s-5) auto 0;
+    margin: var(--s-2) auto 0;
     text-align: center;
     font-size: var(--t-small);
     color: var(--ink-muted);
