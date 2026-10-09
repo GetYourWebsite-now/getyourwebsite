@@ -1589,17 +1589,38 @@
 
   .sandbox { margin-top: var(--s-5); }
 
+  /* Light chrome, not a gold panel. Gold is the brand mark and the
+     free-mock badge and nothing else; a full-width gold bar was the largest
+     block of it on the site.
+
+     THE COLOURS HERE ARE LITERALS ON PURPOSE. This banner is our wrapper,
+     but it lives inside .sandbox, and .sandbox redefines the token names
+     for the portal it contains: --ink-soft is #e6e7eb there, --line is a
+     near-transparent white, --accent is the portal's gold. Writing
+     `color: var(--ink-soft)` here renders near-white text on a light grey
+     bar — which is exactly what the first attempt did. They are the global
+     palette's values, and if the palette moves they have to move with it.
+     `npm run verify:contrast` measures this banner specifically for that
+     reason, even though it skips everything else inside .sandbox. */
   .sandbox__banner {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.7rem;
-    padding: 0.85rem 1.2rem;
-    background: var(--gold);
-    color: var(--black);
-    font-size: 0.92rem;
+    padding: 0.8rem 1.1rem;
+    /* The banner is a <p>, and global.css caps paragraphs at a 60ch
+       measure for readability. That is right for prose and wrong for a bar
+       that has to sit flush on top of a 1200px frame — it was rendering at
+       580px with the frame full-width under it. The gold fill used to hide
+       how odd that looked. */
+    max-width: none;
+    background: #f6f7f9;  /* --bg-alt */
+    color: #4a4f58;       /* --ink-soft */
+    border: 1px solid #e6e7eb;  /* --line */
+    border-bottom: 0;
+    font-size: 0.9375rem;
     font-weight: 500;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-radius: 8px 8px 0 0;
   }
 
   .sandbox__actions { display: flex; gap: 0.5rem; margin-left: auto; flex-wrap: wrap; }
@@ -1625,7 +1646,8 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    background: var(--black);
+    /* The portal fills this, and the portal is dark. */
+    background: var(--footer);
   }
 
   .sandbox:fullscreen .sandbox__banner,
@@ -1652,7 +1674,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--black);
+    background: #2f3dd6;  /* --accent; literal, see .sandbox__banner */
     flex-shrink: 0;
     animation: sandbox-pulse 2s ease-in-out infinite;
   }

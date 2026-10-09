@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
+import WebsiteCompare from '../components/WebsiteCompare.astro';
 import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
 import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN, PRICING_DISCLAIMER } from '../data/site.js';
@@ -246,30 +247,10 @@ import { url } from '../data/url.js';
         <h2>The difference a website makes.</h2>
       </div>
 
-      <div class="compare" data-reveal-group>
-        <div class="compare__col compare__col--without" data-reveal>
-          <p class="compare__label">Without a website</p>
-          <ul class="compare__list">
-            <li>Invisible to anyone searching right now</li>
-            <li>Only open when someone picks up the phone</li>
-            <li>Relies entirely on word of mouth</li>
-            <li>Looks smaller than you are</li>
-          </ul>
-        </div>
-
-        <div class="compare__col compare__col--with" data-reveal>
-          <p class="compare__label">With a website</p>
-          <ul class="compare__list">
-            <li>Found by people looking for you today</li>
-            <li>Open 24/7, answering the same questions for you</li>
-            <li>Builds trust before the first conversation</li>
-            <li>Takes inquiries while you sleep</li>
-          </ul>
-        </div>
-      </div>
+      <WebsiteCompare />
 
       <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/benefits')}>The full case for getting online</a>
+        <a class="link-arrow" href={url('/why-us') + '#why-a-website'}>The full case for getting online</a>
       </p>
     </div>
   </section>
@@ -304,7 +285,7 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 8. Why us ------------------------------------------------------------
-       One column on purpose. There was a dashed [EDIT: team photo] box here;
+       One column on purpose. There was a dashed team-photo placeholder here;
        a placeholder for a photo that does not exist is worse than no photo,
        because it is a visible reminder that the page is unfinished. The text
        stands alone until there is a real one to drop in.
@@ -344,8 +325,7 @@ import { url } from '../data/url.js';
 
 <style>
   .section-more { margin-top: var(--s-6); }
-  .section-head--center + .grid + .section-more,
-  .compare + .section-more { text-align: center; }
+  .section-head--center + .grid + .section-more { text-align: center; }
 
   /* Hero ----------------------------------------------------------------- */
 
@@ -503,63 +483,6 @@ import { url } from '../data/url.js';
 
   .card__note { margin-top: var(--s-4); font-size: var(--t-small); }
 
-  /* Benefits compare ------------------------------------------------------ */
-
-  .compare {
-    display: grid;
-    gap: var(--s-4);
-  }
-
-  .compare__col {
-    padding: var(--s-5);
-    border-radius: var(--radius);
-    border: 1px solid var(--line);
-  }
-
-  .compare__col--without {
-    background: var(--bg);
-    color: var(--ink-soft);
-  }
-
-  /* Was an inverted black card. The footer is the only dark surface now, so
-     an accent edge carries the contrast between the two columns instead. */
-  .compare__col--with {
-    background: var(--bg);
-    border-color: var(--accent);
-    box-shadow: inset 2px 0 0 var(--accent);
-  }
-
-  .compare__label {
-    font-family: var(--font-mono);
-    font-size: var(--t-label);
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    margin-bottom: var(--s-4);
-    color: var(--ink-muted);
-  }
-
-  .compare__col--with .compare__label { color: var(--accent); }
-
-  .compare__list { display: flex; flex-direction: column; gap: var(--s-3); }
-
-  .compare__list li {
-    position: relative;
-    padding-left: 1.6rem;
-    font-size: var(--t-body);
-    line-height: 1.5;
-  }
-
-  .compare__list li::before {
-    position: absolute;
-    left: 0;
-    top: -0.05rem;
-    font-family: var(--font-mono);
-  }
-
-  .compare__col--without li::before { content: '×'; color: var(--ink-muted); }
-  .compare__col--with li::before { content: '✓'; color: var(--accent); }
-
   /* Pricing note ---------------------------------------------------------- */
 
   .care-line {
@@ -613,7 +536,6 @@ import { url } from '../data/url.js';
     .feature--flip .feature__copy { order: 2; }
     .feature--flip .feature__shot { order: 1; }
 
-    .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
   }
 
   /* The hero goes two-up at 1240, much later than the 860 everything else

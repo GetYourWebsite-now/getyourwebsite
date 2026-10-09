@@ -39,7 +39,7 @@ import { chromium } from 'playwright';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
 const PAGES = [
-  '/', '/work', '/pricing', '/how-it-works', '/benefits',
+  '/', '/work', '/pricing', '/how-it-works',
   '/why-us', '/contact', '/free-mock', '/free-mock/thanks',
   '/demo', '/privacy', '/terms', '/404',
 ];
@@ -107,7 +107,14 @@ for (const path of PAGES) {
     for (const el of document.querySelectorAll('body *')) {
       // The portal lookalike runs its own token set on purpose — see
       // CLAUDE.md; the portal owns that palette, not this site.
-      if (el.closest('.sandbox, astro-dev-toolbar')) continue;
+      //
+      // Our own wrapper chrome is the exception and IS measured. It sits
+      // inside .sandbox, so it inherits the portal's shadowed token values
+      // unless it is careful, and the first light version of the banner
+      // rendered #e6e7eb text on an #f6f7f9 bar — invisible, and invisible
+      // to this check too while the whole subtree was skipped.
+      if (el.closest('astro-dev-toolbar')) continue;
+      if (el.closest('.sandbox') && !el.closest('.sandbox__banner')) continue;
       // Text hidden from assistive technology is not subject to 1.4.3. This
       // is only ever decorative duplication of copy that is already on the
       // page (the 404's ghost numeral); it still has to be visible, which is

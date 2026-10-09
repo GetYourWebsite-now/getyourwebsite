@@ -70,14 +70,10 @@ const here = Astro.url.pathname;
           </a>
         ))
       }
-      {/* Benefits lost its header slot to "How it works" but is still a live
-          page, so the drawer keeps it — along with the footer and the home
-          page, that's three ways to reach it. */}
-      <a
-        href={url('/benefits')}
-        aria-current={isActive(here, '/benefits') ? 'page' : undefined}
-      >
-        Benefits
+      {/* Demo is out of the desktop bar but belongs in the drawer: on a
+          phone this list is the whole site. */}
+      <a href={url('/demo')} aria-current={isActive(here, '/demo') ? 'page' : undefined}>
+        Demo
       </a>
       <a class="btn btn--primary nav__drawer-cta" href={url('/free-mock')}>Get a free mock</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we

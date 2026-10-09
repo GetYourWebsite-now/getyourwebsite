@@ -3,38 +3,45 @@
  * here rather than inside a page: contact details, nav links, the Our Work
  * grid and the pricing tiers.
  *
- * Anything marked [EDIT] is a placeholder Jack still needs to fill in.
- * There's a full list of them at the bottom of README.md.
+ * Where a value is still unset, the comment says so and says what the code
+ * does without it. Nothing here silently degrades: an unset analytics code
+ * emits no script, an unset portal URL renders no Sign in link.
  */
 
-/** [EDIT] Where the contact form is delivered and what shows in the footer. */
+/** Where the contact form is delivered, and what shows in the footer. */
 export const CONTACT_EMAIL = 'hello@getyourwebsite.now';
 
 /**
- * [EDIT] Formspree form ID — the part after /f/ in the endpoint they give you
- * (e.g. "xyzabcd" from https://formspree.io/f/xyzabcd). Create a form at
- * https://formspree.io, point it at CONTACT_EMAIL above, and paste the ID here.
- * Free plan covers 50 submissions a month.
- * Until this is a real ID the contact form shows a friendly notice and falls
- * back to the email address, so nothing silently disappears.
+ * Formspree form ID — the part after /f/ in the endpoint they give you
+ * (e.g. "xyzabcd" from https://formspree.io/f/xyzabcd). It is pointed at
+ * CONTACT_EMAIL above. The free plan covers 50 submissions a month.
+ *
+ * Both forms post here: /contact sends source=contact and /free-mock sends
+ * source=free-mock, so the two can be told apart in the inbox. If this is
+ * ever emptied, the contact form shows a notice and falls back to the email
+ * address rather than failing silently.
  */
 export const FORMSPREE_FORM_ID = 'xqpkrbez';
 
-/** [EDIT] Social links. Delete any you don't want — the footer adapts. */
-export const SOCIALS = [
-  // { label: 'Instagram', href: 'https://instagram.com/...' }, // [EDIT]
-  // { label: 'TikTok', href: 'https://tiktok.com/@...' },      // [EDIT]
-];
+/**
+ * Social links. None yet; the footer renders no social list while this is
+ * empty rather than showing dead icons. Add entries as
+ * { label: 'Instagram', href: 'https://instagram.com/...' } and the footer
+ * picks them up.
+ */
+export const SOCIALS = [];
 
-/** The five links that sit in the middle of the nav bar. */
+/**
+ * The four links in the middle of the nav bar.
+ *
+ * Demo is deliberately not one of them: it is linked from How it works and
+ * from the home page's platform section, which is where someone is actually
+ * curious about it, and a shorter bar gives the CTA more room. Benefits is
+ * gone entirely — merged into /why-us, with a redirect in astro.config.mjs.
+ */
 export const NAV_LINKS = [
   { label: 'Our Work', href: '/work' },
-  { label: 'Demo', href: '/demo' },
   { label: 'Pricing', href: '/pricing' },
-  // "How it works" took the slot Benefits used to hold. Six links plus the gold
-  // CTA plus Sign in overflowed the header at the width the burger hands over
-  // at — there were 81px of slack before any of this was added. Benefits is
-  // still a live page, linked from the home page and the footer.
   { label: 'How it works', href: '/how-it-works' },
   { label: 'Why Us', href: '/why-us' },
 ];
@@ -187,8 +194,9 @@ export const FEATURED_PROJECTS = CLIENT_PROJECTS;
  * Three rules that shaped what is NOT here:
  *
  *   No delivery times. The only real data point we have is Allergy Rescue
- *   Kit at 24 build rounds, which supports no defensible "1–2 weeks". A
- *   timeline we invent is a timeline we miss.
+ *   Kit at 24 build rounds, which supports no defensible build estimate. A
+ *   timeline we invent is a timeline we miss. The only time promise on the
+ *   site is the reply one: within one business day.
  *
  *   Examples point at real client work only, never at a concept site. A
  *   tier with no real example yet renders none — see Growth. Allergy Rescue
@@ -373,9 +381,10 @@ export const HEADING_FONT = 'inter';
 /**
  * GoatCounter site code, for privacy-friendly visitor counts.
  *
- * [EDIT] Sign up free at https://www.goatcounter.com and put your site code
- * here — just the code, not the full URL. For `rosas.goatcounter.com` that's
- * `rosas`. Leave it empty and no analytics script is emitted at all.
+ * Unset. Sign up free at https://www.goatcounter.com and put the site code
+ * here — just the code, not the full URL; for `rosas.goatcounter.com` that
+ * is `rosas`. While it is empty no analytics script is emitted at all,
+ * which is the current state and a deliberate one.
  *
  * GoatCounter over Plausible: no cookies, no consent banner needed, nothing
  * personal stored, and the script is about 3KB. It's free for non-commercial
@@ -387,7 +396,7 @@ export const GOATCOUNTER_ID = '';
 /**
  * The client portal, for the "Sign in" link in the header and footer.
  *
- * [EDIT] Set this to https://portal.getyourwebsite.now once that subdomain is
+ * Unset. Set it to https://portal.getyourwebsite.now once that subdomain is
  * serving. It answered HTTP 522 (Cloudflare reached, origin did not) on every
  * attempt while this was built, and a Sign in button that lands on an error
  * page is worse than no button — so the link is built, styled and tested, and
@@ -412,7 +421,7 @@ export const LIVE_SITE_URL = 'https://getyourwebsite.now';
 /**
  * Legal pages (/privacy, /terms).
  *
- * [EDIT] LEGAL_NAME must match the name on the LLC's Michigan filing exactly.
+ * LEGAL_NAME must match the name on the LLC's Michigan filing exactly.
  * One word, as the business is written everywhere else. Michigan's registry
  * displays every entity name in capitals whatever case it was filed in, so
  * "GETYOURWEBSITE LLC" in a search result does not contradict this. Check the
@@ -423,6 +432,16 @@ export const LIVE_SITE_URL = 'https://getyourwebsite.now';
  *
  * Bump LEGAL_UPDATED whenever either page changes in substance.
  */
+/**
+ * The founders' names, school and town, for the "Who we are" section on
+ * /why-us. Empty by default and rendered only when it is not: putting two
+ * students' names and their school on a public page is Jack's call to make,
+ * not a default to inherit. The section reads correctly without it.
+ *
+ * Example: 'Jack and Zane, seniors at <school>, <town> Michigan'
+ */
+export const TEAM_NAMES = '';
+
 export const LEGAL_NAME = 'GetYourWebsite LLC';
 export const LEGAL_STATE = 'Michigan';
 export const LEGAL_UPDATED = 'October 3, 2026';

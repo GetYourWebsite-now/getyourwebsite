@@ -17,16 +17,18 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
 
 <BaseLayout
   title="Contact"
-  description="Request a free website mockup for your business, or ask us anything. We read every inquiry and reply personally."
+  description="Ask us about an existing site, an unusual project, or anything else. We read every inquiry and reply personally."
 >
   <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Get in touch</p>
-        <h1>Request a free mockup.</h1>
+        <h1>Get in touch.</h1>
         <p class="lead">
-          Tell us about your business and we'll build you a homepage concept —
-          free, no commitment. Or just ask us a question; we don't mind.
+          For a free mock, the fastest route is <a href={url('/free-mock')}>our
+          free-mock form</a>. For anything else — an existing site, a quote for
+          something unusual, a question — use the form below or email
+          <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
       </div>
     </div>
@@ -42,7 +44,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
         <div class="note">
           <p>
             <strong>We read every inquiry and reply personally.</strong>
-            Pricing is confirmed after we review your request — the mockup is
+            Pricing is confirmed after we review your request — the mock is
             always free.
           </p>
         </div>
@@ -58,8 +60,8 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
 
         <ol class="next">
           <li><span>1</span> You send this form</li>
-          <li><span>2</span> We reply within a day or two</li>
-          <li><span>3</span> We build your free mockup</li>
+          <li><span>2</span> We reply within one business day</li>
+          <li><span>3</span> We tell you what it would take, and what it would cost</li>
         </ol>
       </aside>
 
@@ -68,11 +70,11 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
         {
           !formIsSet && (
             <p class="setup-warning">
-              <strong>[EDIT] This form isn't connected yet.</strong> Create a
-              free form at formspree.io and put its ID in
+              <strong>This form isn't connected yet.</strong> Create a free
+              form at formspree.io and put its ID in
               <code>FORMSPREE_FORM_ID</code> in <code>src/data/site.js</code>.
-              Until then submissions will fail and visitors are shown the email
-              address instead.
+              Until then submissions fail and visitors are shown the email
+              address instead, so nothing disappears silently.
             </p>
           )
         }
@@ -87,8 +89,12 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
           <input
             type="hidden"
             name="_subject"
-            value="New mockup inquiry from getyourwebsite"
+            value="New inquiry from getyourwebsite (contact page)"
           />
+
+          {/* Pairs with /free-mock's source=free-mock, so ad traffic and
+              everything else can be told apart in the inbox. */}
+          <input type="hidden" name="source" value="contact" />
 
           <!-- Honeypot. Hidden off-screen; bots fill it, people never see it. -->
           <div class="honeypot" aria-hidden="true">
@@ -146,9 +152,9 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
             <legend class="fieldset-legend">What are you after? <span class="req">*</span></legend>
             <div class="want__opts">
               <label class="radio-card">
-                <input type="radio" name="looking_for" value="Free mockup" checked required />
+                <input type="radio" name="looking_for" value="Free mock" checked required />
                 <span>
-                  <strong>A free mockup</strong>
+                  <strong>A free mock</strong>
                   <small>See what a homepage could look like, no commitment.</small>
                 </span>
               </label>
@@ -177,7 +183,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
               name="details"
               placeholder="A menu people can read on their phone, online booking, a gallery, somewhere to put reviews…"
             ></textarea>
-            <span class="hint">The more you tell us, the closer the first mockup will be.</span>
+            <span class="hint">The more you tell us, the closer the first mock will be.</span>
           </div>
 
           <div class="field">
@@ -193,7 +199,7 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
           </button>
 
           <p class="small-print">
-            We'll only use this to reply to you and make your mockup. No list, no
+            We'll only use this to reply to you and make your mock. No list, no
             newsletter, never sold. See our <a href={url('/privacy')}>Privacy Policy</a>.
           </p>
         </form>
@@ -203,8 +209,8 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
           <div class="done__mark" aria-hidden="true">✓</div>
           <h2>That's with us.</h2>
           <p>
-            Thanks — we've got your inquiry and we'll reply personally, usually
-            within a day or two. If it's urgent, email us directly at
+            Thanks — we've got your inquiry and we'll reply personally within
+            one business day. If it's urgent, email us directly at
             <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
           <div class="btn-row" style="margin-top:var(--s-4)">

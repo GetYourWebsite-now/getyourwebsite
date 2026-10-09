@@ -20,7 +20,6 @@ const PAGES = [
   { path: '/demo', priority: '0.8' },
   { path: '/how-it-works', priority: '0.8' },
   { path: '/pricing', priority: '0.9' },
-  { path: '/benefits', priority: '0.7' },
   { path: '/why-us', priority: '0.7' },
   { path: '/contact', priority: '0.9' },
   { path: '/privacy', priority: '0.3' },

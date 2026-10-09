@@ -61,11 +61,12 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     !condensed && tier.examples && tier.examples.length > 0 && (
       <p class="tier__example">
         <span class="tier__example-label">Built this way:</span>
+        {/* The anchor is on one line because a newline inside it becomes a
+            text node and the underline runs under the resulting space. The
+            comment lives out here: inside the map's return position it would
+            be a second expression, which is a compile error. */}
         {tier.examples.map((ex) => (
-          <a class="tier__example-link" href={ex.href} target="_blank" rel="noopener noreferrer">
-            {ex.name}
-            <span class="sr-only"> (opens in a new tab)</span>
-          </a>
+          <a class="tier__example-link" href={ex.href} target="_blank" rel="noopener noreferrer">{ex.name}<span class="sr-only"> (opens in a new tab)</span></a>
         ))}
       </p>
     )

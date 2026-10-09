@@ -19,7 +19,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/benefits', '/why-us', '/contact', '/free-mock', '/free-mock/thanks', '/privacy', '/terms'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/why-us', '/contact', '/free-mock', '/free-mock/thanks', '/privacy', '/terms'];
 
 
 
@@ -522,7 +522,7 @@ ripples === 0
 // section reads as harmless in a diff — so each is a test.
 console.log('\n[6] Light surfaces');
 
-const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/benefits', '/why-us', '/contact', '/free-mock', '/free-mock/thanks'];
+const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/why-us', '/contact', '/free-mock', '/free-mock/thanks'];
 
 let atmosphere = [];
 let darkSurfaces = [];
@@ -589,54 +589,64 @@ repeats.length === 0
   ? pass('sections alternate between the two light surfaces on every page')
   : fail(`adjacent sections share a surface: ${repeats.slice(0, 4).join('; ')}`);
 
-// ── 7. Static captures of the portal ───────────────────────────────────────
-// The home page teaser is a picture of a component that lives in this repo, so
-// it can drift out of date without anything failing. It did: the portal was
-// redesigned from mint to gold and the teaser kept showing the old one.
+// ── 7. The portal captures on the home page are current ───────────────────
+// The platform section shows pictures of a component that lives in another
+// repo, so they can drift out of date without anything failing. They did
+// once: the portal was redesigned from mint to gold and the picture kept
+// showing the old one.
 //
-// Hue is the tell. The old portal's accent was mint (#3dd6a5, hue ~160) and the
-// new one is our gold (#f5c24b, hue ~44), so a capture of the wrong era is
-// obvious from the pixels without needing to know anything about layout.
+// Hue is the tell. The old portal's accent was mint (#3dd6a5, hue ~160) and
+// the current one is gold (#f5c24b, hue ~44), so a capture from the wrong
+// era is obvious from the pixels without knowing anything about layout.
 //
-// Deliberately scoped to the portal captures only. Two of the client-site
-// screenshots are legitimately green — landscaping is foliage, dental is teal
-// branding — and a blanket "no green anywhere" rule would fail on both.
+// Scoped to portal-my-website.webp deliberately. It is pure portal chrome,
+// so its hue signal is clean; portal-assets.webp is mostly photographs of a
+// bakery, which are warm enough to swamp the measurement either way. The
+// older target, shots/demo.webp, went with `shots:teaser` — the home page
+// section that displayed it was replaced in Phase 2 and nothing rendered it
+// any more, so the check was guarding an image no visitor could see.
 console.log('\n[7] Portal captures are current');
 {
-  const PORTAL_SHOTS = ['public/shots/demo.webp'];
+  const PORTAL_SHOTS = ['public/shots/portal-my-website.webp'];
 
   const hueCounts = async (file) => {
     const { data, info } = await sharp(file).raw().toBuffer({ resolveWithObject: true });
     let mint = 0;
     let gold = 0;
+    let hued = 0;
     for (let i = 0; i < data.length; i += info.channels * 7) {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
       const mx = Math.max(r, g, b);
       const mn = Math.min(r, g, b);
-      // Skip near-black and near-grey: the portal is mostly both, and neither
-      // has a meaningful hue.
+      // Skip near-black and near-grey: the portal is mostly both, and
+      // neither has a meaningful hue.
       if (mx < 60 || mx - mn < 30) continue;
       let h;
       if (mx === r) h = 60 * ((((g - b) / (mx - mn)) % 6 + 6) % 6);
       else if (mx === g) h = 60 * ((b - r) / (mx - mn) + 2);
       else h = 60 * ((r - g) / (mx - mn) + 4);
+      hued++;
       if (h >= 120 && h <= 190) mint++;
       if (h >= 30 && h <= 60) gold++;
     }
-    return { mint, gold };
+    return { mint, gold, hued };
   };
 
   for (const file of PORTAL_SHOTS) {
-    const { mint, gold } = await hueCounts(file);
-    const line = `${file} — ${gold} gold px, ${mint} mint px`;
-    if (gold > 200 && gold > mint * 3) {
+    const { mint, gold, hued } = await hueCounts(file);
+    const line = `${file} — ${gold} gold px, ${mint} mint px, of ${hued} with a hue`;
+    // Proportional, not an absolute pixel count. The old floor of 200 was
+    // calibrated against a full-tab capture; the first tighter crop sampled
+    // fewer pixels and failed a picture that was plainly gold and had not a
+    // single mint pixel in it. A share of the hued pixels survives a crop.
+    if (gold >= Math.max(25, hued * 0.02) && gold > mint * 3) {
       pass(`${line} (current gold portal)`);
     } else {
       fail(
         `${line} — this looks like a capture of the pre-rebuild mint portal. ` +
-          `Regenerate it with \`npm run shots:teaser\`.`
+          `Regenerate it with \`npm run shots:portal\`.`
       );
     }
   }

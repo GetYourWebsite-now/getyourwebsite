@@ -185,10 +185,12 @@ const pagespeed = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(L
         <li data-reveal>
           <span class="steps__n" aria-hidden="true">2</span>
           <div>
-            <h3>It's built from curated pieces</h3>
+            <h3>It's built from pieces that already work</h3>
             <p>
-              Component libraries we maintain, rather than a layout invented
-              from scratch every time. That's why the sites hold together.
+              Candidates come from a searchable component library, get ranked
+              by a model that looks at them, and are weighed against the picks
+              we have already proven on other sites — rather than a layout
+              invented from scratch every time.
             </p>
           </div>
         </li>
@@ -290,11 +292,11 @@ const pagespeed = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(L
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2 class="cta-band__title">See it with your own business in it.</h2>
       <p class="lead" style="margin-inline:auto">
-        We'll build you a free mockup of your homepage first. No commitment, no
+        We'll build you a free mock of your homepage first. No commitment, no
         card, no catch.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Request a free mockup</a>
+        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Request a free mock</a>
         <a class="btn btn--secondary btn--lg" href={url('/demo')}>Try the client demo</a>
       </div>
     </div>
