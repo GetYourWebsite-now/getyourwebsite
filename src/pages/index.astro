@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import CaseStudy from '../components/CaseStudy.astro';
 import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
-import { FEATURED_PROJECTS, TIERS, PRICING_DISCLAIMER, PROOF } from '../data/site.js';
+import { CLIENT_PROJECTS, TIERS, PRICING_DISCLAIMER } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
@@ -67,55 +67,36 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 2. Proof strip -----------------------------------------------------
-       Three numbers, each countable by a visitor from a public source. No
-       logo wall, no invented statistics — PROOF in src/data/site.js records
-       where each figure comes from and when it was last checked.
-  -->
-  <section class="section section--alt section--tight">
-    <div class="shell">
-      <ul class="proof" data-reveal-group>
-        {
-          PROOF.figures.map((f) => (
-            <li class="proof__item" data-reveal>
-              <span class="proof__num stat-num">{f.value}</span>
-              <span class="proof__label">{f.label}</span>
-              <span class="proof__note">{f.note}</span>
-            </li>
-          ))
-        }
-      </ul>
-      <p class="proof__footnote">{PROOF.footnote}</p>
-    </div>
-  </section>
-
-  <!-- 3. Our Work ---------------------------------------------------------
-       Still the concept sites. Phase 3 replaces this with the two real
-       client case studies.
-  -->
-  <section class="section">
+  <!-- 3. Our work — the two real client projects --------------------- -->
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Our work</p>
-        <h2>Concept sites, built like real ones.</h2>
+        <h2>Two clients, both live.</h2>
         <p class="lead">
-          Every one of these is a full, working site — not a mock-up in a
-          design tool. Open them and click around.
+          We are new, and we would rather show you the two real things we have
+          shipped than a wall of logos. Both are open to anyone.
         </p>
       </div>
 
-      <div class="grid grid-3" data-reveal-group>
-        {FEATURED_PROJECTS.map((project) => <ProjectCard project={project} reveal />)}
+      <div class="cases-2up" data-reveal-group>
+        {
+          CLIENT_PROJECTS.map((project) => (
+            <div data-reveal>
+              <CaseStudy project={project} compact level={3} />
+            </div>
+          ))
+        }
       </div>
 
       <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/work')}>See all six builds</a>
+        <a class="link-arrow" href={url('/work')}>See all work</a>
       </p>
     </div>
   </section>
 
   <!-- 4. How it works — three steps, typography only --------------------- -->
-  <section class="section section--alt">
+  <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">How it works</p>
@@ -157,7 +138,7 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 5. Platform --------------------------------------------------------- -->
-  <section class="section">
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">The platform</p>
@@ -258,7 +239,7 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 6. Why a website ---------------------------------------------------- -->
-  <section class="section section--alt">
+  <section class="section">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Why a website</p>
@@ -294,7 +275,7 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 7. Pricing teaser --------------------------------------------------- -->
-  <section class="section">
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Pricing</p>
@@ -320,7 +301,7 @@ import { url } from '../data/url.js';
        because it is a visible reminder that the page is unfinished. The text
        stands alone until there is a real one to drop in.
   -->
-  <section class="section section--alt">
+  <section class="section">
     <div class="shell">
       <div class="why-teaser__copy" data-reveal>
         <p class="eyebrow">Why us</p>
@@ -339,7 +320,7 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 9. Final CTA --------------------------------------------------------- -->
-  <section class="section cta-band">
+  <section class="section section--alt cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2 class="cta-band__title">See your business online before you pay anything.</h2>
       <p class="lead" style="margin-inline:auto">
@@ -452,44 +433,9 @@ import { url } from '../data/url.js';
     color: var(--ink-muted);
   }
 
-  /* Proof strip ----------------------------------------------------------- */
-
-  /* auto-fit rather than a fixed three, because the strip carries whatever
-     we can actually stand behind — two figures today. A hardcoded 3 would
-     leave a visible hole the moment one of them could not be sourced. */
-  .proof {
+  .cases-2up {
     display: grid;
-    gap: var(--s-5);
-    grid-template-columns: 1fr;
-  }
-
-  .proof__item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    padding-left: var(--s-4);
-    border-left: 2px solid var(--accent);
-  }
-
-  .proof__label {
-    font-size: var(--t-body);
-    color: var(--ink);
-    font-weight: 550;
-    max-width: 20rem;
-  }
-
-  .proof__note {
-    font-size: var(--t-small);
-    color: var(--ink-soft);
-    max-width: 22rem;
-  }
-
-  .proof__footnote {
-    margin-top: var(--s-6);
-    font-size: var(--t-label);
-    line-height: 1.5;
-    color: var(--ink-muted);
-    max-width: none;
+    gap: var(--s-7);
   }
 
   /* How it works ---------------------------------------------------------- */
@@ -626,7 +572,8 @@ import { url } from '../data/url.js';
   /* Two-up layouts -------------------------------------------------------- */
 
   @media (min-width: 860px) {
-    .proof { grid-template-columns: repeat(auto-fit, minmax(16rem, 22rem)); gap: var(--s-7); }
+    .cases-2up { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+
 
     /* Subgrid, so the three numbers, the three headings and the three
        paragraphs each sit on a shared row. Without it a heading that wraps

@@ -1,0 +1,259 @@
+---
+/**
+ * One piece of real client work.
+ *
+ * Two shapes, one component and one set of facts behind both:
+ *
+ *   default   full-width on /work — desktop shot with the phone shot
+ *             overlapping it, sector, three bullets, outcome, live link
+ *   compact   the home page pair — same shots and the same one-line
+ *             outcome, without the bullets
+ *
+ * They share a component rather than being written twice because the
+ * difference between them is presentation, and a second copy of the facts is
+ * a second place for them to drift out of date.
+ *
+ * `shotNote` exists for the one case that needs it: a live site whose visible
+ * figures are seeded sample data. If a screenshot shows numbers that are not
+ * real, the caption has to say so.
+ */
+import { url } from '../data/url.js';
+
+interface Props {
+  project: {
+    slug: string;
+    name: string;
+    sector: string;
+    href: string;
+    shot: string;
+    shotPhone?: string;
+    shotNote?: string;
+    blurb: string;
+    built?: string[];
+    outcome?: string;
+  };
+  /** Mirror the layout, so a row of these alternates which side the shot is on. */
+  flip?: boolean;
+  /** Home page version: no bullets, tighter. */
+  compact?: boolean;
+  /** /work puts these under the page h1, so they are h2 there and h3 on home. */
+  level?: 2 | 3;
+}
+
+const { project: p, flip = false, compact = false, level = 2 } = Astro.props;
+const Heading = `h${level}`;
+const host = p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
+---
+
+<article class:list={['case', { 'case--flip': flip, 'case--compact': compact }]}>
+  <figure class="case__shots">
+    <div class="case__desktop shot">
+      <img
+        src={url(p.shot)}
+        alt={`The ${p.name} website on a desktop screen.`}
+        width="1440"
+        height="900"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+
+    {
+      p.shotPhone && (
+        <div class="case__phone">
+          <img
+            src={url(p.shotPhone)}
+            alt={`The ${p.name} website on a phone.`}
+            width="390"
+            height="844"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+  </figure>
+
+  <div class="case__body">
+    <p class="case__sector">{p.sector}</p>
+    <Heading class="case__name">{p.name}</Heading>
+    <p class="case__blurb">{p.blurb}</p>
+
+    {
+      !compact && p.built && (
+        <ul class="case__built">
+          {p.built.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      )
+    }
+
+    {p.outcome && <p class="case__outcome">{p.outcome}</p>}
+
+    <p class="case__link">
+      <a class="link-arrow" href={p.href} target="_blank" rel="noopener noreferrer">
+        {host}
+        <span class="sr-only">— visit {p.name} (opens in a new tab)</span>
+      </a>
+    </p>
+
+    {p.shotNote && <p class="case__note">{p.shotNote}</p>}
+  </div>
+</article>
+
+<style>
+  .case {
+    display: grid;
+    gap: var(--s-5);
+    align-items: center;
+  }
+
+  /* Shots ----------------------------------------------------------------
+     The phone overlaps the bottom-left corner of the desktop shot. It is
+     deliberately small: it is there to say "and it works on a phone", not to
+     be read. */
+
+  .case__shots {
+    position: relative;
+    min-width: 0;
+    padding-bottom: var(--s-5);
+    padding-left: var(--s-5);
+  }
+
+  .case__desktop {
+    margin-left: var(--s-4);
+  }
+
+  .case__desktop img,
+  .case__phone img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .case__phone {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 23%;
+    max-width: 128px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: var(--shadow-shot);
+  }
+
+  /* Body ------------------------------------------------------------------ */
+
+  .case__sector {
+    font-family: var(--font-mono);
+    font-size: var(--t-label);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: var(--s-2);
+  }
+
+  .case__name {
+    font-size: clamp(1.4rem, 1.15rem + 1.1vw, 2rem);
+    margin-bottom: var(--s-3);
+  }
+
+  .case__blurb {
+    font-size: var(--t-lead);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 34rem;
+  }
+
+  .case__built {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-top: var(--s-4);
+    max-width: 34rem;
+  }
+
+  .case__built li {
+    position: relative;
+    padding-left: 1.4rem;
+    font-size: var(--t-small);
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  .case__built li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 7px;
+    height: 1.5px;
+    background: var(--accent);
+  }
+
+  /* The outcome is the sentence that matters, so it gets ink weight and an
+     accent edge rather than being one more grey line. */
+  .case__outcome {
+    margin-top: var(--s-4);
+    padding-left: var(--s-3);
+    border-left: 2px solid var(--accent);
+    font-size: var(--t-small);
+    font-weight: 550;
+    color: var(--ink);
+    max-width: 32rem;
+  }
+
+  .case__link { margin-top: var(--s-4); }
+
+  .case__link .link-arrow {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    letter-spacing: -0.01em;
+  }
+
+  .case__note {
+    margin-top: var(--s-3);
+    font-size: var(--t-label);
+    line-height: 1.5;
+    color: var(--ink-muted);
+    max-width: 30rem;
+  }
+
+  /* Compact (home page) --------------------------------------------------- */
+
+  .case--compact { gap: var(--s-4); }
+  .case--compact .case__shots { padding-bottom: var(--s-4); padding-left: var(--s-4); }
+  .case--compact .case__desktop { margin-left: var(--s-3); }
+  .case--compact .case__phone { width: 26%; max-width: 92px; }
+  .case--compact .case__blurb { font-size: var(--t-body); }
+  .case--compact .case__outcome { font-size: var(--t-label); }
+
+  @media (min-width: 860px) {
+    /* Full width: shot and body side by side, alternating. */
+    .case:not(.case--compact) {
+      grid-template-columns: 1.15fr 1fr;
+      gap: var(--s-7);
+    }
+
+    .case--flip:not(.case--compact) .case__shots { order: 2; }
+    .case--flip:not(.case--compact) .case__body { order: 1; }
+
+    /* Flipped, the phone moves to the other corner so it never sits between
+       the two columns pointing away from the copy. */
+    .case--flip:not(.case--compact) .case__shots {
+      padding-left: 0;
+      padding-right: var(--s-5);
+    }
+
+    .case--flip:not(.case--compact) .case__desktop {
+      margin-left: 0;
+      margin-right: var(--s-4);
+    }
+
+    .case--flip:not(.case--compact) .case__phone { left: auto; right: 0; }
+  }
+</style>

@@ -40,39 +40,95 @@ export const NAV_LINKS = [
 ];
 
 /**
- * The Our Work grid. Adding a new mock site is a one-object job: drop the
- * HTML file in public/, take a screenshot into public/shots/, add an entry.
+ * Everything on /work, in two kinds.
+ *
+ *   kind: 'client'   real work, for people who paid us. Leads the page.
+ *   kind: 'concept'  fictional businesses we built to show range.
+ *
+ * The distinction is the honest part and it must stay visible in the UI: a
+ * concept site dressed as a client site is the single most damaging thing
+ * this page could do.
+ *
+ * Client entries carry `sector`, three `built` bullets and a one-line
+ * `outcome`. Every bullet has to be true of the shipped site today — the
+ * facts below were checked against the live sites and the project repos in
+ * October 2026, and where a figure is approximate it says so.
+ *
+ * Adding a concept mock is still a one-object job: drop the HTML in public/,
+ * screenshot into public/shots/, add an entry.
  */
 export const PROJECTS = [
   {
+    slug: 'ark',
+    kind: 'client',
+    name: 'Allergy Rescue Kit',
+    type: 'Emergency medical equipment',
+    sector: 'Emergency medical equipment',
+    href: 'https://allergyrescuekit.com',
+    shot: '/shots/ark-desktop.webp',
+    shotPhone: '/shots/ark-phone.webp',
+    blurb:
+      'A storefront and a 51-state legal reference for a stock-epinephrine cabinet, in one static site.',
+    built: [
+      'A static Astro site: 14 pages plus 51 state pages generated from a verified state-law dataset — every state and DC.',
+      'Built to WCAG AA contrast, checked across all 65 pages.',
+      'No analytics, no trackers and no cookies: the live site contacts no third-party host at all.',
+    ],
+    outcome: 'Launched 10 September 2026, after 24 build rounds with the founder.',
+  },
+  {
+    slug: 'chemed',
+    kind: 'client',
+    name: 'ChemEd 2027 Interest Map',
+    type: 'Academic conference',
+    sector: 'Academic conference',
+    href: 'https://chemed-interest-map-production.up.railway.app/',
+    shot: '/shots/chemed-desktop.webp',
+    shotPhone: '/shots/chemed-phone.webp',
+    // The live map is seeded with sample attendees until registration opens,
+    // so the figures in the screenshot are not real sign-ups. Saying so costs
+    // nothing and not saying so would be the kind of quiet overstatement this
+    // page exists to avoid.
+    shotNote: 'Shown with sample attendees — the map is live ahead of registration opening.',
+    blurb:
+      'A public “who is coming?” map for a chemistry-education conference, running before registration opens.',
+    built: [
+      'A Next.js and Postgres web app for ChemEd 2027, at Eastern Michigan University on 11–15 July 2027.',
+      'A typeahead over the full NCES school directory — about 131,000 public, private and postsecondary schools — so nobody types an address.',
+      'Three views of the same data: clustered dots, a heatmap and a state choropleth, plus an organiser admin with CSV import and export.',
+    ],
+    outcome: 'Live before registration opens, so the conference can see where interest is building.',
+  },
+  {
     slug: 'bakery',
+    kind: 'concept',
     name: "Rosa's Bakery",
     type: 'Bakery',
     href: '/bakery.html',
     shot: '/shots/bakery.webp',
     blurb: 'Warm, appetite-first layout where the daily menu and the address do the selling.',
-    featured: true,
   },
   {
     slug: 'dental',
+    kind: 'concept',
     name: 'Bright Smile Dental',
     type: 'Dental practice',
     href: '/dental.html',
     shot: '/shots/dental.webp',
     blurb: 'Calm, trust-building design built around one job: getting an appointment booked.',
-    featured: true,
   },
   {
     slug: 'gym',
+    kind: 'concept',
     name: 'Iron Forge Gym',
     type: 'Gym',
     href: '/gym.html',
     shot: '/shots/gym.webp',
     blurb: 'High-contrast and loud, with class times and membership tiers front and centre.',
-    featured: true,
   },
   {
     slug: 'auto',
+    kind: 'concept',
     name: 'Redline Auto Repair',
     type: 'Auto repair',
     href: '/auto.html',
@@ -81,6 +137,7 @@ export const PROJECTS = [
   },
   {
     slug: 'landscaping',
+    kind: 'concept',
     name: 'Cedar & Stone Landscaping',
     type: 'Landscaping',
     href: '/landscaping.html',
@@ -89,6 +146,7 @@ export const PROJECTS = [
   },
   {
     slug: 'restaurant',
+    kind: 'concept',
     name: 'Vela Kitchen',
     type: 'Restaurant',
     href: '/restaurant.html',
@@ -97,49 +155,25 @@ export const PROJECTS = [
   },
 ];
 
-/**
- * The home page proof strip. Facts about us, not page counts.
- *
- * The rule from CLAUDE.md applies here harder than anywhere: no invented
- * statistics. Every figure has to be something we can stand behind, and
- * `note` says on what basis.
- *
- * Two things are deliberately NOT here:
- *
- *   Page counts. The first version of this strip was "2 / 65 / 51", but two
- *   of those three were page counts of a single client's site, which reads
- *   as one fact padded out to three.
- *
- *   An accessibility claim. Both client sites were measured — 66 pages,
- *   7,180 text nodes — and the handful of flags were false positives of a
- *   colour-only method (white headings over photographs, which pixel-sample
- *   at 3.6–3.7:1 and pass as large text, plus visually-hidden skip links).
- *   That is good evidence, but it is not a WCAG AA conformance claim: AA
- *   covers alt text, focus order, labels and landmarks, none of which was
- *   tested. Measure those properly and this can become a third figure.
- *
- * Re-check when a client project changes.
+/*
+ * There is no PROOF export any more. The home page carried a strip of
+ * figures; with only two we could stand behind — client projects live, and
+ * when the first went live — it duplicated the "Live for …" line in the hero
+ * and read as an admission of being new. It comes back when there is a third
+ * real number to put beside them, and the bar for that has not moved: each
+ * figure has to be something a visitor could check, or that we can show the
+ * working for. The accessibility measurement in tools/ is the closest
+ * candidate; see the Phase 2 fixes commit for what it would still need.
  */
-export const PROOF = {
-  figures: [
-    {
-      value: '2',
-      label: 'live client projects',
-      note: 'Allergy Rescue Kit and the ChemEd 2027 interest map',
-    },
-    {
-      value: 'Sept 2026',
-      label: 'first client site went live',
-      note: 'Allergy Rescue Kit',
-    },
-  ],
-  // A footnote, not body copy, and not hover-only — a title attribute would
-  // hide the sourcing from anyone on a phone or a keyboard.
-  footnote: 'Both projects are linked from the hero above. Checked 7 October 2026.',
-};
 
-/** Just the three we lead with on the home page. */
-export const FEATURED_PROJECTS = PROJECTS.filter((p) => p.featured);
+/** The real client work. This is what leads both /work and the home page. */
+export const CLIENT_PROJECTS = PROJECTS.filter((p) => p.kind === 'client');
+
+/** The fictional mocks, shown after the client work and labelled as such. */
+export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
+
+/** Kept as the home page's name for the client pair. */
+export const FEATURED_PROJECTS = CLIENT_PROJECTS;
 
 /**
  * Pricing tiers. All prices are [EDIT] placeholders — change the `price`
