@@ -163,8 +163,13 @@ for (const target of TARGETS.filter((t) => !only || t.slug === only)) {
 
       const png = await page.screenshot({ animations: 'disabled' });
       const out = `${OUT}/${target.slug}-${vp.tag}.webp`;
-      await sharp(png).webp({ quality: 82 }).toFile(out);
-      const meta = await sharp(png).metadata();
+      // Downscaled to roughly twice the largest size either shot is ever
+      // displayed at. They were captured at 2x a 1440 viewport — 2880px
+      // intrinsic for a slot that never exceeds 550px — which Lighthouse
+      // scored as the largest-contentful-paint problem on /work.
+      const maxW = vp.tag === 'desktop' ? 1200 : 300;
+      await sharp(png).resize({ width: maxW }).webp({ quality: 82 }).toFile(out);
+      const meta = await sharp(out).metadata();
       console.log(`  ${mapWarning ? '!' : '✓'} ${out}  ${meta.width}x${meta.height}`);
     } catch (err) {
       console.log(`  ✗ ${target.slug}-${vp.tag}: ${err.message.split('\n')[0]}`);

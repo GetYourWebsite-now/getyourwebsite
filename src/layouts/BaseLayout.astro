@@ -11,7 +11,7 @@ import Footer from '../components/Footer.astro';
 import BareHeader from '../components/BareHeader.astro';
 import BareFooter from '../components/BareFooter.astro';
 import { url } from '../data/url.js';
-import { HEADING_FONT, GOATCOUNTER_ID } from '../data/site.js';
+import { HEADING_FONT, GOATCOUNTER_ID, META_PIXEL_ID } from '../data/site.js';
 
 /**
  * The self-hosted heading faces. See HEADING_FONT in src/data/site.js — that
@@ -63,6 +63,28 @@ const fullTitle = title === 'GetYourWebsite'
 
 // Astro.site comes from SITE_URL in astro.config.mjs.
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com');
+
+// Safe on a static build: each page is rendered on its own, so pathname is
+// known at build time. (Astro.url.searchParams is NOT — see free-mock.astro.)
+const isThanks = Astro.url.pathname.replace(/\/$/, '').endsWith('/free-mock/thanks');
+
+// Built here rather than inline: a nested interpolation inside a template
+// literal inside a set:html attribute does not survive Astro's parser.
+const pixelSnippet = META_PIXEL_ID
+  ? [
+      "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?",
+      "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;",
+      "n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;",
+      "t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}",
+      "(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');",
+      `fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`,
+      isThanks ? "fbq('track','Lead');" : '',
+    ].join('')
+  : '';
+
+const pixelNoscript = META_PIXEL_ID
+  ? `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1"/>`
+  : '';
 const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
 
 ---
@@ -150,6 +172,26 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
           data-goatcounter={`https://${GOATCOUNTER_ID}.goatcounter.com/count`}
           src="//gc.zgo.at/count.js"
         />
+      )
+    }
+
+    <!-- Meta Pixel, only when META_PIXEL_ID is set. While it is empty this
+         block emits nothing — not a script, not a comment — so the privacy
+         page's "no advertising or tracking cookies" stays true by
+         construction rather than by anyone remembering. Turning it on is a
+         two-part change: the ID here AND the disclosure on /privacy.
+
+         The Lead event fires on the thank-you page only. That is the one
+         page you cannot reach without having submitted the form, so it is
+         the honest conversion signal; firing Lead on /free-mock itself
+         would count everyone who merely saw the ad land. -->
+
+    {
+      META_PIXEL_ID && (
+        <>
+          <script is:inline set:html={pixelSnippet}></script>
+          <noscript set:html={pixelNoscript}></noscript>
+        </>
       )
     }
 

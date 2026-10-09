@@ -297,8 +297,10 @@ async function capture({
   }
 
   const png = await page.screenshot({ clip, animations: 'disabled' });
-  await sharp(png).webp({ quality: 88 }).toFile(out);
-  const meta = await sharp(png).metadata();
+  // Same reasoning as tools/client-shots.mjs: twice the widest slot these
+  // are shown in, not whatever the 2x capture happened to produce.
+  await sharp(png).resize({ width: 1300, withoutEnlargement: true }).webp({ quality: 88 }).toFile(out);
+  const meta = await sharp(out).metadata();
   console.log(`  ✓ ${out}  ${meta.width}x${meta.height}`);
 
   await ctx.close();

@@ -152,10 +152,13 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
             <legend class="fieldset-legend">What are you after? <span class="req">*</span></legend>
             <div class="want__opts">
               <label class="radio-card">
-                <input type="radio" name="looking_for" value="Free mock" checked required />
+                <input type="radio" name="looking_for" value="Free mock" required />
                 <span>
                   <strong>A free mock</strong>
-                  <small>See what a homepage could look like, no commitment.</small>
+                  <small>
+                    Quicker through <a href={url('/free-mock')}>the free-mock form</a> —
+                    it asks for less.
+                  </small>
                 </span>
               </label>
               <label class="radio-card">
@@ -166,10 +169,10 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
                 </span>
               </label>
               <label class="radio-card">
-                <input type="radio" name="looking_for" value="Not sure yet" />
+                <input type="radio" name="looking_for" value="Something else" checked />
                 <span>
-                  <strong>Not sure yet</strong>
-                  <small>Ask us anything — we'll help you work it out.</small>
+                  <strong>Something else</strong>
+                  <small>An existing site, an unusual project, or a question.</small>
                 </span>
               </label>
             </div>

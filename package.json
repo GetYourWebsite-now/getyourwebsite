@@ -14,7 +14,8 @@
     "verify:voids": "node tools/voids.mjs",
     "verify:portal": "node tools/portal-sync.mjs",
     "shots:portal": "node tools/portal-shots.mjs",
-    "shots:clients": "node tools/client-shots.mjs"
+    "shots:clients": "node tools/client-shots.mjs",
+    "shots:og": "node tools/og.mjs"
   },
   "dependencies": {
     "astro": "^5.16.2"

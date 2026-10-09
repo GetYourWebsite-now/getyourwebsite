@@ -36,7 +36,7 @@ import { url } from '../data/url.js';
         {
           CLIENT_PROJECTS.map((project, i) => (
             <div class="cases__item" data-reveal>
-              <CaseStudy project={project} flip={i % 2 === 1} level={3} />
+              <CaseStudy project={project} flip={i % 2 === 1} level={3} priority={i === 0} />
             </div>
           ))
         }

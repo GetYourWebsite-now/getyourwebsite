@@ -85,7 +85,8 @@ pricing page and the home page teaser.
 
 1. Put the HTML at `public/techstore.html`.
 2. Save a screenshot to `public/shots/techstore.webp`.
-3. Add one object to the `PROJECTS` array in `src/data/site.js`.
+3. Add one object to the `PROJECTS` array in `src/data/site.js`, with
+   `kind: 'concept'`.
 
 The grid picks it up automatically.
 
@@ -93,77 +94,81 @@ The grid picks it up automatically.
 
 ## Design system
 
-> **Partly stale — rewritten in the redesign's final pass.** The palette is
-> now light-first with a single indigo accent and the type is Inter and
-> JetBrains Mono; the sections describing the old dark-section atmosphere and
-> the scroll hero have been removed, but the colour and type notes below
-> still describe the old design. `src/styles/global.css` is the accurate
-> source until they are rewritten.
+Everything visual is a token in `:root` at the top of `src/styles/global.css`.
+Change a token, not a page.
 
-Four colours and nothing else — white, black, silver and gold. They're defined
-at the top of `src/styles/global.css` along with a couple of derived colours
-that exist purely for contrast:
+**Surfaces.** Two light ones that alternate down a page (`--bg` white,
+`--bg-alt` grey) and one dark one (`--footer`) used only by the footer.
+`npm run verify` fails if a second dark surface appears, or if two sections
+with the same surface end up adjacent.
 
-| Token | Use |
-| --- | --- |
-| `--white` `--black` | backgrounds and text |
-| `--silver` `--silver-light` | secondary text and borders on dark |
-| `--gold` | the accent — CTAs and highlights only, kept rare on purpose |
-| `--ink-soft` | muted text on white (silver fails contrast there) |
-| `--gold-deep` | gold that's legible on white |
+**Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
+eyebrows. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
+4.64:1 against a 4.5 requirement — so `npm run verify:contrast` is
+load-bearing, not a formality.
 
-Every pairing meets WCAG AA. **Never put plain `--gold` text on white** — use
-`--gold-deep`.
+**One accent.** `--accent` (indigo) carries links, primary buttons, focus
+rings, the highlighted pricing tier and the live badge. If something needs
+to stand out and it is none of those, the answer is weight or whitespace.
 
-Type is Clash Display for headings, Work Sans for body and JetBrains Mono for
-labels and figures. The heading face is self-hosted from `public/fonts/`; the
-other two come from Google Fonts.
+**Gold is not an accent.** `--gold` is the brand mark and the free-mock
+badge. Nothing else, and never as text: it measures 1.65:1 on white.
 
-`HEADING_FONT` in `src/data/site.js` is the switch — `clash`, `cabinet`, `sora`
-or `outfit`. BaseLayout preloads the right file and points `--font-display` at
-it. Each face can also carry its own `track`, which overrides `--h-track`: a
-wider face has to be set tighter to hold the same line counts, and that belongs
-to the face rather than to the layout.
+**Lines.** `--line` is decorative and allowed to be faint. `--line-input` is
+the edge of an interactive control, and has to clear 3:1 on *both* light
+surfaces — WCAG 1.4.11. Using `--line` on an input is a real bug; the old
+site had exactly that at 1.4:1.
 
-Two tokens travel with the face: `--h-track` and `--h-word`. They are a pair
-and have to be tuned together — opening the word gaps widens every line, so the
-letters have to go tighter to pay for it. Clash Display runs at -0.055em with
-0.08em of word spacing.
+**No atmosphere.** No gradients, no glow, no glass, no bento, no mesh, no
+textures. Borders and whitespace separate things. The single shadow,
+`--shadow-shot`, lifts product screenshots and nothing else.
 
-**If you change the heading font, run `npm run verify:wraps`.** Swapping the
-face changes the width of every heading on the site, so "does it still look
-right" is a question about forty headings, not the one you happened to look at.
-It counts the line boxes for each and flags orphans — a line much shorter than
-the rest, anywhere in the heading — at desktop and mobile. Clash Display needed
-four adjustments to match Outfit's line counts, all recorded in the CSS next to
-the values: `--h-track` to -0.055em, `--t-h3` down from 1.6rem, the final CTA
-heading down from 3.4rem, and `--t-display`'s mobile end down so "Websites that
-are" stops breaking across two lines and orphaning "are".
+**Radii.** 8px cards, 6px buttons and inputs. Nothing larger.
 
-Sections alternate: `.section` for white and `.section--alt` for the grey
-surface. The footer is the only dark surface on the site, and `npm run verify`
-fails if a second one appears.
+### Type
 
-### Buttons
+Inter and JetBrains Mono, both self-hosted in `public/fonts/`. There is no
+Google Fonts request on this site.
 
-There is one button system, defined once in `global.css`. Use it — don't style
-a button inline, or the site drifts.
+Inter carries the `wght` and `opsz` axes in one file, so
+`font-optical-sizing: auto` gives display headlines and text-cut body copy
+from one 73KB download — which is why there is no separate display face.
+Never set `font-variation-settings` for `opsz`; it overrides that.
+
+Mono is for eyebrows, step numbers, the MOST POPULAR flag and the
+browser-frame URL. **Not** for prices: they are Inter with
+`font-variant-numeric: tabular-nums`, because mono figures read as a
+terminal readout rather than a number someone is being asked to pay.
+
+Note the Fontsource subset does not carry Inter's `cv*`/`ss*` tables, so
+character variants are no-ops and are deliberately not declared. `tnum`
+does work.
+
+`HEADING_FONT` in `src/data/site.js` can point headings at Clash Display,
+Cabinet Grotesk or Sora for comparison. **Run `npm run verify:wraps` after
+any change** — swapping the face changes the width of every heading on the
+site, which is a question about forty headings rather than the one you
+looked at.
+
+### Components
 
 | Class | Use |
 | --- | --- |
-| `.btn .btn--gold` | primary. One per screen; it's the thing we want clicked. |
-| `.btn .btn--ghost` | secondary, on a dark background |
-| `.btn .btn--outline` | secondary, on a light background |
-| `.link-arrow` | tertiary — a text link with a gold arrow |
+| `.btn .btn--primary` | the thing we want clicked; one per screen |
+| `.btn .btn--secondary` | the alternative next to it |
+| `.link-arrow` | tertiary — a text link with an arrow |
+| `.card` | a bordered box; no shadow, no hover lift |
+| `.shot` | a product screenshot, with the one shadow |
 
-Sizes are `.btn--sm`, nothing (medium), and `.btn--lg`.
+Sizes are `.btn--sm`, nothing (medium), `.btn--lg`. Hover is a colour change
+and nothing else — the old system had a ring, a sweep and a press ripple,
+and all three read as a template.
 
-The hover and press effects are space-themed: a dark "event horizon" ring
-tightens inward on hover, a lensing sweep crosses the secondary buttons, and
-pressing collapses a ring inward instead of the usual outward ripple. All of it
-is decoration — `src/scripts/buttons.js` never touches the click, and none of
-it runs under reduced motion, where the colour and focus changes carry the
-feedback on their own.
+Shared components worth knowing: `CaseStudy.astro` (full, `compact` and
+`thumb` variants, one set of facts), `WebsiteCompare.astro` (used by the
+home page and `/why-us`), `VersionTree.astro` (geometry lives in
+`src/data/version-tree.js` so the social card cannot drift from it),
+`TierCard`, `CarePlan`, `ComparisonTable`, `Faq`.
 
 ## Analytics
 
@@ -265,78 +270,57 @@ through the nav, the Our Work cards and the demo sandbox.
 
 ### The automated checks
 
-Most of the things that have broken on this site broke invisibly, so they're
-tests now rather than things to remember. They live in `tools/` and each one
-needs `npm run dev` running in another terminal.
+Most of what has broken on this site broke invisibly, so it is a test rather
+than something to remember. Each needs `npm run dev` in another terminal.
 
 ```bash
-npm run verify           # links, the demo flow, hero copy clearance, reduced
-                         # motion, the contact form, buttons, light surfaces
-npm run verify:contrast  # every text node on every page against the surface it
-                         # is actually painted on, plus button and form-control
-                         # edges against theirs (WCAG 1.4.3 and 1.4.11)
-npm run verify:wraps     # how every heading wraps at desktop and mobile
-npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank screen
-npm run verify:portal    # fails if the /demo sandbox has fallen behind the real portal
-npm run shots:portal     # regenerate the home page's client-portal screenshots
-npm run shots:teaser     # regenerate the /demo teaser image from the sandbox
+npm run verify           # links resolve · the demo sandbox flow end to end ·
+                         # reduced motion · the contact form · the button
+                         # system · light surfaces · the portal captures
+npm run verify:contrast  # every text node on every page against the surface
+                         # it is actually painted on, plus button and
+                         # form-control edges (WCAG 1.4.3 and 1.4.11)
+npm run verify:wraps     # how every heading wraps at 1440 and 390
+npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank
+                         # screen
+npm run verify:portal    # fails if /demo has fallen behind the real portal
 ```
 
-One note while the redesign is in flight: the sections of this README
-describing the old dark-section atmosphere, the four-colour palette and the
-scroll hero are stale, and are rewritten in the final pass. The hero,
-`tools/pacing.mjs`, `tools/ambient-shots.mjs`, `src/scripts/hero.js` and
-`src/scripts/ambient.js` are already gone.
+What each one has actually caught, so you know what you lose by skipping it:
+`verify` found a second dark surface and two adjacent same-surface sections;
+`verify:contrast` found an indigo button at 2.60:1 on the footer, a form
+border at 2.89:1, and our own sandbox chrome rendering near-white on light
+grey; `verify:wraps` found a headline breaking to three lines with the
+middle one orphaned.
 
-`npm run shots:portal` needs the client portal running locally — see the
-header of `tools/portal-shots.mjs`. It screenshots the real portal with seeded
-Rosa's Bakery data and no backend, so the pictures on the home page are of the
-product rather than of a mock-up of it.
+Regenerating things:
 
-`tools/shots.mjs` is a general screenshot harness if you want to eyeball
-something: `node tools/shots.mjs .shots "pricing=/pricing" "hero70=/@0.7"`, where
-`@0.7` scrubs the hero to 70% of its scroll.
-
-One thing to know before you trust a screenshot: a large WebP can report
-`complete` with a real `naturalWidth` and still not be rasterised when a
-capture happens, so it shoots as an empty box that looks exactly like a broken
-image path. `tools/shots.mjs` awaits `img.decode()` on everything first. If you
-write your own capture, do the same.
+```bash
+npm run shots:portal     # the client-portal screenshots on the home page.
+                         # Needs the portal running — see the header of
+                         # tools/portal-shots.mjs
+npm run shots:clients    # the ARK and ChemEd screenshots, from the live sites
+npm run shots:og         # public/og.png, the social card
+node tools/shots.mjs .shots "home=/" "work=/work"   # ad-hoc page captures
+node tools/font-compare.mjs                          # heading faces side by side
+```
 
 ### And by hand
 
 Turn on "Reduce motion" in **System Settings → Accessibility → Display** and
-reload the home page: the version tree in the hero should be fully drawn and
+reload the home page: the hero's version tree should be fully drawn and
 completely still, with the Live badge on Online orders. `npm run verify`
-checks that nothing is animating, but not that what's left looks deliberate.
+checks that nothing is animating; it cannot check that what is left looks
+deliberate.
 
-Lighthouse: run it against `npm run preview`, not the dev server. Expect 100 on
-accessibility, best practices and SEO, and 0ms Total Blocking Time, everywhere.
-Performance is 100 on most pages but bounces between about 95 and 100 on `/demo`
-and `/benefits` depending on which image wins the Largest Contentful Paint race —
-that's measurement noise, so don't chase a three-point drop on one run.
+Check the pricing comparison table at 390px by eye. It swaps to a stacked
+list there, and it must never scroll sideways.
 
----
-
-## `[EDIT]` placeholders — the list of things left for you
-
-Search the project for `[EDIT]` to find them all. In priority order:
-
-| # | What | Where |
-| --- | --- | --- |
-| 1 | **Your email address** — the form destination and the footer address | `CONTACT_EMAIL` in `src/data/site.js` |
-| 2 | **Web3Forms access key** — until this is set the contact form cannot send | `WEB3FORMS_KEY` in `src/data/site.js` |
-| 3 | **Final tier prices** — currently $150 / $350 / $600+ | `TIERS` in `src/data/site.js` |
-| 4 | **Social links** — add them or leave the array empty to hide the row | `SOCIALS` in `src/data/site.js` |
-| 5 | **Your names, school and town** | `src/pages/why-us.astro`, in the `.story__names` block |
-| 6 | **Team photo** — drop it at `public/team.webp`, then swap the placeholder for an `<img>` | `src/pages/why-us.astro` and `src/pages/index.astro` |
-| 7 | **A real statistic with a source**, if you want one on Benefits | `src/pages/benefits.astro`, the `.stat-slot` block |
-| 8 | **Custom domain** when you buy one | see "Deploying" above |
-| 9 | **GoatCounter site code**, if you want visitor stats | `GOATCOUNTER_ID` in `src/data/site.js` |
-| 10 | **Portal URL** — turns the "Sign in" link on. Left empty because `portal.getyourwebsite.now` answered HTTP 522 on every attempt | `PORTAL_URL` in `src/data/site.js` |
-| 11 | **Maintenance plan price**, quoted in the hosting/domain FAQ | `src/pages/pricing.astro` |
-
----
+One thing to know before you trust a screenshot: a large WebP can report
+`complete` with a real `naturalWidth` and still not be rasterised when the
+capture happens, so it shoots as an empty box that looks exactly like a
+broken path. `tools/shots.mjs` awaits `img.decode()` first. Do the same in
+anything you write.
 
 ## Notes and known limitations
 
@@ -349,11 +333,11 @@ Search the project for `[EDIT]` to find them all. In priority order:
   fullscreen only for `<video>`. Both paths are covered by `npm run verify`.
 - **The demo sandbox mirrors our client app** (`GetYourWebsiteAdmin`,
   `development` branch, the **`client/`** workspace — not `frontend/`, which is
-  the staff admin app). After changing the sandbox, run `npm run shots:teaser`:
-  the home page shows a picture of it (`public/shots/demo.webp`) and that
-  picture is not generated by the build, so it can silently go stale — it did
-  exactly that when the portal moved from mint to gold. `npm run verify`
-  checks the asset's accent hue and fails if it's from the old design.
+  the staff admin app). After changing the sandbox, run `npm run shots:portal`:
+  the home page shows pictures of the real portal, and they are not generated
+  by the build, so they can silently go stale — they did exactly that when the
+  portal moved from mint to gold. `npm run verify` checks the accent hue of
+  `public/shots/portal-my-website.webp` and fails if it is from the old design.
   If that app's screens change, update
   `src/components/DemoSandbox.astro` and `src/scripts/demo.js` to match — the
   whole value of that page is that it's honest.

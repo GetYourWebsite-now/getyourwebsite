@@ -394,6 +394,21 @@ export const HEADING_FONT = 'inter';
 export const GOATCOUNTER_ID = '';
 
 /**
+ * Meta (Facebook) Pixel ID, for the ad campaigns that will point at
+ * /free-mock.
+ *
+ * Leave empty until the privacy page's "Cookies and tracking" section has
+ * been updated to disclose the Meta Pixel. Setting this without that edit
+ * makes the privacy page false.
+ *
+ * While it is empty BaseLayout emits nothing at all — no script tag, no
+ * comment, no connection to facebook.net. When it is set it loads the pixel
+ * on every page, fires PageView, and fires a Lead event on
+ * /free-mock/thanks.
+ */
+export const META_PIXEL_ID = '';
+
+/**
  * The client portal, for the "Sign in" link in the header and footer.
  *
  * Unset. Set it to https://portal.getyourwebsite.now once that subdomain is

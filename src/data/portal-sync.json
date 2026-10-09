@@ -1,8 +1,13 @@
 {
-  "_comment": "The client/ commit this demo sandbox was built against. tools/portal-sync.mjs compares it to the live development head and fails when the demo falls behind. Update it in the same commit that updates the sandbox \u2014 never on its own.",
+  "_comment": "The client/ commit this demo sandbox was built against. tools/portal-sync.mjs compares it to the live development head and fails when the demo falls behind. Update it in the same commit that updates the sandbox \u2014 or, if client/ moved without changing anything a client can see, in the same commit as a note saying which commits were reviewed and why they do not affect the sandbox. Never re-pin without doing one of those two things.",
   "repo": "GetYourWebsite-now/GetYourWebsiteAdmin",
   "branch": "development",
   "path": "client",
-  "commit": "bae549922f99339ffe50e8b69d0a9c90e17d7f86",
-  "date": "2026-09-10"
+  "commit": "76ed30d",
+  "date": "2026-10-09",
+  "reviewed": {
+    "through": "76ed30d",
+    "on": "2026-10-09",
+    "note": "Three commits touched client/ since bae549922 and none changes a client-facing surface, so the sandbox was not rebuilt: 676076d is client/BACKLOG.md only; 5bca2cf adds DevRollbackInitialPanel, which RealSiteTab renders only behind site.devTools.enabled; d8ac01a is one line inside that same dev-only panel."
+  }
 }

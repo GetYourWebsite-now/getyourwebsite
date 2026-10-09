@@ -46,9 +46,18 @@ interface Props {
   thumb?: boolean;
   /** /work puts these under the page h1, so they are h2 there and h3 on home. */
   level?: 2 | 3;
+  /**
+   * Set on the first case study of a page, where its screenshot is the
+   * largest thing above the fold and therefore the LCP element. Lazy-loading
+   * the LCP image costs about a second: the browser cannot start fetching it
+   * until layout has run. Lighthouse scored /work at 94 for exactly this.
+   */
+  priority?: boolean;
 }
 
-const { project: p, flip = false, compact = false, thumb = false, level = 2 } = Astro.props;
+const {
+  project: p, flip = false, compact = false, thumb = false, level = 2, priority = false,
+} = Astro.props;
 const Heading = `h${level}`;
 // A raw hostname in monospace reads as a dev artefact rather than a case
 // study — and ChemEd's Railway URL is 48 characters of it. Projects carry
@@ -64,7 +73,8 @@ const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').repl
         alt={`The ${p.name} website on a desktop screen.`}
         width="1440"
         height="900"
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
         decoding="async"
       />
     </div>
