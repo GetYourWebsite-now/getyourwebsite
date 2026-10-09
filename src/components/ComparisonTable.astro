@@ -117,7 +117,8 @@ const cellClass = (v: unknown) =>
   .cmp__price {
     display: block;
     margin-top: 0.15rem;
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
     font-size: var(--t-small);
     font-weight: 500;
     color: var(--ink-muted);
@@ -136,8 +137,10 @@ const cellClass = (v: unknown) =>
     width: 22%;
   }
 
-  .is-yes { color: var(--accent); font-family: var(--font-mono); }
-  .is-no { color: var(--ink-muted); font-family: var(--font-mono); }
+  /* Plain glyphs in Inter. The mono check sat on a wider advance than the
+     dash and the two columns of marks never lined up with each other. */
+  .is-yes { color: var(--accent); }
+  .is-no { color: var(--ink-muted); }
 
   /* The highlighted column, marked the same way the card is. */
   .cmp__table .is-popular { background: var(--accent-soft); }
@@ -171,7 +174,7 @@ const cellClass = (v: unknown) =>
   }
 
   .cmp__card-price {
-    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
     font-weight: 500;
     color: var(--ink-muted);
   }

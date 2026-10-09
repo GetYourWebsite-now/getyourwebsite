@@ -103,10 +103,11 @@ import { CARE_PLAN as care } from '../data/site.js';
     align-items: baseline;
     gap: 0.45rem;
     flex-wrap: wrap;
-    font-family: var(--font-mono);
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
     font-size: clamp(2.5rem, 2.1rem + 1.4vw, 3rem);
     font-weight: 600;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.03em;
     line-height: 1;
     color: var(--ink);
   }
@@ -160,7 +161,6 @@ import { CARE_PLAN as care } from '../data/site.js';
     position: absolute;
     left: 0;
     color: var(--accent);
-    font-family: var(--font-mono);
   }
 
   @media (min-width: 760px) {

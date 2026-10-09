@@ -60,15 +60,12 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
   {
     !condensed && tier.examples && tier.examples.length > 0 && (
       <p class="tier__example">
-        Built this way:{' '}
-        {tier.examples.map((ex, i) => (
-          <>
-            {i > 0 && ', '}
-            <a href={ex.href} target="_blank" rel="noopener noreferrer">
-              {ex.name}
-              <span class="sr-only"> (opens in a new tab)</span>
-            </a>
-          </>
+        <span class="tier__example-label">Built this way:</span>
+        {tier.examples.map((ex) => (
+          <a class="tier__example-link" href={ex.href} target="_blank" rel="noopener noreferrer">
+            {ex.name}
+            <span class="sr-only"> (opens in a new tab)</span>
+          </a>
         ))}
       </p>
     )
@@ -130,10 +127,17 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     align-items: baseline;
     gap: 0.45rem;
     flex-wrap: wrap;
-    font-family: var(--font-mono);
+    /* Inter, not the mono. A price is the largest thing on the card and
+       mono figures read as a terminal readout rather than a number someone
+       is being asked to pay. tabular-nums keeps the three cards' digits on
+       the same rhythm, which is the only thing mono was buying here.
+       Tracking is looser than the mono's -0.045em because that value was
+       tuned for a monospaced face and is cramped on Inter. */
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
     font-size: clamp(2.5rem, 2.1rem + 1.4vw, 3rem);
     font-weight: 600;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.03em;
     line-height: 1;
     color: var(--ink);
     margin-bottom: var(--s-3);
@@ -173,13 +177,25 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     position: absolute;
     left: 0;
     color: var(--accent);
-    font-family: var(--font-mono);
   }
 
   .tier__example {
     margin-top: auto;
     padding-top: var(--s-3);
     font-size: var(--t-small);
+    color: var(--ink-muted);
+  }
+
+  /* The separator is a middle dot rather than a comma, and that is a
+     whitespace decision as much as a typographic one: the newline between
+     two sibling <a>s in the template collapses to a space, so a comma
+     renders as " , ". A dot wants a space on either side anyway. */
+  .tier__example-link + .tier__example-link::before {
+    content: '·';
+    /* inline-block so the separator sits outside the link's underline —
+       text-decoration does not propagate into an atomic inline box. */
+    display: inline-block;
+    margin-inline: 0.3em;
     color: var(--ink-muted);
   }
 
