@@ -19,7 +19,7 @@ are the record of how it was done, in order.
 | `ee0e59c` | **Phase 4.** Real prices, Care plan, comparison table, pricing FAQ, and `/free-mock` — the ad landing page, with no nav and no way out but the form. |
 | `6e0ff5b` | **Pricing figures** set in Inter with tabular numerals rather than mono. |
 | `6dafd77` | **Phase 5.** `/benefits` merged into `/why-us` and deleted (with a redirect); Why Us rewritten so the student fact argues for the care, not the discount; one reply-time promise site-wide. |
-| `(this)` | **Phase 6.** New social card, Meta Pixel slot (off), Lighthouse, docs. |
+| `b07fe6f` | **Phase 6.** New social card, Meta Pixel slot (off), Lighthouse, docs. |
 
 ## Open items — things that need a human decision
 
