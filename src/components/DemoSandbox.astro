@@ -4,18 +4,21 @@
  *
  * Source of truth: GetYourWebsite-now/GetYourWebsiteAdmin, the `client/`
  * workspace, at the commit and branch in src/data/portal-sync.json (currently
- * the light re-skin, 154e61f on client/light-reskin). Specifically:
+ * the light re-skin, eec3c79 on client/light-reskin, rebased onto
+ * development). Specifically:
  *   client/src/layouts/Dashboard.jsx      the sidebar groups, topbar, tab set
  *   client/src/pages/ExploreTab.jsx       the dashboard: KPIs, quick actions,
  *                                         and how the recommendations are chosen
  *   client/src/pages/RealSiteTab.jsx      "My website" + the version list
  *   client/src/pages/VersionTreeTab.jsx   the branching lineage view
  *   client/src/components/HostingPanel.jsx     custom domain + hosted version
+ *   client/src/components/ThemeColorsPanel.jsx theme colors on "My website"
  *   client/src/components/AttachImagesPanel.jsx  photos onto placeholders
  *   client/src/pages/MockSiteTab.jsx      "Free preview"
  *   client/src/pages/AssetsTab.jsx        the image library
  *   client/src/components/ReviseSitePanel.jsx  the change-request workspace
  *   client/src/clientRevision.js          friendly labels + the prompt format
+ *   client/src/siteOnboarding.js          COLOR_ROLES and the hex helpers
  *   client/src/index.css                  every token and class name below
  *
  * NOTE ON DIRECTORIES: the portal is `client/`, not `frontend/`. `frontend/` is
@@ -35,9 +38,12 @@
  *     real (see c220e34 in the portal); the verification round trip is not.
  *   - Hosting a version updates the demo, but there is no domain behind it.
  *   - Domain search is not faked — a domain is shown already connected.
+ *   - Saving theme colors always succeeds and recolors this version's preview
+ *     inside the demo only; "Open" still opens the original sample page. The
+ *     real panel appears only for sites that ship an editable theme.js.
  *   - It mirrors the light re-skin (client/light-reskin), which clients do not
- *     have yet, and not ThemeColorsPanel (93607c9, on development only). Drop
- *     this line from both lists once the re-skin is merged and re-pinned.
+ *     have yet. Drop this line from both lists once the re-skin is merged and
+ *     portal-sync.json is pinned back to development.
  *   - Account and Billing are deliberately omitted. They exist in the real
  *     portal (plan, revision credits, registrant contact, Stripe checkout) but
  *     say nothing about what the product does, and a mock payment screen is the
@@ -260,6 +266,28 @@
                 Only approved versions can go live. Empty photo slots are checked first.
               </p>
               <ul class="portal-version-items" data-hosted></ul>
+            </section>
+
+            <!-- Theme colors. client/src/components/ThemeColorsPanel.jsx: the
+                 seven roles from siteOnboarding.js's COLOR_ROLES, a picker and a
+                 hex field each, one Save. The real panel renders only for an
+                 approved version whose site ships theme.js; Rosa's does. The
+                 button is portal-cta, this sandbox's stand-in for btn--gold. -->
+            <section class="dash-resource-panel client-theme-panel" data-theme-panel>
+              <div class="dash-resource-toolbar">
+                <div>
+                  <h3 class="dash-section-title">Theme colors</h3>
+                  <p class="dash-section-lead">
+                    These colors live in theme.js. Saving updates that file for this version.
+                    A live site can keep the previous colors for a few minutes.
+                  </p>
+                </div>
+              </div>
+              <div class="client-onboarding-palette__grid" data-theme-fields></div>
+              <div class="client-theme-panel__actions">
+                <button type="button" class="portal-cta portal-cta--sm" data-theme-save>Save colors</button>
+                <span class="client-theme-panel__saved" data-theme-saved hidden>Saved</span>
+              </div>
             </section>
 
             <section class="portal-version-list">
@@ -490,7 +518,7 @@
      ══════════════════════════════════════════════════════════════════════ */
 
   .sandbox {
-    /* client/src/index.css :root, light re-skin (154e61f). Most of these are
+    /* client/src/index.css :root, light re-skin (eec3c79). Most of these are
        the global palette already; the ones below are the portal's own names
        for things global.css calls something else. */
     --bg-soft: var(--bg-alt);
@@ -1007,6 +1035,92 @@
 
   .sandbox .dash-pill--live { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
   .sandbox .dash-pill--wait { border-color: var(--line); background: var(--bg-alt); color: var(--muted); }
+
+  /* Theme colors — ThemeColorsPanel.jsx, styles from client/src/index.css at
+     the pinned commit. */
+
+  .sandbox .dash-resource-panel {
+    margin-top: 1.25rem;
+    padding: 1.2rem 1.25rem 1.25rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+
+  .sandbox .dash-resource-toolbar {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .sandbox .client-onboarding-palette__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14.5rem, 1fr));
+    gap: 0.75rem;
+  }
+
+  .sandbox .client-onboarding-color-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+    padding: 0.75rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: var(--p-radius);
+    background: var(--bg-alt);
+  }
+
+  .sandbox .client-onboarding-color-field__label { font-weight: 600; color: var(--ink); font-size: 0.92rem; }
+
+  .sandbox .client-onboarding-color-field__row {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-top: 0.35rem;
+  }
+
+  .sandbox .client-onboarding-color-field__row input[type='color'] {
+    width: 2.4rem;
+    height: 2.1rem;
+    padding: 0;
+    border: 1px solid var(--line-input);
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .sandbox .client-onboarding-color-field__row input[type='text'] {
+    flex: 1;
+    min-width: 0;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid var(--line-input);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-size: 0.88rem;
+  }
+
+  .sandbox .client-onboarding-color-field__row input[type='text'][aria-invalid='true'] { border-color: var(--danger); }
+
+  /* The real lead runs the panel's width; global.css caps <p> at 60ch. */
+  .sandbox .client-theme-panel .dash-section-lead { max-width: none; }
+
+  .sandbox .client-theme-panel__actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+  .sandbox .client-theme-panel__saved { color: var(--ink-soft); font-size: 0.9rem; }
+  .sandbox .client-theme-panel__saved[hidden] { display: none; }
+
+  /* The real panel's button is btn btn--gold at its default size. */
+  .sandbox .portal-cta.portal-cta--sm {
+    margin-top: 0;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 1.55rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+  }
 
   /* Version tree — depth left to right, siblings fanned on Y ---------------- */
 

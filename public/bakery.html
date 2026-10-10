@@ -6,7 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root{--cream:#fbf5ec;--ink:#3a2a20;--terra:#c0633a;--terra-d:#9c4a26;--gold:#d99a52;--line:#e7dccb}
+  :root{--cream:#fbf5ec;--card:#fff;--ink:#3a2a20;--muted:#8a7565;--terra:#c0633a;--terra-d:#9c4a26;--gold:#d99a52;--line:#e7dccb}
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{background:var(--cream);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.7}
@@ -33,16 +33,16 @@
   .hero p{font-size:19px;margin:24px 0 32px;max-width:46ch;color:#6b5546}
   .hero-img{position:relative}
   .hero-img img{border-radius:18px 18px 120px 18px;height:520px;width:100%;object-fit:cover;box-shadow:0 30px 60px rgba(120,70,40,.22)}
-  .badge{position:absolute;left:-26px;bottom:40px;background:#fff;border-radius:16px;padding:18px 22px;box-shadow:0 16px 36px rgba(120,70,40,.18);text-align:center}
+  .badge{position:absolute;left:-26px;bottom:40px;background:var(--card);border-radius:16px;padding:18px 22px;box-shadow:0 16px 36px rgba(120,70,40,.18);text-align:center}
   .badge b{font-family:'Playfair Display';font-size:30px;display:block;color:var(--terra-d)}
-  .badge span{font-size:13px;color:#8a7565}
+  .badge span{font-size:13px;color:var(--muted)}
   .strip{background:var(--terra-d);color:#fbe7d6;text-align:center;padding:16px;font-family:'Playfair Display';font-style:italic;font-size:20px}
   section{padding:90px 0}
   .sec-head{text-align:center;max-width:640px;margin:0 auto 56px}
   .sec-head h2{font-size:clamp(30px,5vw,46px);font-weight:700}
-  .sec-head p{color:#8a7565;font-size:17px;margin-top:14px}
+  .sec-head p{color:var(--muted);font-size:17px;margin-top:14px}
   .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
-  .item{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(120,70,40,.08);transition:.3s}
+  .item{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(120,70,40,.08);transition:.3s}
   .item:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(120,70,40,.16)}
   .item .ph{height:210px;overflow:hidden}
   .item .ph img{height:100%;width:100%;object-fit:cover;transition:.5s}
@@ -50,8 +50,8 @@
   .item .body{padding:22px 24px}
   .item h3{font-size:22px;display:flex;justify-content:space-between;align-items:baseline}
   .item h3 .pr{font-family:'Inter';font-size:16px;color:var(--terra)}
-  .item p{color:#8a7565;font-size:14.5px;margin-top:6px}
-  .visit{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;background:#fff;border-radius:24px;padding:50px;box-shadow:0 16px 40px rgba(120,70,40,.1)}
+  .item p{color:var(--muted);font-size:14.5px;margin-top:6px}
+  .visit{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;background:var(--card);border-radius:24px;padding:50px;box-shadow:0 16px 40px rgba(120,70,40,.1)}
   .visit img{border-radius:16px;height:360px;width:100%;object-fit:cover}
   .visit h2{font-size:40px;font-weight:700;margin-bottom:18px}
   .hours{list-style:none;margin:22px 0}
@@ -105,7 +105,7 @@
     <img src="https://loremflickr.com/700/600/bakery,cafe,interior?lock=31" alt="Inside the bakery">
     <div>
       <h2>Come say good morning</h2>
-      <p style="color:#8a7565">Pull up a stool, grab a coffee, and watch the bakers do their thing. We're on the corner, and we'd love to see you.</p>
+      <p style="color:var(--muted)">Pull up a stool, grab a coffee, and watch the bakers do their thing. We're on the corner, and we'd love to see you.</p>
       <ul class="hours">
         <li><span>Mon – Fri</span><b>6:00am – 5:00pm</b></li>
         <li><span>Saturday</span><b>7:00am – 4:00pm</b></li>

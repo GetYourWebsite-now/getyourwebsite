@@ -147,6 +147,16 @@ const ROUTES = [
   [/\/api\/client\/mock-websites$/, { websites: [] }],
   // `remainingRevisions` matters: without it the Request changes button
   // renders as "Request changes (undefined left)".
+  // Approved versions that ship theme.js get the Theme colors panel on My
+  // website (ThemeColorsPanel.jsx). Rosa's palette is the sample bakery
+  // page's, the same seven values the /demo sandbox starts from.
+  [/\/api\/client\/sites\/versions\/[^/]+\/theme$/, {
+    available: true,
+    colors: {
+      background: '#FBF5EC', surface: '#FFFFFF', text: '#3A2A20', muted: '#8A7565',
+      primary: '#C0633A', accent: '#D99A52', border: '#E7DCCB',
+    },
+  }],
   [/\/api\/client\/billing\/status$/, {
     plan: 'maintenance', status: 'active', paid: true, remainingRevisions: 1,
   }],
@@ -177,9 +187,7 @@ const browser = await chromium.launch({
  * pixel offsets. A full-tab screenshot shrunk into a column on the home page
  * reads as "a dark admin thing"; the panel on its own reads as the feature.
  *
- * Note the portal has no light theme — index.css sets --bg: var(--black) and
- * there is no prefers-color-scheme block, no data-theme and no toggle — so
- * these are dark by necessity, not by choice.
+ * Since the light re-skin these are light, on the same tokens as this site.
  */
 async function capture({
   width, height, out, tab = 'explore', clip, cropTo,
@@ -308,8 +316,8 @@ async function capture({
 
 console.log('\nCapturing the client portal (seeded, no backend, no network)\n');
 // The hero's version tree is DRAWN now (src/components/VersionTree.astro),
-// not screenshotted: the portal is dark-only and its node labels came out at
-// about 5px once a 2880px capture was scaled into a 600px column. The two
+// not screenshotted: the portal's node labels came out at about 5px once a
+// 2880px capture was scaled into a 600px column. The two
 // captures that fed it, and the fullscreen-map and fork-crop machinery that
 // existed only for them, went with it. Everything below is still a real
 // screenshot of a real surface.

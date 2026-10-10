@@ -3,11 +3,11 @@
   "repo": "GetYourWebsite-now/GetYourWebsiteAdmin",
   "branch": "client/light-reskin",
   "path": "client",
-  "commit": "154e61f",
+  "commit": "eec3c79",
   "date": "2026-10-10",
   "reviewed": {
-    "through": "154e61f",
+    "through": "eec3c79",
     "on": "2026-10-10",
-    "note": "Temporarily pinned to client/light-reskin, not development: the sandbox mirrors the light re-skin, which is not merged yet. The re-skin branched from 8fab80f, and development has four newer commits touching client/ that it does not contain: 5bca2cf and d8ac01a (the development-only rollback panel, never shown to clients), 676076d (BACKLOG.md only), and 93607c9 (onboarding page definitions and ThemeColorsPanel on My website) — the last one IS client-facing and is not in the sandbox. Once the re-skin is rebased onto development and merged, set branch back to development, pin the merge commit, and rebuild the sandbox to include ThemeColorsPanel."
+    "note": "Pinned to client/light-reskin, which is now the light re-skin rebased onto development (10a3bc2), so it contains everything development has in client/. The sandbox was rebuilt for the one client-facing addition from that rebase: 93607c9's ThemeColorsPanel on My website. 93607c9's other half, defining pages during onboarding, runs before a site is generated and Rosa's site already exists, so the sandbox has no onboarding to show it in. 5bca2cf and d8ac01a are the development-only rollback panel; 676076d is BACKLOG.md. The re-skin is still unmerged: once it lands on development, set branch back to development and pin the merge commit."
   }
 }
