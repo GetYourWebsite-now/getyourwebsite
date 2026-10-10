@@ -1,0 +1,113 @@
+---
+/**
+ * Connecting a custom domain from the client portal.
+ *
+ * The domain field types rosasbakery.com, Connect is pressed, it is
+ * registered in the business's name, and the site is live on it over HTTPS.
+ * That is HostingPanel's flow — search, pick, connect — with the waiting
+ * taken out. Rosa's Bakery is the same fiction the /demo sandbox is seeded
+ * with, and the sandbox shows the same domain already connected.
+ *
+ * The condition is in the drawing, not left to the copy around it: a custom
+ * domain comes with the Care plan. CLAUDE.md, rule 1.
+ *
+ * 7s loop. The base styles are the final frame (see anim.css).
+ */
+import './anim.css';
+
+interface Props {
+  label?: string;
+}
+const {
+  label = 'Type the domain you want and press Connect. We register it in your business name, and your site goes live on it with a padlock. Custom domains come with the Care plan.',
+} = Astro.props;
+---
+
+<figure class="anim dc" data-anim>
+  <svg viewBox="0 0 400 236" role="presentation" aria-hidden="true" focusable="false">
+
+    <rect class="a-card" x="8" y="8" width="384" height="220" rx="8"></rect>
+    <g transform="translate(0 -24)">
+
+    <rect class="a-field" x="28" y="54" width="250" height="42" rx="6"></rect>
+    <text class="dc__domain dc__type" x="42" y="80">rosasbakery.com</text>
+    <rect class="a-btn" x="288" y="54" width="84" height="42" rx="6"></rect>
+    <text class="a-btn-t dc__btn-t" x="330" y="79">Connect</text>
+
+    <g class="dc__check">
+      <circle cx="39" cy="126" r="10" fill="var(--accent)"></circle>
+      <path d="M34 126 L38 130 L45 122" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      <text class="a-t" x="58" y="131">Registered to Rosa's Bakery</text>
+    </g>
+
+    <g class="dc__live">
+      <rect x="28" y="154" width="344" height="42" rx="6" fill="var(--bg-alt)" stroke="var(--line)"></rect>
+      <g class="dc__lock">
+        <rect x="40" y="172" width="13" height="10" rx="2" fill="var(--ink)"></rect>
+        <path d="M42.5 172 V168.5 a4 4 0 0 1 8 0 V172" fill="none" stroke="var(--ink)" stroke-width="1.8"></path>
+      </g>
+      <text class="dc__url" x="62" y="180">https://rosasbakery.com</text>
+      <g class="dc__pill">
+        <rect class="a-pill" x="318" y="166" width="42" height="18" rx="9"></rect>
+        <text class="a-pill-t" x="339" y="178.5">Live</text>
+      </g>
+    </g>
+
+    <text class="a-cond" x="28" y="230">With the Care plan</text>
+    </g>
+
+    <circle class="a-ring dc__ring" cx="330" cy="51" r="16"></circle>
+  </svg>
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>
+
+<style>
+  .dc__domain { font-family: var(--font-body); font-size: 16px; font-weight: 500; fill: var(--ink); }
+  .dc__url { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-soft); }
+
+  /* Final frame: typed, registered, live. */
+  .dc__ring { opacity: 0; transform-box: fill-box; transform-origin: center; }
+
+  .dc * { animation-duration: 7s; animation-iteration-count: infinite; animation-timing-function: var(--ease); animation-fill-mode: both; }
+
+  .dc__type  { animation-name: dc-type; animation-timing-function: steps(15, end); }
+  .dc__ring  { animation-name: dc-ring; }
+  .dc__check { animation-name: dc-check; }
+  .dc__live  { animation-name: dc-live; }
+  .dc__lock  { animation-name: dc-lock; }
+  .dc__pill  { animation-name: dc-pill; }
+
+  /* Typing 0.6–2.1s, Connect at 2.4s, registered at 2.9s, the address row
+     at 3.6s, padlock 4s, Live 4.4s, hold to 6.4s. */
+  @keyframes dc-type {
+    0%, 8%     { clip-path: inset(0 100% 0 0); }
+    30%, 100%  { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes dc-ring {
+    0%, 34%   { opacity: 0; transform: scale(0.4); }
+    35%       { opacity: 1; transform: scale(0.6); }
+    40%, 100% { opacity: 0; transform: scale(1.3); }
+  }
+  @keyframes dc-check {
+    0%, 40%   { opacity: 0; transform: translateY(4px); }
+    43%, 92%  { opacity: 1; transform: none; }
+    97%, 100% { opacity: 0; transform: none; }
+  }
+  @keyframes dc-live {
+    0%, 50%   { opacity: 0; transform: translateY(4px); }
+    53%, 92%  { opacity: 1; transform: none; }
+    97%, 100% { opacity: 0; transform: none; }
+  }
+  @keyframes dc-lock {
+    0%, 56%   { opacity: 0; }
+    58%, 100% { opacity: 1; }
+  }
+  @keyframes dc-pill {
+    0%, 62%   { opacity: 0; transform: translateY(3px); }
+    65%, 100% { opacity: 1; transform: none; }
+  }
+</style>
+
+<script>
+  import '../../scripts/anim.js';
+</script>

@@ -1,0 +1,173 @@
+---
+/**
+ * "Click the paragraph" — how a change request is made in the client portal.
+ *
+ * A cursor clicks a heading on a drawn page; the heading gets the portal's
+ * indigo selection outline; a note box takes "Make this warmer" and sends;
+ * a new version appears on a mini version tree, first "In review" and then
+ * "Approved".
+ *
+ * Every step is one the product really has: ReviseSitePanel's click-to-select
+ * picker, a note per selection, one send. The In review beat is deliberate —
+ * a person reviews every change before it reaches the client, and a node that
+ * jumped straight to Approved would be drawing a product we do not have.
+ *
+ * 8s loop. The base styles are the final frame (see anim.css).
+ */
+import './anim.css';
+
+interface Props {
+  /** Visible description under the drawing; also what a screen reader gets. */
+  label?: string;
+}
+const {
+  label = 'Click a heading on your site, write what you want changed, and send it. A person builds the new version and reviews it before it is approved.',
+} = Astro.props;
+---
+
+<figure class="anim ctc" data-anim>
+  <svg viewBox="0 0 400 260" role="presentation" aria-hidden="true" focusable="false">
+
+    <!-- The client's site -->
+    <rect class="a-card" x="8" y="8" width="236" height="244" rx="8"></rect>
+    <circle class="a-dot" cx="22" cy="21" r="3"></circle>
+    <circle class="a-dot" cx="32" cy="21" r="3"></circle>
+    <circle class="a-dot" cx="42" cy="21" r="3"></circle>
+    <line x1="8" y1="34" x2="244" y2="34" stroke="var(--line)"></line>
+
+    <text class="a-h" x="26" y="64">Fresh bread daily</text>
+    <rect class="ctc__outline" x="18" y="44" width="170" height="28" rx="4"></rect>
+    <rect class="a-skel" x="26" y="84" width="196" height="6" rx="3"></rect>
+    <rect class="a-skel" x="26" y="96" width="150" height="6" rx="3"></rect>
+    <rect class="a-well" x="26" y="114" width="196" height="84" rx="4"></rect>
+    <path d="M44 186 L84 146 L112 172 L132 156 L176 186 Z" fill="var(--line)"></path>
+    <circle cx="186" cy="134" r="9" fill="var(--line)"></circle>
+    <rect class="a-skel" x="26" y="212" width="74" height="22" rx="4"></rect>
+
+    <!-- The note -->
+    <g class="ctc__note">
+      <rect class="a-field" x="96" y="78" width="176" height="64" rx="6"></rect>
+      <text class="a-t ctc__type" x="108" y="104">Make this warmer</text>
+      <g class="ctc__send">
+        <rect class="a-btn" x="206" y="114" width="56" height="20" rx="4"></rect>
+        <text class="a-btn-t ctc__send-a" x="234" y="128">Send</text>
+        <text class="a-btn-t ctc__send-b" x="234" y="128">Sent</text>
+      </g>
+    </g>
+
+    <!-- The mini version tree -->
+    <rect class="a-card" x="290" y="58" width="102" height="46" rx="6"></rect>
+    <text class="a-t" x="300" y="77">Version 3</text>
+    <rect class="a-pill" x="300" y="84" width="30" height="14" rx="7"></rect>
+    <text class="a-pill-t" x="315" y="94.5">Live</text>
+    <path class="a-edge ctc__edge" d="M341 104 L341 146" pathLength="1"></path>
+    <g class="ctc__node">
+      <rect class="a-field" x="290" y="146" width="102" height="48" rx="6" stroke="var(--accent)"></rect>
+      <text class="a-t" x="300" y="165">Version 4</text>
+      <g class="ctc__wait">
+        <rect class="a-chip--wait" x="300" y="172" width="68" height="17" rx="8.5"></rect>
+        <text class="a-chip-t--wait" x="308" y="184">In review</text>
+      </g>
+      <g class="ctc__ok">
+        <rect class="a-chip" x="300" y="172" width="70" height="17" rx="8.5"></rect>
+        <text class="a-chip-t" x="307" y="184">Approved</text>
+      </g>
+    </g>
+
+    <!-- Pointer -->
+    <circle class="a-ring ctc__ring1" cx="100" cy="58" r="12"></circle>
+    <circle class="a-ring ctc__ring2" cx="234" cy="124" r="12"></circle>
+    <path class="a-cursor ctc__cursor" d="M0 0 L0 17 L4.6 12.6 L7.6 19.4 L10.4 18.2 L7.4 11.6 L13.4 11.6 Z"></path>
+  </svg>
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>
+
+<style>
+  /* Final frame: selected, typed, sent, approved. */
+  .ctc__outline { fill: none; stroke: var(--accent); stroke-width: 2; }
+  .ctc__send-a { opacity: 0; }
+  .ctc__wait { opacity: 0; }
+  .ctc__cursor, .ctc__ring1, .ctc__ring2 { opacity: 0; }
+  .ctc__ring1, .ctc__ring2 { transform-box: fill-box; transform-origin: center; }
+
+  .ctc * { animation-duration: 8s; animation-iteration-count: infinite; animation-timing-function: var(--ease); animation-fill-mode: both; }
+
+  .ctc__cursor   { animation-name: ctc-cursor; }
+  .ctc__ring1    { animation-name: ctc-ring1; }
+  .ctc__ring2    { animation-name: ctc-ring2; }
+  .ctc__outline  { animation-name: ctc-outline; }
+  .ctc__note     { animation-name: ctc-note; }
+  .ctc__type     { animation-name: ctc-type; animation-timing-function: steps(16, end); }
+  .ctc__send-a   { animation-name: ctc-send-a; }
+  .ctc__send-b   { animation-name: ctc-send-b; }
+  .ctc__edge     { animation-name: ctc-edge; stroke-dasharray: 1; }
+  .ctc__node     { animation-name: ctc-node; }
+  .ctc__wait     { animation-name: ctc-wait; }
+  .ctc__ok       { animation-name: ctc-ok; }
+
+  /* 0.8s in, the pointer travels to the heading and clicks (2s), then to Send
+     (4s). The node arrives at 4.9s in review and is approved at 6s; the
+     picture holds until 7.4s and clears for the next loop. */
+  @keyframes ctc-cursor {
+    0%, 6%   { opacity: 0; transform: translate(232px, 232px); }
+    10%      { opacity: 1; transform: translate(232px, 232px); }
+    24%, 32% { opacity: 1; transform: translate(100px, 58px); }
+    48%, 54% { opacity: 1; transform: translate(234px, 124px); }
+    60%, 100% { opacity: 0; transform: translate(234px, 124px); }
+  }
+  @keyframes ctc-ring1 {
+    0%, 24% { opacity: 0; transform: scale(0.4); }
+    25%     { opacity: 1; transform: scale(0.6); }
+    30%, 100% { opacity: 0; transform: scale(1.3); }
+  }
+  @keyframes ctc-ring2 {
+    0%, 50% { opacity: 0; transform: scale(0.4); }
+    51%     { opacity: 1; transform: scale(0.6); }
+    56%, 100% { opacity: 0; transform: scale(1.3); }
+  }
+  @keyframes ctc-outline {
+    0%, 25%   { opacity: 0; }
+    26%, 92%  { opacity: 1; }
+    97%, 100% { opacity: 0; }
+  }
+  @keyframes ctc-note {
+    0%, 30%   { opacity: 0; transform: translateY(4px); }
+    33%, 92%  { opacity: 1; transform: none; }
+    97%, 100% { opacity: 0; transform: none; }
+  }
+  /* Typed: the text is uncovered left to right in letter-sized steps. */
+  @keyframes ctc-type {
+    0%, 34%    { clip-path: inset(0 100% 0 0); }
+    46%, 100%  { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes ctc-send-a {
+    0%, 52%   { opacity: 1; }
+    53%, 100% { opacity: 0; }
+  }
+  @keyframes ctc-send-b {
+    0%, 52%   { opacity: 0; }
+    53%, 100% { opacity: 1; }
+  }
+  @keyframes ctc-edge {
+    0%, 56%   { stroke-dashoffset: 1; opacity: 1; }
+    62%, 92%  { stroke-dashoffset: 0; opacity: 1; }
+    97%, 100% { stroke-dashoffset: 0; opacity: 0; }
+  }
+  @keyframes ctc-node {
+    0%, 60%   { opacity: 0; transform: translateY(6px); }
+    63%, 92%  { opacity: 1; transform: none; }
+    97%, 100% { opacity: 0; transform: none; }
+  }
+  @keyframes ctc-wait {
+    0%, 73%   { opacity: 1; }
+    75%, 100% { opacity: 0; }
+  }
+  @keyframes ctc-ok {
+    0%, 73%   { opacity: 0; }
+    75%, 100% { opacity: 1; }
+  }
+</style>
+
+<script>
+  import '../../scripts/anim.js';
+</script>

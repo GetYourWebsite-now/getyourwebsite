@@ -11,15 +11,14 @@
      4. Layout        .shell, .section, .stack helpers
      5. Components    buttons, cards, badges, eyebrows, forms
      6. Reveal        scroll-reveal animation (see src/scripts/reveal.js)
-     7. Legacy        tokens the hero and the demo chrome still reference
 
    The house style, in four rules:
 
      1. Light first. Sections alternate --bg and --bg-alt. The footer is the
         only dark surface on the site.
      2. One accent. --accent (deep indigo) carries links, primary buttons,
-        focus rings and the highlighted pricing tier. --gold is the brand mark
-        and the free-mock badge, nothing else, and never text.
+        focus rings and the highlighted pricing tier. --gold is the free-mock
+        badge, nothing else, and never text.
      3. No atmosphere. No gradients, no glow, no stars, no glassmorphism, no
         mesh. Borders and whitespace do the separating. The one shadow on the
         site lifts product screenshots off the page.
@@ -73,14 +72,6 @@
    src/data/site.js and `node tools/font-compare.mjs`. A @font-face is lazy:
    the browser downloads a face only when something actually uses it, so
    having these declared costs nothing while Inter is selected. */
-
-@font-face {
-  font-family: 'Clash Display';
-  src: url('/fonts/ClashDisplay-Variable.woff2') format('woff2');
-  font-weight: 200 700;
-  font-style: normal;
-  font-display: swap;
-}
 
 @font-face {
   font-family: 'Cabinet Grotesk';
@@ -142,7 +133,8 @@
   --accent-hover: #2531b0;
   --accent-soft: rgba(47, 61, 214, 0.08);
 
-  /* The brand mark and the free-mock badge. Nothing else, and NEVER as text:
+  /* The free-mock badge. Nothing else — not even the logo since Phase 7 — and
+     NEVER as text:
      --gold on white measures 1.65:1. On the badge it is a background with
      --ink on top, which measures 11.96:1. */
   --gold: #f5c24b;
@@ -166,7 +158,7 @@
      BaseLayout overrides this alongside --font-display when an alternate face
      is selected, so switching fonts carries its own tracking with it.
      Inter at -0.025em: the opsz axis has already closed the headline up, so
-     it needs far less manual tracking than Clash Display did at -0.055em. */
+     it needs far less manual tracking than the old display face did. */
   --h-track: -0.025em;
   --h-word: normal;
 
@@ -198,7 +190,8 @@
   --s-6: 3rem;
   --s-7: 4rem;
   --s-8: 6rem;
-  --section-y: clamp(4rem, 2.6rem + 6.4vw, 7.5rem);
+  /* 64px on a phone, 112px at 1440 — Stripe's spacing, Phase 7. */
+  --section-y: clamp(4rem, 2.886rem + 4.571vw, 7rem);
 
   --shell: 1200px;   /* max content width */
   --shell-narrow: 780px;
@@ -423,7 +416,10 @@ a:hover { color: var(--accent-hover); }
   margin-top: var(--s-4);
 }
 
-.section-head--center .lead { margin-inline: auto; }
+/* Every child, not just the lead: paragraphs carry a 60ch measure, and at the
+   eyebrow's small mono size that is narrower than the head — so an eyebrow
+   centred its text inside a box that was itself pinned left. */
+.section-head--center > * { margin-inline: auto; }
 
 /* ── 5. Components ─────────────────────────────────────────────────────── */
 
@@ -610,7 +606,7 @@ a:hover { color: var(--accent-hover); }
   background: var(--bg);
 }
 
-/* The free-mock badge — the only place gold appears outside the brand mark.
+/* The free-mock badge — the only place gold appears on the site.
    Gold as a background with --ink on top measures 11.96:1. */
 .badge--gold {
   background: var(--gold);
@@ -736,34 +732,6 @@ a:hover { color: var(--accent-hover); }
 html.no-js [data-reveal] {
   opacity: 1;
   transform: none;
-}
-
-/* ── 7. Legacy tokens — being removed ──────────────────────────────────────
-
-   The last of the old white/black/silver/gold palette. Nothing in the
-   redesigned site uses these. The only thing still holding them up is the
-   /demo sandbox CHROME — the dark frame drawn around the portal lookalike in
-   src/components/DemoSandbox.astro — which is re-themed in its own pass.
-
-   The sandbox ITSELF is not affected either way: it declares its own complete
-   token set on `.sandbox`, which is deliberate, because the portal keeps the
-   portal's tokens (CLAUDE.md). Only the frame around it leans on these.
-
-   Five more went when the scroll hero did (--gold-deep, --gold-soft,
-   --panel-2, --line-light, --shadow-light). Delete each remaining line as its
-   last reference goes; when the block is empty, delete the block. Do not add
-   anything to it. */
-:root {
-  --white: #ffffff;
-  --black: #0a0a0c;
-  --silver: #a9adb6;
-  --silver-light: #e6e7eb;
-  --gold-line: rgba(245, 194, 75, 0.32);
-  --panel: #101015;
-  --line-dark: rgba(230, 231, 235, 0.14);
-  --radius-lg: 12px;
-  --radius-pill: 999px;
-  --shadow-dark: 0 24px 60px rgba(0, 0, 0, 0.45);
 }
 
 /* ── Reduced motion ────────────────────────────────────────────────────── */

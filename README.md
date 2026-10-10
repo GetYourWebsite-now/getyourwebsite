@@ -144,8 +144,8 @@ Note the Fontsource subset does not carry Inter's `cv*`/`ss*` tables, so
 character variants are no-ops and are deliberately not declared. `tnum`
 does work.
 
-`HEADING_FONT` in `src/data/site.js` can point headings at Clash Display,
-Cabinet Grotesk or Sora for comparison. **Run `npm run verify:wraps` after
+`HEADING_FONT` in `src/data/site.js` can point headings at Cabinet Grotesk
+or Sora for comparison. **Run `npm run verify:wraps` after
 any change** — swapping the face changes the width of every heading on the
 site, which is a question about forty headings rather than the one you
 looked at.
@@ -276,7 +276,10 @@ than something to remember. Each needs `npm run dev` in another terminal.
 ```bash
 npm run verify           # links resolve · the demo sandbox flow end to end ·
                          # reduced motion · the contact form · the button
-                         # system · light surfaces · the portal captures
+                         # system · light surfaces · the portal captures ·
+                         # then the word budget (verify:words)
+npm run verify:words     # visible words in <main> per page, against a budget:
+                         # home and how-it-works 550, why-us 600
 npm run verify:contrast  # every text node on every page against the surface
                          # it is actually painted on, plus button and
                          # form-control edges (WCAG 1.4.3 and 1.4.11)
@@ -300,7 +303,11 @@ npm run shots:portal     # the client-portal screenshots on the home page.
                          # Needs the portal running — see the header of
                          # tools/portal-shots.mjs
 npm run shots:clients    # the ARK and ChemEd screenshots, from the live sites
-npm run shots:og         # public/og.png, the social card
+npm run shots:og         # public/og.png, the social card, plus favicon.svg
+                         # and apple-touch-icon.png — all from
+                         # public/brand/mark.svg
+npm run record           # .shots/phase7/home.webm: 6s of the home page
+                         # scrolling, for judging the animations
 node tools/shots.mjs .shots "home=/" "work=/work"   # ad-hoc page captures
 node tools/font-compare.mjs                          # heading faces side by side
 ```
@@ -309,7 +316,8 @@ node tools/font-compare.mjs                          # heading faces side by sid
 
 Turn on "Reduce motion" in **System Settings → Accessibility → Display** and
 reload the home page: the hero's version tree should be fully drawn and
-completely still, with the Live badge on Online orders. `npm run verify`
+completely still, with the Live badge on Online orders. The four drawings
+in src/components/anim/ should each show their finished picture, still. `npm run verify`
 checks that nothing is animating; it cannot check that what is left looks
 deliberate.
 

@@ -1,0 +1,75 @@
+/* Shared by the drawn animations in this folder. Imported by each component,
+   bundled once.
+
+   The system is VersionTree.astro's: white cards on a --bg-alt well, --line
+   and --line-input strokes, Inter labels, and indigo for the one thing that
+   matters in each drawing. No shadows, no gradients, no glow.
+
+   Every animated element's BASE style is its final frame. The keyframes
+   carry it back to the start and forward again; reduced motion turns the
+   animations off and is left holding the finished picture. */
+
+.anim {
+  margin: 0;
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--s-3);
+}
+
+.anim svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 500px;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+/* On a phone the well's padding is width the labels need. */
+@media (max-width: 520px) {
+  .anim:not(.anim--bare) { padding: var(--s-1) 0.25rem; }
+}
+
+/* For a drawing that sits straight on the section, with no well around it. */
+.anim--bare { background: none; border: 0; padding: 0; border-radius: 0; }
+
+/* Until the observer has seen it, an animation waits on its first frame. */
+:root[data-anim-ready] .anim:not(.is-playing) * { animation-play-state: paused !important; }
+
+/* Drawing primitives --------------------------------------------------- */
+
+.anim .a-card { fill: var(--bg); stroke: var(--line); stroke-width: 1; }
+.anim .a-field { fill: var(--bg); stroke: var(--line-input); stroke-width: 1; }
+.anim .a-well { fill: var(--bg-alt); }
+.anim .a-skel { fill: var(--line); }
+.anim .a-dot { fill: #d2d5db; }
+.anim .a-edge { fill: none; stroke: var(--ink-muted); stroke-width: 1.5; stroke-linecap: round; }
+
+.anim text { font-family: var(--font-body); }
+.anim .a-h { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; fill: var(--ink); }
+.anim .a-t { font-size: 13px; font-weight: 600; fill: var(--ink); }
+.anim .a-m { font-size: 13px; fill: var(--ink-muted); }
+.anim .a-mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; fill: var(--ink-muted); }
+/* A condition drawn into the picture (the Care plan on DomainConnect) is
+   content, not decoration: body ink, never the faint caption grey. */
+.anim .a-cond { font-size: 13px; font-weight: 500; fill: var(--ink-soft); }
+
+.anim .a-btn { fill: var(--accent); }
+.anim .a-btn-t { font-size: 13px; font-weight: 600; fill: #fff; text-anchor: middle; }
+.anim .a-pill { fill: var(--accent); }
+.anim .a-pill-t { font-size: 11px; font-weight: 600; letter-spacing: 0.02em; fill: #fff; text-anchor: middle; }
+.anim .a-chip { fill: var(--accent-soft); }
+.anim .a-chip-t { font-size: 12px; font-weight: 600; fill: var(--accent); }
+.anim .a-chip--wait { fill: var(--bg-alt); stroke: var(--line); }
+.anim .a-chip-t--wait { font-size: 12px; font-weight: 600; fill: var(--ink-muted); }
+
+.anim .a-cursor { fill: var(--ink); stroke: #fff; stroke-width: 1; stroke-linejoin: round; }
+.anim .a-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+
+/* Reduced motion: the finished picture, still. */
+@media (prefers-reduced-motion: reduce) {
+  .anim *,
+  .anim *::before,
+  .anim *::after { animation: none !important; }
+}

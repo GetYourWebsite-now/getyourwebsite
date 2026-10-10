@@ -1,6 +1,6 @@
 ---
 /**
- * One build tier. Used twice — condensed on the home teaser, in full on
+ * One build tier. Used twice — as a teaser on the home page, in full on
  * /pricing — and both read the same entry in TIERS, so a price can only be
  * wrong in one place.
  *
@@ -22,12 +22,16 @@ interface Props {
     features: string[];
     examples?: { name: string; href: string }[];
   };
-  /** Home page version: tagline and a short feature list, no examples. */
+  /** A short feature list, no examples. */
   condensed?: boolean;
+  /** Home page version: name, price and tagline only. The features live on
+      /pricing; the home page's word budget (tools/words.mjs) has no room for
+      three lists, and one click away is where someone comparing tiers is. */
+  teaser?: boolean;
   reveal?: boolean;
 }
 
-const { tier, condensed = false, reveal = false } = Astro.props;
+const { tier, condensed = false, teaser = false, reveal = false } = Astro.props;
 
 // Custom is scoped per project, so "Start with a free mock" is the wrong
 // first step for it — that conversation starts with the project.
@@ -39,7 +43,7 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
 ---
 
 <article
-  class:list={['tier', { 'tier--popular': tier.popular }]}
+  class:list={['tier', { 'tier--popular': tier.popular, 'tier--teaser': teaser }]}
   data-reveal={reveal ? '' : undefined}
 >
   {tier.popular && <span class="tier__flag">Most popular</span>}
@@ -53,12 +57,14 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     <p class="tier__tagline">{tier.tagline}</p>
   </header>
 
-  <ul class="tier__features">
-    {features.map((f) => <li>{f}</li>)}
-  </ul>
+  {!teaser && (
+    <ul class="tier__features">
+      {features.map((f) => <li>{f}</li>)}
+    </ul>
+  )}
 
   {
-    !condensed && tier.examples && tier.examples.length > 0 && (
+    !condensed && !teaser && tier.examples && tier.examples.length > 0 && (
       <p class="tier__example">
         <span class="tier__example-label">Built this way:</span>
         {/* The anchor is on one line because a newline inside it becomes a
@@ -72,12 +78,14 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     )
   }
 
-  <a
-    class:list={['btn', tier.popular ? 'btn--primary' : 'btn--secondary', 'tier__cta']}
-    href={url(ctaHref)}
-  >
-    {ctaLabel}
-  </a>
+  {!teaser && (
+    <a
+      class:list={['btn', tier.popular ? 'btn--primary' : 'btn--secondary', 'tier__cta']}
+      href={url(ctaHref)}
+    >
+      {ctaLabel}
+    </a>
+  )}
 </article>
 
 <style>
@@ -117,6 +125,7 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
   }
 
   .tier__head { margin-bottom: var(--s-4); }
+  .tier--teaser .tier__head { margin-bottom: 0; }
 
   .tier__name {
     font-size: 1.125rem;

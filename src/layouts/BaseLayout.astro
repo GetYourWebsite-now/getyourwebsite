@@ -27,15 +27,9 @@ const HEADING_FACES = {
   inter: { family: 'Inter', file: null, track: '-0.025em' },
 
   // Kept selectable for comparison only — `node tools/font-compare.mjs`.
-  // `track` overrides --h-track: a wider face has to be set tighter to hold
-  // the same line counts. These two values are a pair and have to be tuned
-  // together, because opening the word gaps widens every line.
-  clash: {
-    family: 'Clash Display',
-    file: 'ClashDisplay-Variable.woff2',
-    track: '-0.055em',
-    word: '0.08em',
-  },
+  // A face can carry its own `track` (overrides --h-track) and `word`
+  // (overrides --h-word): a wider face has to be set tighter to hold the
+  // same line counts.
   cabinet: { family: 'Cabinet Grotesk', file: 'CabinetGrotesk-Variable.woff2' },
   sora: { family: 'Sora', file: 'Sora-Variable.woff2' },
 };

@@ -361,11 +361,10 @@ export const PRICING_FAQ = [
  *               rather than by being a different family. That restraint is
  *               the point: one grotesque, set well, is what the fintech sites
  *               this design follows actually do.
- *   'clash'   — Clash Display, self-hosted (Fontshare, ITF Free Font License)
  *   'cabinet' — Cabinet Grotesk, self-hosted (Fontshare, ITF Free Font License)
  *   'sora'    — Sora, self-hosted (Google Fonts, SIL Open Font License 1.1)
  *
- * The three alternatives are kept for comparison only. Changing this line is
+ * The two alternatives are kept for comparison only. Changing this line is
  * the whole switch: BaseLayout preloads the right file and points
  * `--font-display` at it, and every heading follows. Each face can carry its
  * own `track`, because a wider face has to be set tighter to hold the same

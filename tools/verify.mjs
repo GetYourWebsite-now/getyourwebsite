@@ -13,6 +13,8 @@
  *      sections alternate
  *   7  the static captures of the portal aren't from a previous design
  *
+ * `npm run verify` also runs tools/words.mjs, the per-page word budget.
+ *
  * Needs a dev server on :4321.
  */
 import { chromium } from 'playwright';
@@ -591,62 +593,62 @@ repeats.length === 0
 
 // ── 7. The portal captures on the home page are current ───────────────────
 // The platform section shows pictures of a component that lives in another
-// repo, so they can drift out of date without anything failing. They did
-// once: the portal was redesigned from mint to gold and the picture kept
-// showing the old one.
+// repo, so they can drift out of date without anything failing. They have
+// twice: mint to gold, and gold to the light re-skin.
 //
-// Hue is the tell. The old portal's accent was mint (#3dd6a5, hue ~160) and
-// the current one is gold (#f5c24b, hue ~44), so a capture from the wrong
-// era is obvious from the pixels without knowing anything about layout.
+// The portal has had three looks — dark with a mint accent, dark with gold,
+// and (since 154e61f) light with indigo — so the capture's own pixels say
+// which era it is from. Brightness separates light from dark: the light
+// capture averages ~246 luminance, the gold one ~26. Hue separates the
+// accents: whatever colour there is should be indigo (#2f3dd6, hue ~234),
+// with no gold (~44) or mint (~160) in it.
 //
 // Scoped to portal-my-website.webp deliberately. It is pure portal chrome,
-// so its hue signal is clean; portal-assets.webp is mostly photographs of a
-// bakery, which are warm enough to swamp the measurement either way. The
-// older target, shots/demo.webp, went with `shots:teaser` — the home page
-// section that displayed it was replaced in Phase 2 and nothing rendered it
-// any more, so the check was guarding an image no visitor could see.
+// so its signal is clean; portal-assets.webp is mostly sample photographs,
+// which would swamp both measurements.
 console.log('\n[7] Portal captures are current');
 {
   const PORTAL_SHOTS = ['public/shots/portal-my-website.webp'];
 
-  const hueCounts = async (file) => {
+  const measure = async (file) => {
     const { data, info } = await sharp(file).raw().toBuffer({ resolveWithObject: true });
-    let mint = 0;
+    let lum = 0;
+    let n = 0;
+    let indigo = 0;
     let gold = 0;
-    let hued = 0;
+    let mint = 0;
     for (let i = 0; i < data.length; i += info.channels * 7) {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
+      lum += 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      n++;
       const mx = Math.max(r, g, b);
       const mn = Math.min(r, g, b);
-      // Skip near-black and near-grey: the portal is mostly both, and
-      // neither has a meaningful hue.
+      // Near-black and near-grey have no meaningful hue.
       if (mx < 60 || mx - mn < 30) continue;
       let h;
       if (mx === r) h = 60 * ((((g - b) / (mx - mn)) % 6 + 6) % 6);
       else if (mx === g) h = 60 * ((b - r) / (mx - mn) + 2);
       else h = 60 * ((r - g) / (mx - mn) + 4);
-      hued++;
-      if (h >= 120 && h <= 190) mint++;
+      if (h >= 215 && h <= 255) indigo++;
       if (h >= 30 && h <= 60) gold++;
+      if (h >= 120 && h <= 190) mint++;
     }
-    return { mint, gold, hued };
+    return { light: lum / n, indigo, gold, mint };
   };
 
   for (const file of PORTAL_SHOTS) {
-    const { mint, gold, hued } = await hueCounts(file);
-    const line = `${file} — ${gold} gold px, ${mint} mint px, of ${hued} with a hue`;
-    // Proportional, not an absolute pixel count. The old floor of 200 was
-    // calibrated against a full-tab capture; the first tighter crop sampled
-    // fewer pixels and failed a picture that was plainly gold and had not a
-    // single mint pixel in it. A share of the hued pixels survives a crop.
-    if (gold >= Math.max(25, hued * 0.02) && gold > mint * 3) {
-      pass(`${line} (current gold portal)`);
+    const { light, indigo, gold, mint } = await measure(file);
+    const line = `${file} — mean luminance ${light.toFixed(0)}, ${indigo} indigo / ${gold} gold / ${mint} mint px`;
+    // Small absolute floors: the light portal spends its accent sparingly,
+    // so there are only a few dozen indigo pixels in a whole capture.
+    if (light > 200 && indigo >= 20 && gold + mint <= indigo * 0.1) {
+      pass(`${line} (current light portal)`);
     } else {
       fail(
-        `${line} — this looks like a capture of the pre-rebuild mint portal. ` +
-          `Regenerate it with \`npm run shots:portal\`.`
+        `${line} — this looks like a capture of an earlier, dark portal. ` +
+          `Regenerate it with \`npm run shots:portal\` against client/ at the pinned commit.`
       );
     }
   }

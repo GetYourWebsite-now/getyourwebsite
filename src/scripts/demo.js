@@ -501,8 +501,20 @@ function init(root) {
         : live
           ? 'Live now'
           : `Approved ${fmtDate(x.approvedAt)}`;
+      // The portal marks the hosted node with a solid indigo Live pill.
+      if (live) {
+        const pill = document.createElement('span');
+        pill.className = 'vtree-card__live';
+        pill.textContent = 'Live';
+        card.appendChild(pill);
+      }
       el.vtree.appendChild(card);
     });
+
+    // The lineage of the live version — every edge from the root down to it —
+    // is drawn in the accent, the way the portal lights the selected path.
+    const lit = new Set();
+    for (let n = state.hosting.hostedVersion; byN.has(n); n = byN.get(n).parent) lit.add(n);
 
     // Edges.
     //
@@ -531,7 +543,7 @@ function init(root) {
             `M${x1},${par.y} C${mid},${par.y} ${mid},${x.y} ${x2},${x.y}`
           );
           path.setAttribute('fill', 'none');
-          path.setAttribute('stroke', 'rgba(230,231,235,0.28)');
+          path.setAttribute('class', `vtree-edge${lit.has(x.n) ? ' is-lit' : ''}`);
           // Non-scaling so the curve keeps an even weight despite the stretched
           // aspect ratio — without it the line thins horizontally and thickens
           // vertically.
@@ -550,13 +562,14 @@ function init(root) {
     list.forEach((v) => {
       const li = document.createElement('li');
       li.className = 'portal-version-item';
+      // RealSiteTab's markup: the pill sits beside the title, as
+      // `dash-pill dash-pill--wait` — grey, because nothing is approved yet.
       li.innerHTML = `
         <div>
-          <div class="portal-version-name"></div>
+          <div class="portal-version-name"><span></span> <span class="dash-pill dash-pill--wait">In review</span></div>
           <div class="portal-meta"></div>
-        </div>
-        <span class="portal-status">In review</span>`;
-      li.querySelector('.portal-version-name').textContent = `Version ${v.versionNumber}`;
+        </div>`;
+      li.querySelector('.portal-version-name span').textContent = `Version ${v.versionNumber}`;
       li.querySelector('.portal-meta').textContent =
         `Sent ${fmtDate(v.sentAt)} · we build it, then approve it`;
       el.pending.appendChild(li);
@@ -587,7 +600,7 @@ function init(root) {
       name.textContent = `Version ${v.versionNumber}${v.label ? ` · ${v.label}` : ''}`;
       if (live) {
         const pill = document.createElement('span');
-        pill.className = 'dash-pill';
+        pill.className = 'dash-pill dash-pill--live';
         pill.textContent = 'Live';
         name.appendChild(pill);
       }

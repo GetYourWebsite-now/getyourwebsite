@@ -2,8 +2,9 @@
 /**
  * A sandboxed lookalike of the real GetYourWebsite client portal.
  *
- * Source of truth: GetYourWebsite-now/GetYourWebsiteAdmin, branch `development`,
- * the `client/` workspace. Specifically:
+ * Source of truth: GetYourWebsite-now/GetYourWebsiteAdmin, the `client/`
+ * workspace, at the commit and branch in src/data/portal-sync.json (currently
+ * the light re-skin, 154e61f on client/light-reskin). Specifically:
  *   client/src/layouts/Dashboard.jsx      the sidebar groups, topbar, tab set
  *   client/src/pages/ExploreTab.jsx       the dashboard: KPIs, quick actions,
  *                                         and how the recommendations are chosen
@@ -34,15 +35,19 @@
  *     real (see c220e34 in the portal); the verification round trip is not.
  *   - Hosting a version updates the demo, but there is no domain behind it.
  *   - Domain search is not faked — a domain is shown already connected.
+ *   - It mirrors the light re-skin (client/light-reskin), which clients do not
+ *     have yet, and not ThemeColorsPanel (93607c9, on development only). Drop
+ *     this line from both lists once the re-skin is merged and re-pinned.
  *   - Account and Billing are deliberately omitted. They exist in the real
  *     portal (plan, revision credits, registrant contact, Stripe checkout) but
  *     say nothing about what the product does, and a mock payment screen is the
  *     last thing a credibility demo should contain.
  *
- * The portal used to be dark slate and mint. It was redesigned onto gold-on-
- * black, and its token block now says outright that it mirrors this marketing
- * site — so the palette below is our four colours under the portal's own names,
- * not a foreign theme being quarantined.
+ * The portal has been dark slate and mint, then gold-on-black. Since the light
+ * re-skin it is on this site's tokens outright — white cards on a grey page,
+ * one indigo accent, Inter — so the sandbox no longer overrides the palette at
+ * all. .sandbox only adds the few names the portal uses that global.css does
+ * not (--surface, --muted, --line-strong and so on).
  */
 ---
 
@@ -69,13 +74,10 @@
       <aside class="client-sidebar" aria-label="Client portal">
         <div class="client-sidebar-brand">
           <span class="client-wordmark">
-            <svg class="client-wordmark__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <circle cx="16" cy="16" r="7" fill="var(--gold)"></circle>
-              <circle cx="12.5" cy="13" r="6" fill="var(--black)" opacity="0.35"></circle>
-              <ellipse
-                cx="16" cy="16" rx="14.2" ry="5.4"
-                stroke="var(--gold)" stroke-width="1.6" opacity="0.75"
-                transform="rotate(-28 16 16)"></ellipse>
+            <svg class="client-wordmark__mark" viewBox="0 0 64 64" aria-hidden="true">
+              <path d="M32 2 L58 17 L58 47 L32 62 L6 47 L6 17 Z" fill="var(--accent)"></path>
+              <rect x="18" y="18" width="18" height="18" fill="var(--bg)"></rect>
+              <rect x="28" y="28" width="18" height="18" fill="var(--bg)"></rect>
             </svg>
             <span class="client-wordmark__text">GetYourWebsite</span>
           </span>
@@ -479,41 +481,33 @@
   /* ══════════════════════════════════════════════════════════════════════
      Portal styles.
 
-     Ported from client/src/index.css on the `development` branch, trimmed to
-     the classes this demo actually uses.
-
-     The portal was redesigned onto gold-on-black, and its own token block now
-     opens with a comment saying it mirrors this marketing site. So these are
-     no longer a foreign palette being quarantined — they are the same four
-     colours, aliased to the names the portal's classes use. The .sandbox scope
-     stays because the portal's radii, type sizes and spacing are its own.
+     Ported from client/src/index.css at the pinned commit (the light
+     re-skin), trimmed to the classes this demo actually uses. Colours are the
+     re-skin's, rule for rule. The .sandbox scope stays because the portal's
+     radii, type sizes and spacing are its own.
 
      If the real portal's design changes, this is the block to update.
      ══════════════════════════════════════════════════════════════════════ */
 
   .sandbox {
-    /* Same values as client/src/index.css :root */
-    --black: #0a0a0c;
-    --gold: #f5c24b;
-    --gold-soft: rgba(245, 194, 75, 0.12);
-    --gold-line: rgba(245, 194, 75, 0.32);
-
-    --bg: #0a0a0c;
-    --bg-soft: #101015;
-    --surface: #16161d;
-    --ink: #ffffff;
-    --ink-soft: #e6e7eb;
-    --muted: #a9adb6;
-    --line: rgba(230, 231, 235, 0.14);
-    --line-strong: rgba(230, 231, 235, 0.24);
-    --accent: #f5c24b;
-    --accent-hover: #f8cb5e;
-    --accent-ink: #0a0a0c;
-    --accent-soft: rgba(245, 194, 75, 0.12);
+    /* client/src/index.css :root, light re-skin (154e61f). Most of these are
+       the global palette already; the ones below are the portal's own names
+       for things global.css calls something else. */
+    --bg-soft: var(--bg-alt);
+    --surface: var(--bg);
+    --muted: var(--ink-muted);
+    --line-strong: #d2d5db;
+    --accent-line: rgba(47, 61, 214, 0.32);
+    --accent-ink: #ffffff;
+    --hover: rgba(10, 10, 12, 0.04);
+    --scrim: rgba(10, 10, 12, 0.4);
+    --danger: #b42318;
+    --danger-bg: #fef3f2;
     /* The portal's radii are tighter than ours — 6px, not 14px. */
     --p-radius: 6px;
     --p-font: var(--font-body);
-    --p-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    /* One soft shadow, for floating panels only. Cards use a --line border. */
+    --p-shadow: 0 8px 24px rgba(10, 10, 12, 0.08);
   }
 
   .sandbox * { box-sizing: border-box; }
@@ -523,9 +517,9 @@
     height: min(84vh, 860px);
     min-height: 560px;
     overflow: hidden;
-    border: 1px solid var(--line-dark);
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 0 0 var(--radius) var(--radius);
+    background: var(--bg-alt);
     font-family: var(--p-font);
     color: var(--ink);
   }
@@ -544,7 +538,7 @@
     width: 15.5rem;
     flex-shrink: 0;
     padding: 1.35rem 1rem 1.15rem;
-    background: rgba(10, 10, 12, 0.92);
+    background: var(--bg);
     border-right: 1px solid var(--line);
   }
 
@@ -558,7 +552,7 @@
   }
 
   .sandbox .client-wordmark { display: inline-flex; align-items: center; gap: 0.55rem; min-width: 0; }
-  .sandbox .client-wordmark__mark { width: 1.7rem; height: 1.7rem; flex-shrink: 0; }
+  .sandbox .client-wordmark__mark { width: 24px; height: 24px; flex-shrink: 0; }
 
   .sandbox .client-wordmark__text {
     font-family: var(--font-display);
@@ -591,7 +585,7 @@
     gap: 0.1rem;
     padding: 0.5rem 0.75rem;
     text-align: left;
-    color: var(--ink-soft);
+    color: var(--muted);
     font-size: 0.92rem;
     font-weight: 600;
     letter-spacing: -0.015em;
@@ -604,23 +598,23 @@
     font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: rgba(169, 173, 182, 0.72);
+    color: var(--muted);
   }
 
   .sandbox .client-nav-tab:hover {
     color: var(--ink);
-    background: rgba(230, 231, 235, 0.06);
-    border-color: rgba(230, 231, 235, 0.1);
+    background: var(--hover);
+    border-color: var(--line);
   }
 
   .sandbox .client-nav-tab.active {
-    color: var(--ink);
-    background: rgba(230, 231, 235, 0.1);
-    border-color: rgba(245, 194, 75, 0.28);
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-color: var(--accent);
     box-shadow: inset 3px 0 0 var(--accent);
   }
 
-  .sandbox .client-nav-tab.active .client-nav-tab__hint { color: rgba(245, 194, 75, 0.72); }
+  .sandbox .client-nav-tab.active .client-nav-tab__hint { color: var(--accent); }
 
   .sandbox .client-sidebar-footer {
     display: flex;
@@ -640,9 +634,9 @@
     width: 1.9rem;
     height: 1.9rem;
     flex-shrink: 0;
-    border-radius: 999px;
+    border-radius: 6px;
     background: var(--accent-soft);
-    border: 1px solid var(--gold-line);
+    border: 1px solid var(--accent-line);
     color: var(--accent);
     font-weight: 700;
     font-size: 0.85rem;
@@ -661,7 +655,7 @@
     gap: 1rem;
     min-height: 3.2rem;
     padding: 0.65rem 1.5rem;
-    background: rgba(10, 10, 12, 0.88);
+    background: var(--bg);
     border-bottom: 1px solid var(--line);
     flex-shrink: 0;
   }
@@ -685,20 +679,26 @@
     padding: 0.5rem 0.75rem;
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--muted);
-    border-radius: 7px;
-    transition: color 0.15s ease, background 0.15s ease;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line-input);
+    border-radius: 6px;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
   }
 
-  .sandbox .client-btn-ghost:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+  .sandbox .client-btn-ghost:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
 
   .sandbox .client-btn-soft {
     padding: 0.6rem 1rem;
     font-size: 0.95rem;
     font-weight: 800;
     color: var(--ink);
-    background: var(--bg-soft);
-    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    border: 1px solid var(--line-input);
     border-radius: var(--p-radius);
     transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
     flex-shrink: 0;
@@ -763,7 +763,7 @@
     padding: 1.1rem 1.15rem 1rem;
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    background: rgba(22, 22, 29, 0.92);
+    background: var(--bg);
   }
 
   .sandbox .dash-kpi-label {
@@ -805,13 +805,13 @@
     color: var(--ink);
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    background: rgba(10, 10, 12, 0.5);
+    background: var(--bg);
     transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
   }
 
   .sandbox .explore-quick-card:hover {
-    border-color: var(--gold-line);
-    background: rgba(245, 194, 75, 0.06);
+    border-color: var(--accent-line);
+    background: var(--bg);
     transform: translateY(-1px);
   }
 
@@ -823,8 +823,8 @@
     height: 1.75rem;
     margin-bottom: 0.35rem;
     border-radius: 5px;
-    border: 1px solid rgba(230, 231, 235, 0.16);
-    background: rgba(230, 231, 235, 0.05);
+    border: 1px solid var(--line);
+    background: var(--bg);
     color: var(--accent);
   }
 
@@ -841,7 +841,7 @@
     padding: 1.2rem 1.25rem 1.25rem;
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    background: rgba(22, 22, 29, 0.88);
+    background: var(--bg);
   }
 
   .sandbox .dash-section-title {
@@ -867,9 +867,9 @@
     align-items: center;
     gap: 0.9rem;
     padding: 0.95rem 1rem;
-    border: 1px solid rgba(230, 231, 235, 0.12);
+    border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    background: rgba(10, 10, 12, 0.35);
+    background: var(--bg);
   }
 
   .sandbox .explore-recommended-mark {
@@ -877,7 +877,7 @@
     height: 1.15rem;
     flex-shrink: 0;
     border-radius: 999px;
-    border: 1.5px solid rgba(230, 231, 235, 0.28);
+    border: 1.5px solid var(--line-input);
   }
 
   .sandbox .explore-recommended-copy { flex: 1; min-width: 0; }
@@ -919,7 +919,7 @@
     top: 0;
     bottom: 0;
     width: 1px;
-    background: rgba(230, 231, 235, 0.16);
+    background: var(--line-strong);
   }
 
   .sandbox .vtree-node:first-child::before { top: 50%; }
@@ -933,7 +933,7 @@
     width: 0.85rem;
     height: 0.85rem;
     border-radius: 999px;
-    border: 2px solid rgba(230, 231, 235, 0.3);
+    border: 2px solid var(--line-input);
     background: var(--bg);
   }
 
@@ -953,7 +953,7 @@
     text-transform: uppercase;
     color: var(--accent);
     background: var(--accent-soft);
-    border: 1px solid var(--gold-line);
+    border: 1px solid var(--accent-line);
     border-radius: 999px;
   }
 
@@ -967,7 +967,7 @@
     padding: 0.9rem 1rem;
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    background: rgba(10, 10, 12, 0.4);
+    background: var(--bg);
   }
 
   .sandbox .hosting-domain__name {
@@ -986,15 +986,15 @@
   .sandbox .hosting-hosted-title { margin-top: 1.4rem; }
 
   .sandbox .portal-version-item.is-live {
-    border-color: var(--gold-line);
-    background: rgba(245, 194, 75, 0.06);
+    border-color: var(--accent-line);
+    background: var(--bg);
   }
 
   .sandbox .dash-pill {
     margin-left: 0.5rem;
     padding: 0.12rem 0.5rem;
     border-radius: 999px;
-    border: 1px solid var(--gold-line);
+    border: 1px solid var(--accent-line);
     background: var(--accent-soft);
     color: var(--accent);
     font-family: var(--font-mono);
@@ -1004,6 +1004,9 @@
     text-transform: uppercase;
     vertical-align: middle;
   }
+
+  .sandbox .dash-pill--live { border-color: var(--accent); background: var(--accent); color: var(--accent-ink); }
+  .sandbox .dash-pill--wait { border-color: var(--line); background: var(--bg-alt); color: var(--muted); }
 
   /* Version tree — depth left to right, siblings fanned on Y ---------------- */
 
@@ -1018,13 +1021,31 @@
     position: absolute;
     width: 10.5rem;
     padding: 0.6rem 0.7rem;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-input);
     border-radius: var(--p-radius);
-    background: rgba(22, 22, 29, 0.95);
+    background: var(--bg);
     transform: translate(-50%, -50%);
   }
 
-  .sandbox .vtree-card.is-live { border-color: var(--gold-line); background: rgba(245, 194, 75, 0.08); }
+  /* The portal's selected path is indigo and its Live marker is a solid
+     indigo pill; the hosted version gets both here. */
+  .sandbox .vtree-card.is-live { border-color: var(--accent); background: var(--accent-soft); }
+  .sandbox .vtree-card.is-live .vtree-card__title { color: var(--accent); }
+  .sandbox .vtree-card__live {
+    display: inline-block;
+    margin-top: 0.3rem;
+    padding: 0.08rem 0.45rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .sandbox .vtree-edge { stroke: var(--muted); }
+  .sandbox .vtree-edge.is-lit { stroke: var(--accent); }
   .sandbox .vtree-card.is-pending { border-style: dashed; opacity: 0.85; }
   .sandbox .vtree-card__title { font-size: 0.9rem; font-weight: 700; color: var(--ink); }
   .sandbox .vtree-card__meta { margin-top: 0.15rem; font-size: 0.75rem; color: var(--muted); }
@@ -1040,15 +1061,15 @@
     padding: 0.7rem 0.85rem;
     border: 1px dashed var(--line-strong);
     border-radius: var(--p-radius);
-    background: rgba(10, 10, 12, 0.35);
+    background: var(--bg);
     transition: border-color 0.15s ease, background 0.15s ease;
   }
 
   .sandbox .attach-slot.is-over,
-  .sandbox .attach-slot.is-armed { border-color: var(--accent); background: rgba(245, 194, 75, 0.08); }
+  .sandbox .attach-slot.is-armed { border-color: var(--accent); background: var(--accent-soft); }
 
   /* Staged, not yet saved — the panel collects changes and sends them together. */
-  .sandbox .attach-slot.is-staged { border-color: var(--gold-line); border-style: solid; }
+  .sandbox .attach-slot.is-staged { border-color: var(--accent-line); border-style: solid; }
   .sandbox .attach-slot.is-staged .attach-slot__state { color: var(--accent); }
   .sandbox .attach-slot.is-filled { border-style: solid; }
 
@@ -1058,7 +1079,7 @@
     flex-shrink: 0;
     border-radius: 5px;
     border: 1px solid var(--line);
-    background: rgba(230, 231, 235, 0.05);
+    background: var(--bg-alt);
     object-fit: cover;
   }
 
@@ -1077,12 +1098,12 @@
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
     overflow: hidden;
-    background: rgba(10, 10, 12, 0.5);
+    background: var(--bg);
     cursor: grab;
     text-align: left;
   }
 
-  .sandbox .attach-chip.is-armed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--gold-line); }
+  .sandbox .attach-chip.is-armed { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-line); }
   .sandbox .attach-chip img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
   .sandbox .attach-chip span { display: block; padding: 0.35rem 0.5rem; font-size: 0.72rem; color: var(--ink-soft); }
 
@@ -1115,7 +1136,7 @@
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
     overflow: hidden;
-    background: rgba(10, 10, 12, 0.5);
+    background: var(--surface);
   }
 
   .sandbox .assets-card img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
@@ -1169,7 +1190,7 @@
 
   .sandbox .portal-alert-success {
     background: var(--accent-soft);
-    border: 1px solid rgba(61, 214, 165, 0.35);
+    border: 1px solid var(--accent-line);
     color: var(--accent);
   }
 
@@ -1192,10 +1213,9 @@
 
   .sandbox .portal-panel {
     padding: 2.1rem 1.85rem;
-    border-radius: var(--p-radius);
+    border-radius: var(--radius);
     border: 1px solid var(--line);
-    background: var(--surface);
-    box-shadow: var(--p-shadow);
+    background: var(--bg);
   }
 
   .sandbox .portal-status {
@@ -1208,7 +1228,7 @@
     color: var(--accent);
   }
 
-  .sandbox .portal-status.is-wait { color: #f0c674; }
+  .sandbox .portal-status.is-wait { color: var(--ink-soft); }
 
   .sandbox .portal-panel h2 {
     font-family: var(--p-font);
@@ -1255,7 +1275,6 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--p-radius);
-    box-shadow: var(--p-shadow);
   }
 
   .sandbox .portal-version-list-title { margin: 0 0 0.95rem; font-size: 1.05rem; font-weight: 800; color: var(--ink); }
@@ -1294,7 +1313,7 @@
     inset: 0;
     z-index: 30;
     display: flex;
-    background: rgba(0, 0, 0, 0.72);
+    background: var(--scrim);
     animation: sandbox-page-in 0.25s ease-out;
   }
 
@@ -1308,7 +1327,7 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    background: #0f1217;
+    background: var(--bg-alt);
     border-right: 1px solid var(--line);
   }
 
@@ -1319,7 +1338,7 @@
     gap: 1rem;
     padding: 1rem 1.25rem;
     border-bottom: 1px solid var(--line);
-    background: rgba(11, 13, 16, 0.96);
+    background: var(--bg);
     flex-shrink: 0;
   }
 
@@ -1343,7 +1362,7 @@
     padding: 0.2rem 0.55rem;
     border-radius: 6px;
     background: var(--accent-soft);
-    border: 1px solid rgba(61, 214, 165, 0.28);
+    border: 1px solid var(--accent-line);
     color: var(--accent);
     font-size: 0.75rem;
     font-weight: 800;
@@ -1358,8 +1377,8 @@
   }
 
   .sandbox .client-revise-preview-actions { display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
-  .sandbox .client-revise-preview-body { flex: 1; min-height: 0; position: relative; background: #fff; }
-  .sandbox .client-revise-frame { width: 100%; height: 100%; border: none; display: block; background: #fff; }
+  .sandbox .client-revise-preview-body { flex: 1; min-height: 0; position: relative; background: var(--bg); }
+  .sandbox .client-revise-frame { width: 100%; height: 100%; border: none; display: block; background: var(--bg); }
 
   .sandbox .client-revise-sidebar {
     width: 100%;
@@ -1406,8 +1425,8 @@
   .sandbox .client-revise-textarea {
     width: 100%;
     padding: 0.8rem 0.9rem;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
+    background: var(--bg);
+    border: 1px solid var(--line-input);
     border-radius: var(--p-radius);
     color: var(--ink);
     font: inherit;
@@ -1435,7 +1454,7 @@
   .sandbox .client-revise-preview-box[hidden] { display: none; }
 
   .sandbox .client-revise-notes { display: flex; flex-direction: column; gap: 0.75rem; }
-  .sandbox .client-revise-note-wrap.active .client-revise-note { border-color: rgba(61, 214, 165, 0.55); }
+  .sandbox .client-revise-note-wrap.active .client-revise-note { border-color: var(--accent); }
 
   .sandbox .client-revise-note {
     padding: 0.8rem;
@@ -1480,7 +1499,7 @@
     font-weight: 700;
   }
 
-  .sandbox .client-revise-note-remove:hover { background: rgba(155, 44, 44, 0.22); color: #ff8e8e; }
+  .sandbox .client-revise-note-remove:hover { background: var(--danger-bg); color: var(--danger); }
 
   .sandbox .client-revise-preview-box { border-top: 1px solid var(--line); padding-top: 0.85rem; }
 
@@ -1528,15 +1547,12 @@
       height: 100%;
       border-top: 0;
       border-left: 1px solid var(--line);
-      box-shadow: -16px 0 40px rgba(0, 0, 0, 0.35);
+      box-shadow: var(--p-shadow);
     }
   }
 
   @media (max-width: 700px) {
-    /* The sidebar slides in over the content, as it does in the real portal.
-       Opaque, not the 0.92 alpha it uses at desktop width: there it sits on the
-       page background, here it sits on top of the dashboard and the content
-       reads straight through it. */
+    /* The sidebar slides in over the content, as it does in the real portal. */
     .sandbox .client-sidebar {
       position: absolute;
       left: 0;
@@ -1544,10 +1560,10 @@
       bottom: 0;
       width: min(16rem, 80%);
       z-index: 30;
-      background: #0a0a0c;
+      background: var(--bg);
       transform: translateX(-101%);
       transition: transform 260ms var(--ease);
-      box-shadow: var(--shadow-dark);
+      box-shadow: var(--p-shadow);
     }
 
     .sandbox .client-dashboard.is-nav-open .client-sidebar { transform: translateX(0); }
@@ -1589,19 +1605,13 @@
 
   .sandbox { margin-top: var(--s-5); }
 
-  /* Light chrome, not a gold panel. Gold is the brand mark and the
-     free-mock badge and nothing else; a full-width gold bar was the largest
-     block of it on the site.
+  /* Light chrome, not a gold panel. Gold is the free-mock badge and nothing
+     else.
 
-     THE COLOURS HERE ARE LITERALS ON PURPOSE. This banner is our wrapper,
-     but it lives inside .sandbox, and .sandbox redefines the token names
-     for the portal it contains: --ink-soft is #e6e7eb there, --line is a
-     near-transparent white, --accent is the portal's gold. Writing
-     `color: var(--ink-soft)` here renders near-white text on a light grey
-     bar — which is exactly what the first attempt did. They are the global
-     palette's values, and if the palette moves they have to move with it.
-     `npm run verify:contrast` measures this banner specifically for that
-     reason, even though it skips everything else inside .sandbox. */
+     These were literals while .sandbox redefined the palette for a dark
+     portal — var(--ink-soft) resolved to near-white in here. The portal is
+     on our tokens now and .sandbox only adds names, so the banner is back on
+     tokens. `npm run verify:contrast` still measures it specifically. */
   .sandbox__banner {
     display: flex;
     flex-wrap: wrap;
@@ -1614,9 +1624,9 @@
        580px with the frame full-width under it. The gold fill used to hide
        how odd that looked. */
     max-width: none;
-    background: #f6f7f9;  /* --bg-alt */
-    color: #4a4f58;       /* --ink-soft */
-    border: 1px solid #e6e7eb;  /* --line */
+    background: var(--bg-alt);
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
     border-bottom: 0;
     font-size: 0.9375rem;
     font-weight: 500;
@@ -1646,8 +1656,7 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
-    /* The portal fills this, and the portal is dark. */
-    background: var(--footer);
+    background: var(--bg-alt);
   }
 
   .sandbox:fullscreen .sandbox__banner,
@@ -1674,7 +1683,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #2f3dd6;  /* --accent; literal, see .sandbox__banner */
+    background: var(--accent);
     flex-shrink: 0;
     animation: sandbox-pulse 2s ease-in-out infinite;
   }
@@ -1687,30 +1696,31 @@
   .sandbox__reset {
     margin-left: auto;
     padding: 0.35rem 0.9rem;
-    border: 1px solid rgba(10, 10, 12, 0.35);
-    border-radius: var(--radius-pill);
+    border: 1px solid var(--line-input);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--black);
-    transition: background var(--dur) var(--ease);
+    color: var(--ink);
+    transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
   }
 
-  .sandbox__reset:hover { background: rgba(10, 10, 12, 0.1); }
+  .sandbox__reset:hover { border-color: var(--accent); color: var(--accent); }
 
   /* Narration log --------------------------------------------------------- */
 
   .sandbox__log {
     margin-top: var(--s-5);
     padding: var(--s-5);
-    border: 1px solid var(--line-dark);
-    border-radius: var(--radius-lg);
-    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
   }
 
   .sandbox__log[hidden] { display: none; }
 
-  .sandbox__log h3 { color: var(--white); margin-bottom: var(--s-2); }
-  .sandbox__log > p { color: var(--silver); font-size: 0.95rem; max-width: 44rem; }
+  .sandbox__log h3 { color: var(--ink); margin-bottom: var(--s-2); }
+  .sandbox__log > p { color: var(--ink-soft); font-size: 0.95rem; max-width: 44rem; }
 
   .sandbox__log ol {
     display: flex;
@@ -1722,8 +1732,8 @@
   .sandbox__log li {
     padding: var(--s-3) var(--s-4);
     border-radius: var(--radius);
-    border: 1px solid var(--line-dark);
-    background: var(--black);
+    border: 1px solid var(--line);
+    background: var(--bg-alt);
   }
 
   .sandbox__log time {
@@ -1732,7 +1742,7 @@
     font-size: 0.72rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: var(--gold);
+    color: var(--ink-muted);
     margin-bottom: 0.5rem;
   }
 
@@ -1740,7 +1750,7 @@
     font-family: var(--font-mono);
     font-size: 0.82rem;
     line-height: 1.5;
-    color: var(--silver-light);
+    color: var(--ink-soft);
     white-space: pre-wrap;
     word-break: break-word;
   }

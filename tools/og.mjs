@@ -13,10 +13,17 @@
  *
  * Needs nothing running: it loads a local HTML file with the fonts read off
  * disk as data URIs, so there is no server and no network.
+ *
+ * It also writes the two icons, because they are the same mark and the same
+ * "nobody looks at it again" surface: public/favicon.svg (a copy of the mark)
+ * and public/apple-touch-icon.png (180px, the mark on white with 20px of
+ * padding — iOS fills transparency with black). All three read
+ * public/brand/mark.svg, so redrawing the mark there and re-running this
+ * updates every one of them.
  */
 import { chromium } from 'playwright';
 import sharp from 'sharp';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import { WIDE } from '../src/data/version-tree.js';
 
 const OUT = 'public/og.png';
@@ -33,8 +40,12 @@ const C = {
   inkMuted: '#6b7079',
   line: '#e6e7eb',
   accent: '#2f3dd6',
-  gold: '#f5c24b',
 };
+
+// The mark, straight from the source file. Its own fills are the indigo and
+// white defaults, which is what every one of these surfaces wants.
+const MARK = await readFile('public/brand/mark.svg', 'utf8');
+const markInline = MARK.replace(/<!--[\s\S]*?-->\s*/g, '').replace(/ width="64" height="64"/, '');
 
 const fontDataUri = async (file) => {
   const buf = await readFile(`public/fonts/${file}`);
@@ -85,7 +96,7 @@ const html = `<!doctype html>
     -webkit-font-smoothing: antialiased;
   }
   .brand { display: flex; align-items: center; gap: 12px; }
-  .brand svg { width: 34px; height: 34px; overflow: visible; }
+  .brand svg { width: 34px; height: 34px; }
   .brand span { font-size: 24px; font-weight: 600; letter-spacing: -0.03em; color: ${C.ink}; }
 
   .row { display: grid; grid-template-columns: 1fr 1.02fr; gap: 56px; align-items: center; }
@@ -119,11 +130,7 @@ const html = `<!doctype html>
 </style>
 
 <div class="brand">
-  <svg viewBox="0 0 32 32" fill="none">
-    <circle cx="16" cy="16" r="7" fill="${C.gold}"/>
-    <circle cx="12.5" cy="13" r="6" fill="${C.ink}" opacity="0.22"/>
-    <ellipse cx="16" cy="16" rx="14.2" ry="5.4" stroke="${C.ink}" stroke-width="1.6" transform="rotate(-28 16 16)"/>
-  </svg>
+  ${markInline}
   <span>GetYourWebsite</span>
 </div>
 
@@ -177,4 +184,19 @@ if (overflow.length) {
   overflow.forEach((o) => console.log('   ' + o));
   process.exit(1);
 }
-console.log('  nothing clipped\n');
+console.log('  nothing clipped');
+
+// ── Icons ──────────────────────────────────────────────────────────────────
+await writeFile('public/favicon.svg', MARK);
+const TOUCH = 180;
+const PAD = 20;
+const markPng = await sharp(Buffer.from(MARK), { density: 600 })
+  .resize(TOUCH - PAD * 2, TOUCH - PAD * 2)
+  .png()
+  .toBuffer();
+await sharp({ create: { width: TOUCH, height: TOUCH, channels: 4, background: '#ffffff' } })
+  .composite([{ input: markPng, left: PAD, top: PAD }])
+  .flatten({ background: '#ffffff' })
+  .png({ compressionLevel: 9 })
+  .toFile('public/apple-touch-icon.png');
+console.log('✓ public/favicon.svg and public/apple-touch-icon.png (180x180) from public/brand/mark.svg\n');

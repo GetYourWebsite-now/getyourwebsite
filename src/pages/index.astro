@@ -1,20 +1,23 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
-import WebsiteCompare from '../components/WebsiteCompare.astro';
 import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
-import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN, PRICING_DISCLAIMER } from '../data/site.js';
+import MergeAnim from '../components/anim/MergeAnim.astro';
+import ClickToChange from '../components/anim/ClickToChange.astro';
+import PhotoDrop from '../components/anim/PhotoDrop.astro';
+import DomainConnect from '../components/anim/DomainConnect.astro';
+import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
 <BaseLayout
   title="GetYourWebsite"
-  description="Websites for local businesses. We build you a free mock first, then the real site — hosted, maintained, and with every version kept so you choose what's live."
+  description="Websites for local businesses, done for you. A free mock first, then we build the site, host it and keep it current — every version kept, one button to choose what's live."
 >
   <!-- 1. Hero ------------------------------------------------------------
-       Left: the offer in one sentence. Right: a real screenshot of the
-       client portal, not an illustration of one — see tools/portal-shots.mjs.
+       Left: the offer, and that we do the work. Right: the version tree,
+       drawn rather than screenshotted — see VersionTree.astro.
   -->
   <section class="section section--hero">
     <div class="shell hero">
@@ -27,9 +30,8 @@ import { url } from '../data/url.js';
           Your business online&nbsp;— built, hosted, and kept current for you.
         </h1>
         <p class="lead hero__lead">
-          We build you a free mock first, and the real site only if you like
-          it. After that we host it, keep every version, and make the changes
-          you ask for.
+          You never touch a website builder. Tell us about the business; we
+          build it, host it and keep it current.
         </p>
         <div class="btn-row hero__cta">
           <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
@@ -61,23 +63,30 @@ import { url } from '../data/url.js';
           <VersionTree />
         </div>
         <figcaption class="hero__caption">
-          Your version tree in the client portal. Every revision is kept, and
-          one button decides which one is live.
+          Your version tree. One button decides which version is live.
         </figcaption>
       </figure>
     </div>
   </section>
 
-  <!-- 3. Our work — the two real client projects --------------------- -->
+  <!-- 2. Who does the work ---------------------------------------------------
+       The positioning, as a drawing. Replaced the with/without-a-website
+       comparison, which lives on /why-us now.
+  -->
   <section class="section section--alt">
+    <div class="shell">
+      <h2 class="eyebrow merge-eyebrow" data-reveal>Who does the work</h2>
+      <MergeAnim />
+    </div>
+  </section>
+
+  <!-- 3. Our work — the two real client projects --------------------- -->
+  <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">Our work</p>
         <h2>Two clients, both live.</h2>
-        <p class="lead">
-          We are new, and we would rather show you the two real things we have
-          shipped than a wall of logos. Both are open to anyone.
-        </p>
+        <p class="lead">Real sites, open to anyone. No wall of logos.</p>
       </div>
 
       <div class="cases-2up" data-reveal-group>
@@ -96,199 +105,130 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 4. How it works — three steps, typography only --------------------- -->
-  <section class="section">
+  <!-- 4. How it works — three steps, typography only ---------------------
+       The deposit split and the balance-at-launch detail moved to the
+       pricing FAQ, where someone deciding to pay is looking for them.
+  -->
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">How it works</p>
-        <h2>Three steps, and the first one is free.</h2>
+        <h2>Three steps, and the first is free.</h2>
       </div>
 
       <ol class="steps" data-reveal-group>
         <li class="step" data-reveal>
           <span class="step__num">01</span>
           <h3>A free mock</h3>
-          <p>
-            Tell us about your business in your own words. We build a real
-            homepage concept for it — your name, your services, your photos —
-            and send you a link. No card, no commitment, and you keep the link
-            either way.
-          </p>
+          <p>Tell us about your business. We send back a homepage concept, free.</p>
         </li>
         <li class="step" data-reveal>
           <span class="step__num">02</span>
           <h3>Approve and start</h3>
-          <p>
-            If you want the full site, a 50% deposit starts the build and the
-            balance is due at launch. We confirm the price with you after we
-            have seen your mock, so you are agreeing to a number rather than a
-            range.
-          </p>
+          <p>Like it? We confirm the price, then build the full site.</p>
         </li>
         <li class="step" data-reveal>
           <span class="step__num">03</span>
-          <h3>You choose what's live</h3>
-          <p>
-            We build the site, register your domain and point it at it. After
-            that every change you ask for is saved as its own version, and you
-            pick which one the world sees.
-          </p>
+          <h3>We run it for you</h3>
+          <p>On the Care plan we host it and keep every change.</p>
         </li>
       </ol>
     </div>
   </section>
 
-  <!-- 5. Platform --------------------------------------------------------- -->
-  <section class="section section--alt">
+  <!-- 5. Platform ----------------------------------------------------------
+       One real capture of the portal, then three drawings of the things it
+       does that a still can't show. The drawings replaced three paragraphs.
+  -->
+  <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
         <p class="eyebrow">The platform</p>
-        <h2>The site is the easy part. Running it is what we built.</h2>
-        <p class="lead">
-          The screenshots below are the portal a client actually gets. You can
-          click through the same thing in the demo, without an account.
+        <h2>Running the site is the part we built.</h2>
+        <p class="lead">Every client gets this portal.</p>
+        <p class="section-head__link">
+          <a class="link-arrow" href={url('/demo')}>Try it in the demo</a>
         </p>
       </div>
 
-      <!-- Row 1: versioning -->
+      <figure class="platform-shot shot" data-reveal>
+        <img
+          src={url('/shots/portal-my-website.webp')}
+          alt="The My website tab in the client portal, showing the live version, a list of approved versions, and Open, Quick edit, Request changes and Attach images buttons on each."
+          width="1300"
+          height="763"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+
       <div class="feature" data-reveal>
+        <div class="feature__visual"><ClickToChange /></div>
         <div class="feature__copy">
-          <h3>Press host on last year's Christmas site</h3>
-          <p>
-            Every revision becomes a new version of your site. Nothing is ever
-            overwritten and nothing is lost. Ask for a Christmas version in
-            November, approve it and press host; in January press host on the
-            everyday one and you are back. Build the theme once, reuse it
-            every year.
-          </p>
-          <p class="feature__link">
-            <a class="link-arrow" href={url('/demo')}>Try the client demo</a>
-          </p>
+          <h3>Click it. Say what to change.</h3>
+          <p>No emails describing paragraphs. A person builds and reviews every change.</p>
         </div>
-        <figure class="feature__shot shot">
-          <img
-            src={url('/shots/portal-my-website.webp')}
-            alt="The My website tab in the client portal, showing the live version, a list of approved versions, and Open, Quick edit, Request changes and Attach images buttons on each."
-            width="1300"
-            height="763"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
       </div>
 
-      <!-- Row 2: images -->
       <div class="feature feature--flip" data-reveal>
+        <div class="feature__visual"><PhotoDrop /></div>
         <div class="feature__copy">
-          <h3>Your photos, dragged into place</h3>
-          <p>
-            Drop your own pictures onto the photo slots in your site and save.
-            No file names, no emailing files back and forth, no waiting on us.
-            We host and manage the files for you, optimised and served from
-            the same network as the site.
-          </p>
+          <h3>Your photos, dragged into place.</h3>
+          <p>Drop your own pictures onto your site's photo slots, and save.</p>
         </div>
-        <figure class="feature__shot shot">
-          <img
-            src={url('/shots/portal-assets.webp')}
-            alt="The Assets tab in the client portal: an upload form and a grid of the client's own photos, each marked public or private."
-            width="1300"
-            height="606"
-            loading="lazy"
-            decoding="async"
-          />
-        </figure>
       </div>
 
-      <!-- Rows 3 and 4: no screenshot, because neither one is a screen -->
-      <div class="grid grid-2 feature-pair" data-reveal-group>
-        <article class="card" data-reveal>
-          <h3>Hosting and the domain, handled</h3>
+      <div class="feature" data-reveal>
+        <div class="feature__visual"><DomainConnect /></div>
+        <div class="feature__copy">
+          <h3>Your domain, handled.</h3>
           <p>
-            We register your domain and point it at your site, in your
-            business's name. You never touch a registrar or a DNS record. The
-            site is hosted on Cloudflare's network, which by Cloudflare's own
-            published figures spans hundreds of cities in 100+ countries and
-            reaches roughly 95% of the Internet-connected population in under
-            50 milliseconds — so it loads fast for the people near you, and it
-            stays up.
+            Hosted on Cloudflare's network: hundreds of cities in 100+
+            countries, by their own figures.
           </p>
           <p class="card__note">
             <a href="https://www.cloudflare.com/network/" target="_blank" rel="noopener noreferrer">
-              Check those figures on Cloudflare's network page
+              Check Cloudflare's figures
               <span class="sr-only">(opens in a new tab)</span>
             </a>
           </p>
-        </article>
-
-        <article class="card" data-reveal>
-          <h3>Not one prompt into a chatbot</h3>
-          <p>
-            Building a site starts with research: web searches about your
-            specific business and its industry. The draft is assembled from
-            curated component libraries by several specialised agents that
-            write, critique and refine it in turn. Then a person reviews every
-            site before you ever see it — and keeps reviewing every revision
-            after that.
-          </p>
-          <p class="card__note">
-            <a class="link-arrow" href={url('/how-it-works')}>How all of it works</a>
-          </p>
-        </article>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 6. Why a website ---------------------------------------------------- -->
-  <section class="section">
-    <div class="shell">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">Why a website</p>
-        <h2>The difference a website makes.</h2>
-      </div>
-
-      <WebsiteCompare />
-
-      <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/why-us') + '#why-a-website'}>The full case for getting online</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- 7. Pricing teaser ---------------------------------------------------
+  <!-- 6. Pricing teaser ---------------------------------------------------
        Reads BUILD_TIERS, the same array /pricing renders, so the two can
-       never drift apart again. They did before: this section was still
-       quoting the old placeholder prices long after the real ones were set.
+       never drift apart again. Teaser cards: name, price and tagline; the
+       feature lists are one click away.
   -->
   <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
         <p class="eyebrow">Pricing</p>
         <h2>Three ways to get off the ground.</h2>
-        <p class="lead">And the first step costs nothing.</p>
+        {/* The first sentence of PRICING_DISCLAIMER. The rest — which tier most
+            businesses land in — is on /pricing, next to the tiers. */}
+        <p class="lead">Final quote after we've seen your free mock.</p>
       </div>
 
       <div class="grid grid-3" data-reveal-group>
-        {BUILD_TIERS.map((tier) => <TierCard tier={tier} condensed reveal />)}
+        {BUILD_TIERS.map((tier) => <TierCard tier={tier} teaser reveal />)}
       </div>
 
       <p class="care-line" data-reveal>
         Hosting and upkeep: {CARE_PLAN.name}, {CARE_PLAN.price}{CARE_PLAN.period}.
       </p>
 
-      <p class="pricing-note" data-reveal>{PRICING_DISCLAIMER}</p>
-
-      <p class="section-more" data-reveal>
+      <p class="section-more section-more--center" data-reveal>
         <a class="link-arrow" href={url('/pricing')}>Full pricing and FAQ</a>
       </p>
     </div>
   </section>
 
-  <!-- 8. Why us ------------------------------------------------------------
-       One column on purpose. There was a dashed team-photo placeholder here;
-       a placeholder for a photo that does not exist is worse than no photo,
-       because it is a visible reminder that the page is unfinished. The text
-       stands alone until there is a real one to drop in.
+  <!-- 7. Why us ------------------------------------------------------------
+       One column on purpose: no team photo exists, and a placeholder for one
+       would be a visible reminder that the page is unfinished.
   -->
   <section class="section">
     <div class="shell">
@@ -296,10 +236,8 @@ import { url } from '../data/url.js';
         <p class="eyebrow">Why us</p>
         <h2>You talk to the people who build it.</h2>
         <p class="lead">
-          We are a small team and your project is not one of forty. You deal
-          with whoever is writing your site rather than an account manager
-          relaying messages, which is why a change you ask for on Tuesday is
-          usually live that week.
+          A small team. You email the person writing your site, and we reply
+          within one business day.
         </p>
         <p class="section-more">
           <a class="link-arrow" href={url('/why-us')}>What makes us different</a>
@@ -308,13 +246,12 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 9. Final CTA --------------------------------------------------------- -->
+  <!-- 8. Final CTA --------------------------------------------------------- -->
   <section class="section section--alt cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2 class="cta-band__title">See your business online before you pay anything.</h2>
       <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send back a free mock of your homepage. No
-        commitment, no cost, no catch.
+        Tell us about it and we'll send a free mock of your homepage.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
         <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
@@ -325,7 +262,10 @@ import { url } from '../data/url.js';
 
 <style>
   .section-more { margin-top: var(--s-6); }
-  .section-head--center + .grid + .section-more { text-align: center; }
+  .section-more--center { text-align: center; }
+  .section-head__link { margin-top: var(--s-3); }
+
+  .merge-eyebrow { text-align: center; margin-bottom: var(--s-6); }
 
   /* Hero ----------------------------------------------------------------- */
 
@@ -454,34 +394,31 @@ import { url } from '../data/url.js';
 
   .step p { color: var(--ink-soft); }
 
-  /* Platform rows --------------------------------------------------------- */
+  /* Platform ------------------------------------------------------------- */
 
+  .platform-shot { margin-bottom: var(--s-6); }
+  .platform-shot img { width: 100%; height: auto; }
+
+  /* Three rows, drawing and one line each, the drawing alternating sides.
+     Stacked, the words come first so the drawing has a caption to explain
+     it before it starts moving. */
   .feature {
     display: grid;
-    gap: var(--s-5);
+    gap: var(--s-4);
     align-items: center;
     padding-block: var(--s-6);
-  }
-
-  .feature + .feature { border-top: 1px solid var(--line); }
-
-  .feature__copy h3 {
-    font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
-    margin-bottom: var(--s-3);
-  }
-
-  .feature__copy p { color: var(--ink-soft); }
-  .feature__link { margin-top: var(--s-4); }
-  .feature__shot { min-width: 0; }
-  .feature__shot img { width: 100%; height: auto; }
-
-  .feature-pair {
-    margin-top: var(--s-6);
-    padding-top: var(--s-6);
     border-top: 1px solid var(--line);
   }
 
-  .card__note { margin-top: var(--s-4); font-size: var(--t-small); }
+  .feature__copy { order: -1; }
+  .feature__copy h3 {
+    font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
+    margin-bottom: var(--s-2);
+  }
+  .feature__copy p { color: var(--ink-soft); }
+  .feature__visual { min-width: 0; }
+
+  .card__note { margin-top: var(--s-3); font-size: var(--t-small); }
 
   /* Pricing note ---------------------------------------------------------- */
 
@@ -492,14 +429,6 @@ import { url } from '../data/url.js';
     font-weight: 550;
     color: var(--ink);
     max-width: none;
-  }
-
-  .pricing-note {
-    max-width: 44rem;
-    margin: var(--s-2) auto 0;
-    text-align: center;
-    font-size: var(--t-small);
-    color: var(--ink-muted);
   }
 
   /* Final CTA ------------------------------------------------------------- */
@@ -532,9 +461,11 @@ import { url } from '../data/url.js';
       gap: 0.4rem;
     }
 
-    .feature { grid-template-columns: 1fr 1.2fr; gap: var(--s-7); }
-    .feature--flip .feature__copy { order: 2; }
-    .feature--flip .feature__shot { order: 1; }
+    .feature { grid-template-columns: 1.15fr 1fr; gap: var(--s-7); }
+    .feature__copy { order: 2; }
+    .feature--flip { grid-template-columns: 1fr 1.15fr; }
+    .feature--flip .feature__copy { order: 1; }
+    .feature--flip .feature__visual { order: 2; }
 
   }
 

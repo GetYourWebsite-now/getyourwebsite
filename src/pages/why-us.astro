@@ -52,37 +52,23 @@ const PROMISES = [
   },
 ];
 
-/** The argument that used to be the whole of /benefits. */
+/** The argument that used to be the whole of /benefits, one sentence each
+    since Phase 7's word budget. */
 const OUTCOMES = [
   {
     label: '01',
     title: 'More revenue',
-    body: "A website doesn't create demand out of nothing — it catches the demand that already exists and is currently going somewhere else. The people searching for a bakery in your town tonight are going to buy from someone. A site is how you get counted.",
-    points: [
-      'You appear in searches you currently miss entirely',
-      'Higher-value work finds you, because people can see what you actually do',
-      'No commission, unlike the directories and delivery apps',
-    ],
+    body: 'A site catches the demand that already exists, which tonight is going to someone else.',
   },
   {
     label: '02',
     title: 'More new clients',
-    body: 'The hardest customer to win is the one who has never heard of you. A website is the cheapest introduction you will ever make — it works on everyone who searches, all year, without you doing anything after it launches.',
-    points: [
-      "People who'd never have called you will fill in a form",
-      'Google Maps, socials and flyers all get somewhere real to point at',
-      'Existing customers can finally send you to their friends properly',
-    ],
+    body: 'It introduces you to everyone who searches for what you do, all year round.',
   },
   {
     label: '03',
     title: 'A more streamlined day',
-    body: 'This is the one nobody expects and everybody notices. Every question your site answers is a phone call you do not take in the middle of something else.',
-    points: [
-      'Hours, directions, prices and menus stop being phone calls',
-      'Bookings and quote requests arrive written down, not half-remembered',
-      'You stop repeating the same five answers every single day',
-    ],
+    body: "Every question your site answers is a phone call you don't take mid-job.",
   },
 ];
 ---
@@ -137,22 +123,17 @@ const OUTCOMES = [
 
       <div class="story" data-reveal>
         <p>
-          The businesses around here deserve to be online, and a lot of them
-          are not. Not because they do not want to be — because the quotes
-          they were given were absurd, or the person who built it stopped
-          answering, or it never got past a half-finished Facebook page. We
-          decided to go and fix that, one business at a time.
+          A lot of the businesses around here aren't online — because the
+          quotes were absurd, or the builder stopped answering. We decided to
+          fix that, one business at a time.
         </p>
         <p>
-          We live here. Building something for a business down the road and
-          then walking past it is the whole point — it is also the reason we
-          cannot afford to do a bad job. There is no city we disappear into
-          afterwards.
+          We live here. We walk past the businesses we build for, so we can't
+          afford a bad job.
         </p>
         <p>
-          And we are paying for college with this, which we would rather say
-          plainly than dress up. It means a client who is happy enough to
-          tell someone else is not a nice extra for us; it is the entire
+          And we're paying for college with this, which we'd rather say
+          plainly. A client happy enough to tell someone else is the entire
           business model.
         </p>
 
@@ -173,10 +154,7 @@ const OUTCOMES = [
       <div class="section-head" data-reveal>
         <p class="eyebrow">Why a website at all</p>
         <h2>Same business. Two very different weeks.</h2>
-        <p class="lead">
-          If you are not sure a site is worth it at all, start here rather
-          than with us.
-        </p>
+        <p class="lead">Not sure a site is worth it? Start here, not with us.</p>
       </div>
 
       <WebsiteCompare />
@@ -189,11 +167,6 @@ const OUTCOMES = [
               <div class="outcome__body">
                 <h3>{o.title}</h3>
                 <p>{o.body}</p>
-                <ul>
-                  {o.points.map((pt) => (
-                    <li>{pt}</li>
-                  ))}
-                </ul>
               </div>
             </article>
           ))
@@ -201,11 +174,8 @@ const OUTCOMES = [
       </div>
 
       <p class="no-numbers" data-reveal>
-        <strong>We're not going to make up numbers.</strong> Plenty of
-        agencies will quote you a statistic about how many customers check a
-        business online. Most of those get copied between marketing blogs
-        until nobody can find the original study. We would rather leave the
-        space empty than fill it with something we cannot stand behind.
+        <strong>We're not going to make up numbers.</strong> No statistic we
+        can't trace to its source; we'd rather leave the space empty.
       </p>
     </div>
   </section>
@@ -236,8 +206,7 @@ const OUTCOMES = [
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2 class="cta-band__title">See your business online before you pay anything.</h2>
       <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send back a free mock of your homepage. No
-        commitment, no cost, no catch.
+        Tell us about it and we'll send a free mock of your homepage.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
         <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
@@ -295,29 +264,8 @@ const OUTCOMES = [
     padding-top: 0.2rem;
   }
 
-  .outcome__body h3 { margin-bottom: var(--s-3); }
+  .outcome__body h3 { margin-bottom: var(--s-2); }
   .outcome__body > p { color: var(--ink-soft); }
-
-  .outcome__body ul {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-top: var(--s-4);
-  }
-
-  .outcome__body li {
-    position: relative;
-    padding-left: 1.4rem;
-    font-size: var(--t-small);
-    color: var(--ink-soft);
-  }
-
-  .outcome__body li::before {
-    content: '→';
-    position: absolute;
-    left: 0;
-    color: var(--accent);
-  }
 
   .no-numbers {
     margin-top: var(--s-7);
