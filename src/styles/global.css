@@ -9,7 +9,7 @@
      2. Reset         a small, boring reset
      3. Base          html/body/headings/links
      4. Layout        .shell, .section, .stack helpers
-     5. Components    buttons, cards, badges, eyebrows, forms
+     5. Components    buttons, cards, badges, forms
      6. Reveal        scroll-reveal animation (see src/scripts/reveal.js)
 
    The house style, in four rules:
@@ -110,7 +110,7 @@
      `npm run verify:contrast`. */
   --ink: #0a0a0c;       /* headings */
   --ink-soft: #4a4f58;  /* body */
-  --ink-muted: #6b7079; /* captions, eyebrows, meta */
+  --ink-muted: #6b7079; /* captions, sector labels, meta */
 
   /* Lines ----------------------------------------------------------------
      Two, for two different jobs. --line is decorative: it separates cards and
@@ -381,7 +381,7 @@ a:hover { color: var(--accent-hover); }
 .stack-4 > * + * { margin-top: var(--s-4); }
 .stack-6 > * + * { margin-top: var(--s-6); }
 
-/* Section header block — eyebrow, heading, lead paragraph. */
+/* Section header block — (rarely) an eyebrow, a heading, a lead paragraph. */
 .section-head {
   max-width: 44rem;
   margin-bottom: var(--s-7);
@@ -392,15 +392,23 @@ a:hover { color: var(--accent-hover); }
   text-align: center;
 }
 
+/* A label above a heading. Used rarely: only where it says something the
+   heading doesn't — the topic a pronoun in the headline refers to, or who the
+   page is for. Most sections have none; the headline carries it.
+
+   Inter 500 at 14px, sentence case, in the accent, 12px above the heading.
+   It used to be mono, uppercase and tracked, which read as a terminal
+   readout on a light page. Mono is now only for the browser-frame URL, step
+   numbers and code-like strings. */
 .eyebrow {
   display: block;
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  margin-bottom: var(--s-3);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
 }
 
 .lead {
@@ -416,9 +424,9 @@ a:hover { color: var(--accent-hover); }
   margin-top: var(--s-4);
 }
 
-/* Every child, not just the lead: paragraphs carry a 60ch measure, and at the
-   eyebrow's small mono size that is narrower than the head — so an eyebrow
-   centred its text inside a box that was itself pinned left. */
+/* Every child, not just the lead: paragraphs carry a 60ch measure, which is
+   narrower than the head for small text — so a short paragraph centred its
+   text inside a box that was itself pinned left. */
 .section-head--center > * { margin-inline: auto; }
 
 /* ── 5. Components ─────────────────────────────────────────────────────── */
@@ -538,7 +546,6 @@ a:hover { color: var(--accent-hover); }
 
 .link-arrow::after {
   content: '→';
-  font-family: var(--font-mono);
   transition: transform var(--dur) var(--ease);
 }
 
@@ -595,11 +602,8 @@ a:hover { color: var(--accent-hover); }
   align-items: center;
   gap: 0.4rem;
   padding: 0.28rem 0.6rem;
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   color: var(--ink-muted);
@@ -613,16 +617,6 @@ a:hover { color: var(--accent-hover); }
   border-color: var(--gold);
   color: var(--ink);
   font-weight: 600;
-}
-
-/* A big number / stat */
-.stat-num {
-  font-family: var(--font-mono);
-  font-size: clamp(1.75rem, 1.3rem + 1.8vw, 2.5rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  color: var(--ink);
-  line-height: 1;
 }
 
 /* Forms ------------------------------------------------------------------ */

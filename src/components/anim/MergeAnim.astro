@@ -34,7 +34,7 @@ const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
     <ul class="merge__names" aria-label="Website builders">
       <li>Squarespace</li><li>Wix</li><li>Base44</li><li>Replit</li>
     </ul>
-    <h3>You do the work</h3>
+    <h2>You do the work</h2>
     <p>Templates and prompts. Nights and weekends. Yours to maintain.</p>
   </div>
 
@@ -51,7 +51,7 @@ const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
         </g>
       </svg>
     </figure>
-    <h3>Done for you. Without the agency bill.</h3>
+    <h2>Done for you. Without the agency bill.</h2>
     <p>Built, hosted and kept current by people you can email. From {from}.</p>
   </div>
 
@@ -59,7 +59,7 @@ const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
     <ul class="merge__names" aria-label="Agencies">
       <li>Design studios</li><li>Marketing agencies</li>
     </ul>
-    <h3>They do the work</h3>
+    <h2>They do the work</h2>
     <p>Done for you, at agency prices and agency timelines.</p>
   </div>
 </div>
@@ -76,9 +76,11 @@ const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
   .merge__side--agency { order: 2; }
   .merge__centre { order: 3; }
 
-  .merge h3 { font-size: var(--t-h3); margin-top: var(--s-3); }
+  /* Three h2s, peers: the section has no heading above them, so h3s would
+     skip a level after the hero's h1. Sized as the h3s they look like. */
+  .merge h2 { font-size: var(--t-h3); margin-top: var(--s-3); }
   .merge p { color: var(--ink-soft); margin: var(--s-2) auto 0; max-width: 22rem; }
-  .merge__centre h3 { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem); }
+  .merge__centre h2 { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem); }
   .merge__centre p { color: var(--ink); }
 
   .merge__names {

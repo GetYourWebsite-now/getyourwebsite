@@ -68,8 +68,17 @@ is not real about it goes in the "What's different from the real thing" list on
 - **One reply-time promise, one phrasing:** "We reply within one business day."
   No build-time estimates anywhere; the only data point we have is ARK at 24
   rounds and it supports nothing.
-- Mono is for eyebrows, step numbers, the MOST POPULAR flag and the
-  browser-frame URL. Prices are Inter with `tabular-nums`.
+- **Eyebrows are rare.** Default to none — the headline carries the section.
+  Keep one only where it says something the headline doesn't (who the page is
+  for, what a pronoun in the headline refers to, what "Care plan" is). Where
+  kept, `.eyebrow` in `global.css` is the only style: Inter 500, 14px,
+  sentence case, `--accent`, 12px above the heading. No per-page overrides.
+  Case-study sector labels are the same size in `--ink-muted`; "Most popular"
+  is the same Inter 500 on the indigo tag.
+- Mono is only for the browser-frame URL, step numbers (01/02/03) and
+  code-like strings. Nothing else — no uppercase, no tracking. Prices are
+  Inter with `tabular-nums`. The `/demo` sandbox is the one exception: it
+  mirrors the portal's own mono labels (rule 2).
 - **`/privacy` and `/terms` are not edited for voice.** They are published legal
   text; they still say "mockup" and that is fine. `DemoSandbox.astro` keeps it
   too, because it mirrors the portal's own label.

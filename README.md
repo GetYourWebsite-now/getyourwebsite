@@ -103,7 +103,7 @@ Change a token, not a page.
 with the same surface end up adjacent.
 
 **Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
-eyebrows. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
+case-study sector labels. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
 4.64:1 against a 4.5 requirement — so `npm run verify:contrast` is
 load-bearing, not a formality.
 
@@ -135,8 +135,9 @@ Inter carries the `wght` and `opsz` axes in one file, so
 from one 73KB download — which is why there is no separate display face.
 Never set `font-variation-settings` for `opsz`; it overrides that.
 
-Mono is for eyebrows, step numbers, the MOST POPULAR flag and the
-browser-frame URL. **Not** for prices: they are Inter with
+Mono is only for the browser-frame URL, step numbers and code-like strings.
+Eyebrows are rare and set in Inter (see `.eyebrow` in `global.css` and the
+rule in CLAUDE.md). **Not** for prices: they are Inter with
 `font-variant-numeric: tabular-nums`, because mono figures read as a
 terminal readout rather than a number someone is being asked to pay.
 

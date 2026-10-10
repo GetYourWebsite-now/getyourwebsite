@@ -117,8 +117,8 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
 
          Inter is preloaded because it is the body face and on the critical
          path for every page; JetBrains Mono is not, because it only sets
-         eyebrows and figures and @font-face is lazy, so it is fetched in
-         parallel the moment something uses it. -->
+         the browser-frame URL, step numbers and code-like strings, and
+         @font-face is lazy, so it is fetched the moment something uses it. -->
     <link
       rel="preload"
       as="font"

@@ -50,7 +50,7 @@
 .anim .a-h { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; fill: var(--ink); }
 .anim .a-t { font-size: 13px; font-weight: 600; fill: var(--ink); }
 .anim .a-m { font-size: 13px; fill: var(--ink-muted); }
-.anim .a-mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; fill: var(--ink-muted); }
+.anim .a-label { font-size: 12px; font-weight: 500; fill: var(--ink-muted); }
 /* A condition drawn into the picture (the Care plan on DomainConnect) is
    content, not decoration: body ink, never the faint caption grey. */
 .anim .a-cond { font-size: 13px; font-weight: 500; fill: var(--ink-soft); }

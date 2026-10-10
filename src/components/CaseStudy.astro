@@ -172,14 +172,13 @@ const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').repl
 
   /* Body ------------------------------------------------------------------ */
 
+  /* The client's sector, as written ("Emergency medical equipment"). Kept
+     as a label because the project name doesn't say what the business does. */
   .case__sector {
-    font-family: var(--font-mono);
-    font-size: var(--t-label);
+    font-size: 0.875rem;
     font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
     color: var(--ink-muted);
-    margin-bottom: var(--s-2);
+    margin-bottom: 0.75rem;
   }
 
   .case__name {
