@@ -20,6 +20,13 @@ const BASE_PATH = process.env.BASE_PATH ?? '/';
 export default defineConfig({
   site: SITE_URL,
   base: BASE_PATH,
+  // /benefits was merged into /why-us — its argument ("why a business needs
+  // a site at all") belongs on the page where someone decides whether to
+  // trust us, not on one of its own. A static build emits a small
+  // meta-refresh page here, so anything Google has indexed still lands.
+  redirects: {
+    '/benefits': '/why-us#why-a-website',
+  },
   trailingSlash: 'ignore',
   build: {
     // Emit /work/index.html rather than /work.html so the clean URLs in the nav

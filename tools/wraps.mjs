@@ -21,7 +21,7 @@
 import { chromium } from 'playwright';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/benefits', '/why-us', '/contact'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/why-us', '/contact', '/free-mock'];
 
 // A last line under this fraction of the widest line reads as an orphan.
 const WIDOW_AT = 0.3;
@@ -54,7 +54,7 @@ for (const vp of VIEWPORTS) {
     const found = await page.evaluate(
       ([widowAt]) => {
         const out = [];
-        const els = document.querySelectorAll('h1, h2, h3, .hero__title, .hero__closing');
+        const els = document.querySelectorAll('h1, h2, h3');
 
         for (const el of els) {
           // Skip anything inside the demo sandbox — it deliberately runs its

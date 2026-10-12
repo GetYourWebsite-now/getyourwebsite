@@ -1,0 +1,95 @@
+---
+/**
+ * The with/without-a-website comparison.
+ *
+ * Shown on /why-us as the opening of "Why a website at all" (the argument
+ * that used to be the whole of /benefits). It was on the home page too until
+ * Phase 7, when MergeAnim took that slot; it stays a component so it can
+ * come back without a second copy of the lists.
+ *
+ * The affirmative column used to be an inverted black card. The footer is
+ * the only dark surface on the site now, so the weight that makes the
+ * comparison land comes from an accent edge and accent ticks instead.
+ */
+const WITHOUT = [
+  'Invisible to anyone searching right now',
+  'Only open when someone picks up the phone',
+  'Relies entirely on word of mouth',
+  'Looks smaller than you are',
+];
+
+const WITH = [
+  'Found by people looking for you today',
+  'Open 24/7, answering the same questions for you',
+  'Builds trust before the first conversation',
+  'Takes inquiries while you sleep',
+];
+---
+
+<div class="compare" data-reveal-group>
+  <div class="compare__col compare__col--without" data-reveal>
+    <p class="compare__label">Without a website</p>
+    <ul class="compare__list">
+      {WITHOUT.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+
+  <div class="compare__col compare__col--with" data-reveal>
+    <p class="compare__label">With a website</p>
+    <ul class="compare__list">
+      {WITH.map((item) => <li>{item}</li>)}
+    </ul>
+  </div>
+</div>
+
+<style>
+  .compare {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .compare__col {
+    padding: var(--s-5);
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: var(--bg);
+  }
+
+  .compare__col--without { color: var(--ink-soft); }
+
+  .compare__col--with {
+    border-color: var(--accent);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  .compare__label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: var(--s-4);
+    color: var(--ink-muted);
+  }
+
+  .compare__col--with .compare__label { color: var(--accent); }
+
+  .compare__list { display: flex; flex-direction: column; gap: var(--s-3); }
+
+  .compare__list li {
+    position: relative;
+    padding-left: 1.6rem;
+    font-size: var(--t-body);
+    line-height: 1.5;
+  }
+
+  .compare__list li::before {
+    position: absolute;
+    left: 0;
+    top: -0.05rem;
+  }
+
+  .compare__col--without li::before { content: '×'; color: var(--ink-muted); }
+  .compare__col--with li::before { content: '✓'; color: var(--accent); }
+
+  @media (min-width: 860px) {
+    .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+  }
+</style>

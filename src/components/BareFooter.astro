@@ -1,0 +1,40 @@
+---
+/**
+ * The footer for landing pages: copyright and the two legal links, which
+ * have to be reachable from any page that collects an email address.
+ * Nothing else — see BareHeader for why.
+ */
+import { url } from '../data/url.js';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bare-foot">
+  <div class="shell bare-foot__inner">
+    <p>&copy; {year} GetYourWebsite</p>
+    <p class="bare-foot__legal">
+      <a href={url('/privacy')}>Privacy</a>
+      <a href={url('/terms')}>Terms</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .bare-foot {
+    background: var(--bg);
+    border-top: 1px solid var(--line);
+    padding-block: var(--s-4);
+    font-size: 0.82rem;
+    color: var(--ink-muted);
+  }
+
+  .bare-foot__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-4);
+  }
+
+  .bare-foot__legal { display: flex; gap: var(--s-4); }
+  .bare-foot a { color: var(--ink-soft); }
+</style>

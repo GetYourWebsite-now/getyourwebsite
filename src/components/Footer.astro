@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
       <a href={url('/')} aria-label="GetYourWebsite — home">
         <Wordmark />
       </a>
-      <p class="foot__line">Built by students who'd love to build yours.</p>
+      <p class="foot__line">Websites for local businesses, built and maintained by the people you talk to.</p>
     </div>
 
     <nav class="foot__nav" aria-label="Footer">
@@ -20,9 +20,9 @@ const year = new Date().getFullYear();
       <ul>
         <li><a href={url('/')}>Home</a></li>
         {NAV_LINKS.map((link) => <li><a href={url(link.href)}>{link.label}</a></li>)}
-        {/* Not in NAV_LINKS any more — "How it works" took its header slot —
-            but still a live page, so it stays reachable from here. */}
-        <li><a href={url('/benefits')}>Benefits</a></li>
+        {/* Not in the nav bar, but worth a footer slot: someone who has read
+            the platform section may well want to click through to it. */}
+        <li><a href={url('/demo')}>Demo</a></li>
         {PORTAL_URL && (
           <li>
             <a href={PORTAL_URL} rel="noopener">Sign in</a>
@@ -42,7 +42,7 @@ const year = new Date().getFullYear();
           </li>
         ))}
       </ul>
-      <a class="btn btn--gold btn--sm foot__cta" href={url('/contact')}>Request a free mockup</a>
+      <a class="btn btn--primary btn--sm foot__cta" href={url('/free-mock')}>Get a free mock</a>
     </div>
   </div>
 
@@ -56,10 +56,11 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
+  /* The one dark surface on the site. Flat — no stars, no sheen, no drift.
+     Footer ink is #c9ccd2 on #0a0a0c, which measures 12.29:1. */
   .foot {
-    background: var(--black);
-    color: var(--silver);
-    border-top: 1px solid var(--line-dark);
+    background: var(--footer);
+    color: var(--footer-ink);
     padding-block: var(--s-7) var(--s-4);
   }
 
@@ -72,18 +73,15 @@ const year = new Date().getFullYear();
 
   .foot__line {
     margin-top: var(--s-3);
-    max-width: 22rem;
-    color: var(--silver);
+    max-width: 24rem;
+    color: var(--footer-ink);
     font-size: var(--t-small);
   }
 
   .foot__heading {
-    font-family: var(--font-mono);
-    font-size: var(--t-label);
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--white);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
     margin-bottom: var(--s-3);
   }
 
@@ -95,18 +93,29 @@ const year = new Date().getFullYear();
   }
 
   .foot a {
-    color: var(--silver);
+    color: var(--footer-ink);
     text-decoration: none;
-    font-size: 0.95rem;
+    font-size: 0.9375rem;
     transition: color var(--dur) var(--ease);
   }
 
-  .foot a:hover { color: var(--gold); }
+  .foot a:hover { color: #fff; text-decoration: underline; }
 
-  .foot__cta {
+  /* The primary button inverts to a white fill on this surface (global.css),
+     so its label has to be ink. This rule lives here rather than there
+     because `.foot a` above is scoped, and a scoped selector outranks the
+     unscoped one in global.css whatever order they land in. */
+  /* `.foot a.foot__cta`, not `.foot__cta`. The `.foot a` rule above is
+     (0,2,1) once Astro's scoping attribute is added, so a bare `.foot__cta`
+     at (0,2,0) loses to it and the label stays footer-grey on the white
+     fill — which is what `npm run verify:contrast` caught at 1.61:1. */
+  .foot a.foot__cta {
     margin-top: var(--s-4);
-    color: var(--black) !important;
+    color: var(--ink);
+    text-decoration: none;
   }
+
+  .foot a.foot__cta:hover { color: var(--ink); text-decoration: none; }
 
   .foot__base {
     display: flex;
@@ -114,9 +123,9 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: var(--s-2) var(--s-4);
     padding-top: var(--s-4);
-    border-top: 1px solid var(--line-dark);
+    border-top: 1px solid var(--footer-line);
     font-size: 0.82rem;
-    color: var(--silver);
+    color: var(--footer-ink);
   }
 
   .foot__legal {

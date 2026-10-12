@@ -1,0 +1,232 @@
+---
+import { WIDE, NARROW } from '../data/version-tree.js';
+
+/**
+ * The hero's version tree — a stylised, light rendering of the real thing.
+ *
+ * Why this is drawn rather than screenshotted
+ * ------------------------------------------
+ * The portal's node labels are about 5px tall once a 2880px screenshot is
+ * scaled into a 600px column. The feature it shows —
+ * that revisions branch, and that one of them is the live one — is the
+ * single most important thing on the page, and it was illegible.
+ *
+ * So this is the same feature with the same five labels, drawn at a size you
+ * can actually read. It is not a mock of something we do not have: the
+ * real surface is three clicks away at /demo, and a real screenshot of it is
+ * further down the same page under "The platform".
+ *
+ * Two layouts, not one scaling layout
+ * -----------------------------------
+ * An SVG with a viewBox scales its text along with everything else, so one
+ * horizontal tree would render at ~7px on a phone — the exact problem being
+ * fixed. The wide layout runs left-to-right; below 640px a second, vertical
+ * layout takes over. Both are aria-hidden and the description below them
+ * carries the content once, so a screen reader does not hear the labels
+ * twice.
+ *
+ * Geometry note: the connectors use pathLength="1", so the draw-on animation
+ * is exact in normalised units and does not have to know how long each real
+ * path is.
+ */
+
+---
+
+<div class="vt" data-version-tree>
+  {
+    [
+      { key: 'wide', box: '0 0 636 244', g: WIDE },
+      { key: 'narrow', box: '0 0 356 356', g: NARROW },
+    ].map(({ key, box, g }) => (
+      <svg
+        class={`vt__svg vt--${key}`}
+        viewBox={box}
+        role="presentation"
+        aria-hidden="true"
+        focusable="false"
+      >
+        {g.edges.map((d, i) => (
+          <path class="vt__edge" d={d} pathLength="1" style={`--i:${i + 1}`} />
+        ))}
+
+        {g.nodes.map((n, i) => (
+          <g class="vt__node" style={`--i:${i}`}>
+            <rect class="vt__card" x={n.x} y={n.y} width={n.w ?? g.w} height={g.h} rx="9" />
+            <text class="vt__label" x={n.x + 13} y={n.y + 26}>{n.label}</text>
+            <text class="vt__caption" x={n.x + 13} y={n.y + 47}>Approved</text>
+
+            {/* The badge exists on both the version that is live now and the
+                one the animation hands it to; they cross-fade, which is what
+                pressing host actually looks like. */}
+            {(n.live || n.target) && (
+              <g class={n.live ? 'vt__live vt__live--a' : 'vt__live vt__live--b'}>
+                <rect
+                  class="vt__pill"
+                  x={n.x + (n.w ?? g.w) - 58}
+                  y={n.y + g.h - 31}
+                  width="46"
+                  height="19"
+                  rx="5"
+                />
+                <text class="vt__pill-text" x={n.x + (n.w ?? g.w) - 35} y={n.y + g.h - 17}>
+                  Live
+                </text>
+              </g>
+            )}
+          </g>
+        ))}
+      </svg>
+    ))
+  }
+
+  <p class="sr-only">
+    A version tree with five versions of a site: First build, then Warmer
+    photos, then Online orders, which branches into Christmas and Spring menu.
+    Online orders is the version currently live, and the live badge can be
+    moved to any of the others.
+  </p>
+</div>
+
+<style>
+  .vt {
+    background: var(--bg-alt);
+    padding: var(--s-3) var(--s-2);
+  }
+
+  .vt__svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* Capped and centred. The narrow viewBox is only 340 units wide, so in a
+     600px-wide stacked hero it scaled the labels up to 23px — the same
+     scaling problem as the wide layout, in the other direction. */
+  .vt--narrow {
+    display: none;
+    max-width: 380px;
+    margin-inline: auto;
+  }
+
+  /* Below this the wide tree's text would scale under about 12px, which is
+     the illegibility this component exists to fix. */
+  @media (max-width: 640px) {
+    .vt--wide { display: none; }
+    .vt--narrow { display: block; }
+  }
+
+  /* Nodes ---------------------------------------------------------------- */
+
+  .vt__card {
+    fill: var(--bg);
+    stroke: var(--line);
+    stroke-width: 1;
+  }
+
+  .vt__label {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    fill: var(--ink);
+  }
+
+  .vt__caption {
+    font-family: var(--font-body);
+    font-size: 12px;
+    fill: var(--ink-muted);
+  }
+
+  .vt--narrow .vt__label { font-size: 16px; }
+  .vt--narrow .vt__caption { font-size: 12.5px; }
+
+  /* Connectors ----------------------------------------------------------- */
+
+  .vt__edge {
+    fill: none;
+    stroke: var(--ink-muted);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  /* The live badge ------------------------------------------------------- */
+
+  .vt__pill { fill: var(--accent); }
+
+  .vt__pill-text {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    fill: #fff;
+    text-anchor: middle;
+  }
+
+  /* Motion ----------------------------------------------------------------
+     Nodes arrive in sequence, each connector draws once its source node is
+     there, and then the live badge moves to the Christmas branch and back on
+     a loop. Everything is opacity or a normalised dash offset, so none of it
+     causes layout work.
+
+     The one piece of visual budget on this site is spent here, inside the
+     product, rather than on decoration around it. */
+
+  @keyframes vt-node-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  @keyframes vt-edge-draw {
+    from { stroke-dashoffset: 1; }
+    to   { stroke-dashoffset: 0; }
+  }
+
+  /* 5s round trip: the badge moves at 1.6s, moves back at 3.6s, and the rest
+     is the pause that stops it reading as a blinking light. */
+  @keyframes vt-live-here {
+    0%, 28%   { opacity: 1; }
+    32%, 68%  { opacity: 0; }
+    72%, 100% { opacity: 1; }
+  }
+
+  @keyframes vt-live-there {
+    0%, 28%   { opacity: 0; }
+    32%, 68%  { opacity: 1; }
+    72%, 100% { opacity: 0; }
+  }
+
+  .vt__node {
+    opacity: 0;
+    animation: vt-node-in 420ms var(--ease) forwards;
+    animation-delay: calc(var(--i) * 120ms);
+  }
+
+  .vt__edge {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: vt-edge-draw 300ms var(--ease) forwards;
+    /* One beat behind the node it leaves from. */
+    animation-delay: calc(var(--i) * 120ms + 300ms);
+  }
+
+  /* Starts once the tree has finished arriving (~1s). */
+  .vt__live--a { animation: vt-live-here 5s var(--ease) 0.9s infinite; }
+  .vt__live--b { opacity: 0; animation: vt-live-there 5s var(--ease) 0.9s infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The finished state, held still: everything present, the badge on the
+       version that is actually live. */
+    .vt__node,
+    .vt__edge,
+    .vt__live--a,
+    .vt__live--b {
+      animation: none !important;
+    }
+
+    .vt__node { opacity: 1; transform: none; }
+    .vt__edge { stroke-dashoffset: 0; }
+    .vt__live--a { opacity: 1; }
+    .vt__live--b { opacity: 0; }
+  }
+</style>

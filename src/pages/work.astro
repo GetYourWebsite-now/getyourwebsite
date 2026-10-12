@@ -1,48 +1,77 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseStudy from '../components/CaseStudy.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { PROJECTS } from '../data/site.js';
+import { CLIENT_PROJECTS, CONCEPT_PROJECTS } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
 <BaseLayout
-  title="Our Work"
-  description="Six concept websites we've built for local businesses — bakery, dental, gym, auto repair, landscaping and restaurant. All live, all clickable."
+  title="Work"
+  description="Real client work — Allergy Rescue Kit and the ChemEd 2027 Interest Map — plus six concept sites we built for fictional businesses to show range."
 >
-  <section class="section section--dark has-stars has-glow section--tight page-head">
+  <section class="section section--alt section--tight page-head">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <p class="eyebrow">Our work</p>
-        <h1>Concept sites we've built — real client work coming soon.</h1>
+        <h1>Work</h1>
         <p class="lead">
-          We're new, and we'd rather show you something honest than something
-          invented. Every site below is a complete, working build we made to
-          prove what we can do. Open any of them and click around — they're real
-          pages, not pictures of pages.
+          Two live client projects, and six concept sites we built for
+          fictional businesses to show range. Every one of them is a complete,
+          working build — open any of them and click around.
         </p>
       </div>
     </div>
   </section>
 
+  <!-- Section 1 — real client work, leading the page -------------------- -->
   <section class="section">
     <div class="shell">
-      <div class="grid grid-3" data-reveal-group>
-        {PROJECTS.map((project) => <ProjectCard project={project} reveal level={2} />)}
+      <div class="section-head" data-reveal>
+        <h2>Built for people who paid us to build it.</h2>
+      </div>
+
+      <div class="cases">
+        {
+          CLIENT_PROJECTS.map((project, i) => (
+            <div class="cases__item" data-reveal>
+              <CaseStudy project={project} flip={i % 2 === 1} level={3} priority={i === 0} />
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
 
-  <section class="section section--dark has-stars has-glow">
+  <!-- Section 2 — the concept sites, quieter and labelled honestly ------ -->
+  <section class="section section--alt">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <h2>Concept sites — fictional businesses we built to show range</h2>
+        <p class="lead">
+          None of these are clients. We invented the business, wrote the copy
+          and built the site, so you can see what a bakery or a gym or a
+          dental practice would get. They are full working sites, not pictures
+          of sites.
+        </p>
+      </div>
+
+      <div class="grid grid-3 concepts" data-reveal-group>
+        {CONCEPT_PROJECTS.map((project) => <ProjectCard project={project} reveal quiet level={3} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2>Want one of these with your name on it?</h2>
       <p class="lead" style="margin-inline:auto">
-        Send us your business and we'll build you a free homepage mockup — the
-        same quality as everything above, with your brand, your words and your
-        photos.
+        Tell us about your business and we'll build you a free mock of your
+        homepage — the same quality as everything above, with your brand, your
+        words and your photos.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
-        <a class="btn btn--ghost btn--lg" href={url('/pricing')}>See pricing</a>
+        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+        <a class="btn btn--secondary btn--lg" href={url('/pricing')}>See pricing</a>
       </div>
     </div>
   </section>
@@ -50,4 +79,23 @@ import { url } from '../data/url.js';
 
 <style>
   .page-head .section-head { margin-bottom: 0; }
+
+  .cases {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-8);
+  }
+
+  /* A rule between the two cases, so they read as two pieces of work rather
+     than one long block. */
+  .cases__item + .cases__item {
+    padding-top: var(--s-8);
+    border-top: 1px solid var(--line);
+  }
+
+  /* The concept grid is deliberately quieter than the client work above it:
+     smaller cards in a tighter grid. The hierarchy IS the honesty here — if
+     a fictional bakery looks as important as a paying client's site, the
+     page is overstating what we have done. */
+  .concepts { gap: var(--s-4); }
 </style>

@@ -1,0 +1,87 @@
+---
+/**
+ * An accordion built on <details>/<summary>, so it opens and closes with no
+ * JavaScript at all and is keyboard-operable for free.
+ *
+ * The first item is open by default: an accordion where everything is shut
+ * reads as a wall of questions nobody has answered.
+ */
+interface Props {
+  items: { q: string; a: string }[];
+  /** Heading level for each question. */
+  level?: 2 | 3;
+}
+
+const { items, level = 3 } = Astro.props;
+const Heading = `h${level}`;
+---
+
+<div class="faq">
+  {
+    items.map((item, i) => (
+      <details class="faq__item" open={i === 0}>
+        <summary>
+          <Heading class="faq__q">{item.q}</Heading>
+          <span class="faq__mark" aria-hidden="true" />
+        </summary>
+        <p class="faq__a">{item.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  .faq { border-top: 1px solid var(--line); }
+
+  .faq__item { border-bottom: 1px solid var(--line); }
+
+  .faq__item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: var(--s-4) 0;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .faq__item summary::-webkit-details-marker { display: none; }
+  .faq__item summary:hover .faq__q { color: var(--accent); }
+
+  .faq__q {
+    font-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+    font-weight: 600;
+    transition: color var(--dur) var(--ease);
+  }
+
+  /* A plus that becomes a minus. Two spans would be one more element than
+     this needs; it is a pseudo-pair on one. */
+  .faq__mark {
+    position: relative;
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+  }
+
+  .faq__mark::before,
+  .faq__mark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1.5px;
+    background: var(--accent);
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .faq__mark::after { transform: rotate(90deg); }
+  .faq__item[open] .faq__mark::after { transform: rotate(0deg); }
+
+  .faq__a {
+    padding-bottom: var(--s-4);
+    max-width: 46rem;
+    color: var(--ink-soft);
+  }
+</style>

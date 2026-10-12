@@ -1,226 +1,254 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import CaseStudy from '../components/CaseStudy.astro';
+import VersionTree from '../components/VersionTree.astro';
 import TierCard from '../components/TierCard.astro';
-import { FEATURED_PROJECTS, TIERS, PRICING_DISCLAIMER } from '../data/site.js';
+import MergeAnim from '../components/anim/MergeAnim.astro';
+import ClickToChange from '../components/anim/ClickToChange.astro';
+import PhotoDrop from '../components/anim/PhotoDrop.astro';
+import DomainConnect from '../components/anim/DomainConnect.astro';
+import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
 <BaseLayout
   title="GetYourWebsite"
-  description="Custom websites for local businesses, built by high school students. Request a free mockup — no commitment, no cost."
-  transparentNav
-  bleed
+  description="Websites for local businesses, done for you. A free mock first, then we build the site, host it and keep it current — every version kept, one button to choose what's live."
 >
-  <Hero />
-
-  <!-- 1. Our Work ------------------------------------------------------- -->
-  <section class="section">
-    <div class="shell">
-      <div class="section-head" data-reveal>
-        <p class="eyebrow">Our work</p>
-        <h2>Concept sites, built like real ones.</h2>
-        <p class="lead">
-          Every one of these is a full, working site — not a mock-up in a design tool.
-          Open them and click around.
+  <!-- 1. Hero ------------------------------------------------------------
+       Left: the offer, and that we do the work. Right: the version tree,
+       drawn rather than screenshotted — see VersionTree.astro.
+  -->
+  <section class="section section--hero">
+    <div class="shell hero">
+      <div class="hero__copy">
+        <p class="eyebrow">Websites for local businesses</p>
+        {/* Non-breaking space before the em dash: without it the line broke
+            as "Your business online / — built, hosted, and", starting a line
+            with a dash. A dash binds to the word before it. */}
+        <h1 class="hero__title">
+          Your business online&nbsp;— built, hosted, and kept current for you.
+        </h1>
+        <p class="lead hero__lead">
+          You never touch a website builder. Tell us about the business; we
+          build it, host it and keep it current.
+        </p>
+        <div class="btn-row hero__cta">
+          <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+          <a
+            class="btn btn--secondary btn--lg"
+            href="https://allergyrescuekit.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            See a live client site
+            <span class="sr-only">— Allergy Rescue Kit (opens in a new tab)</span>
+          </a>
+        </div>
+        <p class="hero__live">
+          Live for <a href="https://allergyrescuekit.com" target="_blank" rel="noopener noreferrer">Allergy
+          Rescue Kit</a> and the <a
+            href="https://chemed-interest-map-production.up.railway.app/"
+            target="_blank"
+            rel="noopener noreferrer">ChemEd 2027 Interest Map</a>.
         </p>
       </div>
 
-      <div class="grid grid-3" data-reveal-group>
-        {FEATURED_PROJECTS.map((project) => <ProjectCard project={project} reveal />)}
-      </div>
-
-      <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/work')}>See all six builds</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- 2. Demo ----------------------------------------------------------- -->
-  <section class="section section--dark has-stars">
-    <div class="shell demo-teaser">
-      <div class="demo-teaser__copy" data-reveal>
-        <p class="eyebrow">The demo</p>
-        <h2>See what it's like to be our client.</h2>
-        <p class="lead">
-          When we build your site you get a private portal: open your website,
-          click any part of it, and tell us what to change. No email chains, no
-          "third paragraph, second sentence".
-        </p>
-        <p class="lead">
-          We rebuilt that portal here with sample data so you can try it before
-          you ever contact us.
-        </p>
-        <p class="demo-teaser__cta">
-          <a class="btn btn--gold" href={url('/demo')}>Try the client demo</a>
-        </p>
-      </div>
-
-      <!-- A stylised browser frame around a screenshot of the real sandbox -->
-      <div class="demo-teaser__frame" data-reveal>
+      <figure class="hero__shot">
         <div class="browser">
           <div class="browser__bar" aria-hidden="true">
             <span></span><span></span><span></span>
-            <div class="browser__url">portal.getyourwebsite</div>
+            <div class="browser__url">portal.getyourwebsite.now</div>
           </div>
-          <img
-            src={url('/shots/demo.webp')}
-            alt="The GetYourWebsite client portal, showing a website version list with Open and Request changes buttons."
-            width="1280"
-            height="896"
-            loading="lazy"
-            decoding="async"
-          />
+          <VersionTree />
         </div>
-      </div>
+        <figcaption class="hero__caption">
+          Your version tree. One button decides which version is live.
+        </figcaption>
+      </figure>
     </div>
   </section>
 
-  <!-- 3. Benefits ------------------------------------------------------- -->
+  <!-- 2. Who does the work ---------------------------------------------------
+       The positioning, as a drawing. Replaced the with/without-a-website
+       comparison, which lives on /why-us now.
+  -->
+  <section class="section section--alt">
+    <div class="shell">
+      <MergeAnim />
+    </div>
+  </section>
+
+  <!-- 3. Our work — the two real client projects --------------------- -->
   <section class="section">
     <div class="shell">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">Why a website</p>
-        <h2>The difference a website makes.</h2>
+      <div class="section-head" data-reveal>
+        <h2>Two clients, both live.</h2>
+        <p class="lead">Real sites, open to anyone. No wall of logos.</p>
       </div>
 
-      <div class="compare" data-reveal-group>
-        <div class="compare__col compare__col--without" data-reveal>
-          <p class="compare__label">Without a website</p>
-          <ul class="compare__list">
-            <li>Invisible to anyone searching right now</li>
-            <li>Only open when someone picks up the phone</li>
-            <li>Relies entirely on word of mouth</li>
-            <li>Looks smaller than you are</li>
-          </ul>
-        </div>
-
-        <div class="compare__col compare__col--with" data-reveal>
-          <p class="compare__label">With a website</p>
-          <ul class="compare__list">
-            <li>Found by people looking for you today</li>
-            <li>Open 24/7, answering the same questions for you</li>
-            <li>Builds trust before the first conversation</li>
-            <li>Takes inquiries while you sleep</li>
-          </ul>
-        </div>
+      <div class="cases-2up" data-reveal-group>
+        {
+          CLIENT_PROJECTS.map((project) => (
+            <div data-reveal>
+              <CaseStudy project={project} compact level={3} />
+            </div>
+          ))
+        }
       </div>
 
       <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/benefits')}>The full case for getting online</a>
+        <a class="link-arrow" href={url('/work')}>See all work</a>
       </p>
     </div>
   </section>
 
-  <!-- 4. Pricing -------------------------------------------------------- -->
-  <section class="section section--dark has-stars">
+  <!-- 4. How it works — three steps, typography only ---------------------
+       The deposit split and the balance-at-launch detail moved to the
+       pricing FAQ, where someone deciding to pay is looking for them.
+  -->
+  <section class="section section--alt">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <h2>Three steps, and the first is free.</h2>
+      </div>
+
+      <ol class="steps" data-reveal-group>
+        <li class="step" data-reveal>
+          <span class="step__num">01</span>
+          <h3>A free mock</h3>
+          <p>Tell us about your business. We send back a homepage concept, free.</p>
+        </li>
+        <li class="step" data-reveal>
+          <span class="step__num">02</span>
+          <h3>Approve and start</h3>
+          <p>Like it? We confirm the price, then build the full site.</p>
+        </li>
+        <li class="step" data-reveal>
+          <span class="step__num">03</span>
+          <h3>We run it for you</h3>
+          <p>On the Care plan we host it and keep every change.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 5. Platform ----------------------------------------------------------
+       One real capture of the portal, then three drawings of the things it
+       does that a still can't show. The drawings replaced three paragraphs.
+  -->
+  <section class="section">
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <h2>Running the site is the part we built.</h2>
+        <p class="lead">Every client gets this portal.</p>
+        <p class="section-head__link">
+          <a class="link-arrow" href={url('/demo')}>Try it in the demo</a>
+        </p>
+      </div>
+
+      <figure class="platform-shot shot" data-reveal>
+        <img
+          src={url('/shots/portal-my-website.webp')}
+          alt="The My website tab in the client portal, showing the live version, a list of approved versions, and Open, Quick edit, Request changes and Attach images buttons on each."
+          width="1300"
+          height="763"
+          loading="lazy"
+          decoding="async"
+        />
+      </figure>
+
+      <div class="feature" data-reveal>
+        <div class="feature__visual"><ClickToChange /></div>
+        <div class="feature__copy">
+          <h3>Click it. Say what to change.</h3>
+          <p>No emails describing paragraphs. A person builds and reviews every change.</p>
+        </div>
+      </div>
+
+      <div class="feature feature--flip" data-reveal>
+        <div class="feature__visual"><PhotoDrop /></div>
+        <div class="feature__copy">
+          <h3>Your photos, dragged into place.</h3>
+          <p>Drop your own pictures onto your site's photo slots, and save.</p>
+        </div>
+      </div>
+
+      <div class="feature" data-reveal>
+        <div class="feature__visual"><DomainConnect /></div>
+        <div class="feature__copy">
+          <h3>Your domain, handled.</h3>
+          <p>
+            Hosted on Cloudflare's network: hundreds of cities in 100+
+            countries, by their own figures.
+          </p>
+          <p class="card__note">
+            <a href="https://www.cloudflare.com/network/" target="_blank" rel="noopener noreferrer">
+              Check Cloudflare's figures
+              <span class="sr-only">(opens in a new tab)</span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. Pricing teaser ---------------------------------------------------
+       Reads BUILD_TIERS, the same array /pricing renders, so the two can
+       never drift apart again. Teaser cards: name, price and tagline; the
+       feature lists are one click away.
+  -->
+  <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">Pricing</p>
         <h2>Three ways to get off the ground.</h2>
-        <p class="lead">And the first step costs nothing.</p>
+        {/* The first sentence of PRICING_DISCLAIMER. The rest — which tier most
+            businesses land in — is on /pricing, next to the tiers. */}
+        <p class="lead">Final quote after we've seen your free mock.</p>
       </div>
 
       <div class="grid grid-3" data-reveal-group>
-        {TIERS.map((tier) => <TierCard tier={tier} condensed reveal />)}
+        {BUILD_TIERS.map((tier) => <TierCard tier={tier} teaser reveal />)}
       </div>
 
-      <p class="pricing-note" data-reveal>{PRICING_DISCLAIMER}</p>
+      <p class="care-line" data-reveal>
+        Hosting and upkeep: {CARE_PLAN.name}, {CARE_PLAN.price}{CARE_PLAN.period}.
+      </p>
 
-      <p class="section-more" data-reveal>
+      <p class="section-more section-more--center" data-reveal>
         <a class="link-arrow" href={url('/pricing')}>Full pricing and FAQ</a>
       </p>
     </div>
   </section>
 
-  <!-- 5. Why Us --------------------------------------------------------- -->
+  <!-- 7. Why us ------------------------------------------------------------
+       One column on purpose: no team photo exists, and a placeholder for one
+       would be a visible reminder that the page is unfinished.
+  -->
   <section class="section">
-    <div class="shell why-teaser">
+    <div class="shell">
       <div class="why-teaser__copy" data-reveal>
-        <p class="eyebrow">Why us</p>
-        <h2>We're students. That's the point.</h2>
+        <h2>You talk to the people who build it.</h2>
         <p class="lead">
-          We build websites for businesses in our town because they deserve to be
-          online, and because we're putting ourselves through college. You get our
-          full attention — our reputation here is the only one we have.
+          A small team. You email the person writing your site, and we reply
+          within one business day.
         </p>
         <p class="section-more">
           <a class="link-arrow" href={url('/why-us')}>What makes us different</a>
         </p>
       </div>
-
-      <figure class="why-teaser__photo" data-reveal>
-        <!-- [EDIT] Replace with a real team photo: public/team.webp, then swap
-             this placeholder block for an <img>. -->
-        <div class="photo-placeholder" role="img" aria-label="Placeholder for a team photo">
-          <span>[EDIT: team photo]</span>
-        </div>
-      </figure>
     </div>
   </section>
 
-  <!-- 6. How it works — the platform, in brief ------------------------- -->
-  <!-- The full treatment is /how-it-works. This is the teaser: lead with the
-       version switch, because it's the capability nobody expects and the one
-       that separates us from someone who hands over a folder of HTML. -->
-  <section class="section">
-    <div class="shell">
-      <div class="section-head section-head--center" data-reveal>
-        <p class="eyebrow">How it works</p>
-        <h2>The site is the easy part. Running it is what we built.</h2>
-        <p class="lead">
-          Every change you ask for is saved as its own version of your site, and
-          you decide which one the world sees.
-        </p>
-      </div>
-
-      <div class="grid grid-3" data-reveal-group>
-        <article class="card" data-reveal>
-          <h3>Switch versions with one button</h3>
-          <p>
-            Ask for a Christmas version in November and press host. Press host
-            on the old one in January and you're back. Build it once, reuse it
-            every year — nothing is ever overwritten.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>Hosting and the domain, handled</h3>
-          <p>
-            We register your domain and point it at your site, served from
-            Cloudflare's network so it's quick for the people near you. You
-            never see a DNS record.
-          </p>
-        </article>
-        <article class="card" data-reveal>
-          <h3>Your photos, dragged into place</h3>
-          <p>
-            Drop your own pictures onto the photo slots in your site and save.
-            No emailing files back and forth, no waiting on us.
-          </p>
-        </article>
-      </div>
-
-      <p class="section-more" data-reveal>
-        <a class="link-arrow" href={url('/how-it-works')}>
-          How all of it works
-        </a>
-      </p>
-    </div>
-  </section>
-
-  <!-- 7. Final CTA ------------------------------------------------------ -->
-  <section class="section section--dark has-stars has-glow cta-band">
+  <!-- 8. Final CTA --------------------------------------------------------- -->
+  <section class="section section--alt cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2 class="cta-band__title">
-        Your business deserves a website that's above and beyond.
-      </h2>
+      <h2 class="cta-band__title">See your business online before you pay anything.</h2>
       <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send back a free mockup of your homepage. No
-        commitment, no cost, no catch.
+        Tell us about it and we'll send a free mock of your homepage.
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--gold btn--lg" href={url('/contact')}>Request a free mockup</a>
+        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
       </div>
     </div>
   </section>
@@ -228,166 +256,225 @@ import { url } from '../data/url.js';
 
 <style>
   .section-more { margin-top: var(--s-6); }
-  .section-head--center + .grid + .section-more,
-  .compare + .section-more { text-align: center; }
+  .section-more--center { text-align: center; }
+  .section-head__link { margin-top: var(--s-3); }
 
-  /* Demo teaser ---------------------------------------------------------- */
 
-  .demo-teaser {
+  /* Hero ----------------------------------------------------------------- */
+
+  /* Tighter at the top than a standard section: the nav is already a band of
+     white above it, so a full --section-y leaves the headline floating. */
+  .section--hero {
+    padding-top: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+  }
+
+  .hero {
     display: grid;
     gap: var(--s-6);
     align-items: center;
   }
 
-  .demo-teaser__cta { margin-top: var(--s-5); }
-  .demo-teaser .lead + .lead { margin-top: var(--s-3); }
+  /* Well below --t-display's 72px, for two reasons. The headline shares the
+     row with the version tree, so it never gets the full measure a
+     full-width hero would; and it is now a sentence that says what we do
+     rather than a three-word slogan, so it wants to be read rather than
+     declaimed. At 48px it runs to three comfortable lines in this column. */
+  .hero__title {
+    font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
+  }
 
+  .hero__lead {
+    max-width: 34rem;
+    margin-top: var(--s-4);
+  }
+
+  .hero__cta { margin-top: var(--s-5); }
+
+  /* Quiet, and deliberately below the buttons: it is corroboration for
+     someone already interested, not a competing call to action. */
+  .hero__live {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 30rem;
+  }
+
+  .hero__live a { color: var(--ink-soft); text-decoration-color: var(--line-input); }
+  .hero__live a:hover { color: var(--accent); text-decoration-color: currentColor; }
+
+  /* Capped so the stacked hero does not render the tree at 1100px wide with
+     24px labels. Has no effect in the two-column layout, where the column is
+     already narrower than this. */
+  .hero__shot { min-width: 0; max-width: 700px; }
+
+  .hero__caption {
+    margin-top: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 34rem;
+  }
+
+  /* A light browser frame around a product screenshot. The chrome is the one
+     place the shadow token is used — it lifts the shot off the page so it
+     reads as a thing rather than a picture of one. */
   .browser {
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius);
     overflow: hidden;
-    border: 1px solid var(--line-dark);
-    background: var(--panel);
-    box-shadow: var(--shadow-dark);
+    border: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: var(--shadow-shot);
   }
 
   .browser__bar {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.7rem 0.9rem;
-    background: #16161d;
-    border-bottom: 1px solid var(--line-dark);
+    padding: 0.6rem 0.8rem;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
   }
 
   .browser__bar > span {
-    width: 9px;
-    height: 9px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(230, 231, 235, 0.22);
+    background: #d2d5db;
   }
 
   .browser__url {
     flex: 1;
     margin-left: 0.5rem;
-    padding: 0.2rem 0.7rem;
-    border-radius: var(--radius-pill);
-    background: rgba(230, 231, 235, 0.06);
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    border: 1px solid var(--line);
     font-family: var(--font-mono);
     font-size: 0.72rem;
-    color: var(--silver);
+    color: var(--ink-muted);
   }
 
-  .browser img { width: 100%; height: auto; }
-
-  /* Benefits compare ----------------------------------------------------- */
-
-  .compare {
+  .cases-2up {
     display: grid;
-    gap: var(--s-4);
+    gap: var(--s-7);
   }
 
-  .compare__col {
-    padding: var(--s-5);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--line-light);
-  }
+  /* How it works ---------------------------------------------------------- */
 
-  .compare__col--without {
-    background: #fafafb;
-    color: var(--ink-soft);
-  }
-
-  .compare__col--with {
-    background: var(--black);
-    border-color: var(--black);
-    color: var(--silver-light);
-  }
-
-  .compare__label {
-    font-family: var(--font-mono);
-    font-size: var(--t-label);
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    margin-bottom: var(--s-4);
-  }
-
-  .compare__col--without .compare__label { color: var(--ink-soft); }
-  .compare__col--with .compare__label { color: var(--gold); }
-
-  .compare__list { display: flex; flex-direction: column; gap: var(--s-3); }
-
-  .compare__list li {
-    position: relative;
-    padding-left: 1.7rem;
-    font-size: 1.05rem;
-    line-height: 1.5;
-  }
-
-  .compare__list li::before {
-    position: absolute;
-    left: 0;
-    top: -0.05rem;
-    font-family: var(--font-mono);
-    font-size: 1.05rem;
-  }
-
-  .compare__col--without li::before { content: '×'; color: #b0b4bc; }
-  .compare__col--with li::before { content: '✓'; color: var(--gold); }
-
-  /* Why us teaser -------------------------------------------------------- */
-
-  .why-teaser {
+  .steps {
     display: grid;
-    gap: var(--s-6);
-    align-items: center;
+    gap: var(--s-5);
   }
 
-  .photo-placeholder {
+  .step {
     display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 3;
-    border-radius: var(--radius-lg);
-    border: 1px dashed rgba(10, 10, 12, 0.22);
-    background:
-      repeating-linear-gradient(
-        -45deg,
-        #f6f6f8 0 12px,
-        #fdfdfe 12px 24px
-      );
-    color: var(--ink-soft);
+    gap: 0.4rem;
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--line);
+  }
+
+  /* Numbers set in mono at body size, not in a filled circle. A numeral in a
+     disc is the decoration this design is removing, and the sequence is
+     already obvious from the numbers. */
+  .step__num {
     font-family: var(--font-mono);
     font-size: var(--t-small);
-    letter-spacing: 0.08em;
+    font-weight: 500;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    padding-top: 0.15rem;
   }
 
-  /* Pricing note --------------------------------------------------------- */
+  .step p { color: var(--ink-soft); }
 
-  .pricing-note {
-    max-width: 44rem;
+  /* Platform ------------------------------------------------------------- */
+
+  .platform-shot { margin-bottom: var(--s-6); }
+  .platform-shot img { width: 100%; height: auto; }
+
+  /* Three rows, drawing and one line each, the drawing alternating sides.
+     Stacked, the words come first so the drawing has a caption to explain
+     it before it starts moving. */
+  .feature {
+    display: grid;
+    gap: var(--s-4);
+    align-items: center;
+    padding-block: var(--s-6);
+    border-top: 1px solid var(--line);
+  }
+
+  .feature__copy { order: -1; }
+  .feature__copy h3 {
+    font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
+    margin-bottom: var(--s-2);
+  }
+  .feature__copy p { color: var(--ink-soft); }
+  .feature__visual { min-width: 0; }
+
+  .card__note { margin-top: var(--s-3); font-size: var(--t-small); }
+
+  /* Pricing note ---------------------------------------------------------- */
+
+  .care-line {
     margin: var(--s-5) auto 0;
     text-align: center;
     font-size: var(--t-small);
-    color: var(--silver);
+    font-weight: 550;
+    color: var(--ink);
+    max-width: none;
   }
 
-  /* Final CTA ------------------------------------------------------------ */
+  /* Final CTA ------------------------------------------------------------- */
 
   .cta-band__title {
-    /* Sized so this sentence holds two lines at desktop and three on a phone.
-       It sits in .shell-narrow (780px), which is the tightest measure any
-       heading this large has to live in, so it's the first thing to break when
-       the heading face gets wider — it ran to three and four lines
-       respectively before this came down from 3.4rem. tools/wraps.mjs. */
-    font-size: clamp(1.85rem, 1.25rem + 2.8vw, 3.1rem);
+    font-size: clamp(1.75rem, 1.25rem + 2.2vw, 2.6rem);
     margin-bottom: var(--s-4);
   }
 
-  /* Two-up layouts kick in at tablet width ------------------------------- */
+  /* Two-up layouts -------------------------------------------------------- */
 
   @media (min-width: 860px) {
-    .demo-teaser { grid-template-columns: 0.9fr 1.1fr; gap: var(--s-8); }
-    .why-teaser { grid-template-columns: 1.1fr 0.9fr; gap: var(--s-8); }
-    .compare { grid-template-columns: 1fr 1fr; gap: var(--s-5); }
+    .cases-2up { grid-template-columns: 1fr 1fr; gap: var(--s-6); }
+
+
+    /* Subgrid, so the three numbers, the three headings and the three
+       paragraphs each sit on a shared row. Without it a heading that wraps
+       to two lines — which the third one did at several widths — pushes only
+       its own paragraph down and the row stops reading as a row. Shortening
+       the copy would fix today's width and break at the next one. */
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto auto;
+      gap: var(--s-4) var(--s-5);
+    }
+
+    .step {
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      gap: 0.4rem;
+    }
+
+    .feature { grid-template-columns: 1.15fr 1fr; gap: var(--s-7); }
+    .feature__copy { order: 2; }
+    .feature--flip { grid-template-columns: 1fr 1.15fr; }
+    .feature--flip .feature__copy { order: 1; }
+    .feature--flip .feature__visual { order: 2; }
+
+  }
+
+  /* The hero goes two-up at 1240, much later than the 860 everything else
+     uses. Below that the image column is under ~520px, and because the tree
+     is an SVG its labels scale with the box — at 1100 they rendered at
+     10.6px, which is the illegibility the drawn tree exists to fix. Stacked,
+     the tree gets the full shell (capped above) and reads at ~14px.
+     Measured across eleven widths, not guessed. */
+  @media (min-width: 1240px) {
+    .hero {
+      /* The tree needs the wider half. Its text scales with the SVG viewBox,
+         so a narrow column shrinks the labels — which is the one thing this
+         hero cannot afford. The headline is a sentence at 48px and reads
+         fine in the smaller half. */
+      grid-template-columns: 1fr 1.25fr;
+      gap: var(--s-7);
+    }
   }
 </style>

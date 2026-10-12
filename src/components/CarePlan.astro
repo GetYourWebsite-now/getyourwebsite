@@ -1,0 +1,175 @@
+---
+/**
+ * The Care plan. A full-width card rather than a fourth column, because it
+ * is a different kind of thing: the build tiers are paid once, this is the
+ * one that keeps the site alive.
+ *
+ * The monthly/yearly toggle is the only toggle on the page. It is two radio
+ * inputs and a CSS sibling selector — no JavaScript, so it works on a dead
+ * JS budget and under reduced motion with nothing to disable.
+ */
+import { CARE_PLAN as care } from '../data/site.js';
+---
+
+<section class="care" aria-labelledby="care-name">
+  <div class="care__lead">
+    <p class="eyebrow">Keeping it running</p>
+    <h2 class="care__name" id="care-name">{care.name}</h2>
+
+    <fieldset class="care__toggle">
+      <legend class="sr-only">Billing period</legend>
+      <input type="radio" name="care-period" id="care-monthly" checked />
+      <label for="care-monthly">Monthly</label>
+      <input type="radio" name="care-period" id="care-yearly" />
+      <label for="care-yearly">Yearly</label>
+    </fieldset>
+
+    <p class="care__price care__price--monthly">
+      {care.price}<span class="care__period">{care.period}</span>
+    </p>
+    <p class="care__price care__price--yearly">
+      {care.priceYearly}<span class="care__period">{care.periodYearly}</span>
+      <span class="care__saving">{care.yearlyNote}</span>
+    </p>
+
+    <p class="care__footnote">{care.footnote}</p>
+  </div>
+
+  <ul class="care__features">
+    {care.features.map((f) => <li>{f}</li>)}
+  </ul>
+</section>
+
+<style>
+  .care {
+    display: grid;
+    gap: var(--s-5);
+    padding: var(--s-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+
+  .care__name {
+    font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.6rem);
+    margin-bottom: var(--s-4);
+  }
+
+  /* Toggle ----------------------------------------------------------------
+     Radios + labels, styled as a segmented control. The inputs stay in the
+     DOM (and focusable) rather than being display:none, so it is operable
+     by keyboard. */
+
+  .care__toggle {
+    display: inline-flex;
+    border: 1px solid var(--line-input);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    margin-bottom: var(--s-4);
+  }
+
+  .care__toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+  }
+
+  .care__toggle label {
+    padding: 0.45rem 0.9rem;
+    font-size: var(--t-small);
+    font-weight: 550;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .care__toggle label + input + label { border-left: 1px solid var(--line-input); }
+
+  .care__toggle input:checked + label {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .care__toggle input:focus-visible + label {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Price ----------------------------------------------------------------- */
+
+  .care__price {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    font-family: var(--font-body);
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(2.5rem, 2.1rem + 1.4vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .care__period {
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+    font-weight: 400;
+    letter-spacing: 0;
+    color: var(--ink-muted);
+  }
+
+  .care__saving {
+    font-family: var(--font-body);
+    font-size: var(--t-label);
+    font-weight: 550;
+    letter-spacing: 0;
+    color: var(--accent);
+  }
+
+  /* Which price shows, driven entirely by the radio state. */
+  .care__price--yearly { display: none; }
+  .care:has(#care-yearly:checked) .care__price--monthly { display: none; }
+  .care:has(#care-yearly:checked) .care__price--yearly { display: flex; }
+
+  .care__footnote {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 26rem;
+  }
+
+  /* Features -------------------------------------------------------------- */
+
+  .care__features {
+    display: grid;
+    gap: 0.7rem;
+    align-content: start;
+  }
+
+  .care__features li {
+    position: relative;
+    padding-left: 1.4rem;
+    font-size: var(--t-small);
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .care__features li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+
+  @media (min-width: 760px) {
+    .care {
+      grid-template-columns: 0.85fr 1.15fr;
+      gap: var(--s-7);
+      padding: var(--s-6);
+    }
+
+    .care__features { grid-template-columns: 1fr 1fr; gap: 0.7rem var(--s-5); }
+  }
+</style>

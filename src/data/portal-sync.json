@@ -1,8 +1,13 @@
 {
-  "_comment": "The client/ commit this demo sandbox was built against. tools/portal-sync.mjs compares it to the live development head and fails when the demo falls behind. Update it in the same commit that updates the sandbox \u2014 never on its own.",
+  "_comment": "The client/ commit this demo sandbox was built against. tools/portal-sync.mjs compares it to the live head of `branch` and fails when the demo falls behind. Update it in the same commit that updates the sandbox — or, if client/ moved without changing anything a client can see, in the same commit as a note saying which commits were reviewed and why they do not affect the sandbox. Never re-pin without doing one of those two things.",
   "repo": "GetYourWebsite-now/GetYourWebsiteAdmin",
-  "branch": "development",
+  "branch": "client/light-reskin",
   "path": "client",
-  "commit": "bae549922f99339ffe50e8b69d0a9c90e17d7f86",
-  "date": "2026-09-10"
+  "commit": "eec3c79",
+  "date": "2026-10-10",
+  "reviewed": {
+    "through": "eec3c79",
+    "on": "2026-10-10",
+    "note": "Pinned to client/light-reskin, which is now the light re-skin rebased onto development (10a3bc2), so it contains everything development has in client/. The sandbox was rebuilt for the one client-facing addition from that rebase: 93607c9's ThemeColorsPanel on My website. 93607c9's other half, defining pages during onboarding, runs before a site is generated and Rosa's site already exists, so the sandbox has no onboarding to show it in. 5bca2cf and d8ac01a are the development-only rollback panel; 676076d is BACKLOG.md. The re-skin is still unmerged: once it lands on development, set branch back to development and pin the merge commit."
+  }
 }

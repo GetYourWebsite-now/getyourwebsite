@@ -8,8 +8,10 @@
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import BareHeader from '../components/BareHeader.astro';
+import BareFooter from '../components/BareFooter.astro';
 import { url } from '../data/url.js';
-import { HEADING_FONT, GOATCOUNTER_ID } from '../data/site.js';
+import { HEADING_FONT, GOATCOUNTER_ID, META_PIXEL_ID } from '../data/site.js';
 
 /**
  * The self-hosted heading faces. See HEADING_FONT in src/data/site.js — that
@@ -18,21 +20,16 @@ import { HEADING_FONT, GOATCOUNTER_ID } from '../data/site.js';
  * Each is a variable font, so one file covers every weight the headings use.
  */
 const HEADING_FACES = {
-  // `track` overrides --h-track. A wider face has to be set tighter to hold the
-  // same line counts: Clash Display at the stock -0.035em pushed the pricing
-  // and Why Us H1s from two lines to three, and -0.045em brings both back at
-  // full size, so nothing had to shrink. Measured with tools/wraps.mjs.
-  clash: {
-    family: 'Clash Display',
-    file: 'ClashDisplay-Variable.woff2',
-    // These two are a pair and have to be tuned together. Opening the word
-    // gaps widens every line, which on its own pushed the pricing and Why Us
-    // H1s back to three lines — so the letters go tighter to pay for it.
-    // -0.055em with 0.08em holds both at two lines and reads as words rather
-    // than one long run. tools/wraps.mjs checks the line counts.
-    track: '-0.055em',
-    word: '0.08em',
-  },
+  // The default. Inter is also the body face: headings are separated by size,
+  // weight and the optical-size axis rather than by being a different family,
+  // which is where the restraint in this design comes from. No preload entry
+  // is needed because the body face is preloaded for every page anyway.
+  inter: { family: 'Inter', file: null, track: '-0.025em' },
+
+  // Kept selectable for comparison only — `node tools/font-compare.mjs`.
+  // A face can carry its own `track` (overrides --h-track) and `word`
+  // (overrides --h-word): a wider face has to be set tighter to hold the
+  // same line counts.
   cabinet: { family: 'Cabinet Grotesk', file: 'CabinetGrotesk-Variable.woff2' },
   sora: { family: 'Sora', file: 'Sora-Variable.woff2' },
 };
@@ -42,30 +39,53 @@ const headingFace = HEADING_FACES[HEADING_FONT];
 interface Props {
   title: string;
   description: string;
-  /** true on the home page only: nav floats over the hero */
-  transparentNav?: boolean;
-  /** drop the default page padding (the home hero handles its own) */
-  bleed?: boolean;
+  /**
+   * Landing-page chrome: logo only, no nav, and a footer with nothing but
+   * the legal links. For pages that paid traffic lands on, where every
+   * other link is a way out.
+   */
+  bare?: boolean;
+  /** Keep the page out of search. Ads traffic only. */
+  noindex?: boolean;
 }
 
-const { title, description, transparentNav = false, bleed = false } = Astro.props;
+const { title, description, bare = false, noindex = false } = Astro.props;
 
 const fullTitle = title === 'GetYourWebsite'
-  ? 'GetYourWebsite — websites that are out of this world'
+  ? 'GetYourWebsite — websites for local businesses'
   : `${title} · GetYourWebsite`;
 
 // Astro.site comes from SITE_URL in astro.config.mjs.
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com');
+
+// Safe on a static build: each page is rendered on its own, so pathname is
+// known at build time. (Astro.url.searchParams is NOT — see free-mock.astro.)
+const isThanks = Astro.url.pathname.replace(/\/$/, '').endsWith('/free-mock/thanks');
+
+// Built here rather than inline: a nested interpolation inside a template
+// literal inside a set:html attribute does not survive Astro's parser.
+const pixelSnippet = META_PIXEL_ID
+  ? [
+      "!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?",
+      "n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;",
+      "n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;",
+      "t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}",
+      "(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');",
+      `fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`,
+      isThanks ? "fbq('track','Lead');" : '',
+    ].join('')
+  : '';
+
+const pixelNoscript = META_PIXEL_ID
+  ? `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1"/>`
+  : '';
 const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
 
-// Outfit (headings) / Work Sans (body) / JetBrains Mono (labels and figures).
-const FONT_CSS =
-  'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap';
 ---
 
 <!doctype html>
-<!-- data-base lets client-side scripts (the hero's texture loader) build URLs
-     that work whether the site is served from / or from /getyourwebsite/. -->
+<!-- data-base lets client-side scripts build URLs that work whether the site
+     is served from / or from /getyourwebsite/. -->
 <html lang="en" class="no-js" data-base={import.meta.env.BASE_URL}>
   <head>
     <meta charset="utf-8" />
@@ -74,6 +94,7 @@ const FONT_CSS =
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <!-- Social card -->
     <meta property="og:type" content="website" />
@@ -86,32 +107,31 @@ const FONT_CSS =
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
 
-    <meta name="theme-color" content="#0A0A0C" />
+    <meta name="theme-color" content="#ffffff" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
 
-    <!-- Fonts: Outfit (headings) / Work Sans (body) / JetBrains Mono (labels).
-         Preconnect first so the font request starts as early as possible. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Load the font CSS without blocking the first paint: fetch it as a
-         print stylesheet (which browsers don't wait for), then switch it to
-         `all` once it has arrived. The <noscript> copy covers the rest. -->
-    <link
-      rel="stylesheet"
-      href={FONT_CSS}
-      media="print"
-      onload="this.media='all'; this.onload=null;"
-    />
-    <noscript><link rel="stylesheet" href={FONT_CSS} /></noscript>
+    <!-- Fonts. Both self-hosted, so there is no third-party connection to
+         open before text can be styled: no preconnect, no render-blocking
+         stylesheet from a CDN, nothing for a visitor to be tracked by.
 
-    <!-- A self-hosted heading face, if one is selected. Preloaded because it
-         is on the critical path for the largest text on the page and comes
-         from our own origin, so there's no DNS or TLS handshake to wait on —
-         and the @font-face in global.css carries font-display: swap, so the
-         page still paints in the fallback if it's slow. -->
+         Inter is preloaded because it is the body face and on the critical
+         path for every page; JetBrains Mono is not, because it only sets
+         the browser-frame URL, step numbers and code-like strings, and
+         @font-face is lazy, so it is fetched the moment something uses it. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      crossorigin
+      href={url('/fonts/Inter-Variable.woff2')}
+    />
+
+    <!-- An alternate heading face, if HEADING_FONT selects one. Inter needs
+         nothing here: it is already preloaded above and already the default
+         value of --font-display. -->
     {
-      headingFace && (
+      headingFace?.file && (
         <>
           <link
             rel="preload"
@@ -122,12 +142,11 @@ const FONT_CSS =
           />
           {/* html:root, not :root. Astro's stylesheet link lands after this
               inline block, so at equal specificity global.css would win the
-              cascade and the override would silently do nothing — the page
-              ships the preload and the declaration and still renders Outfit.
-              The extra element selector outranks it wherever it sits. */}
+              cascade and the override would silently do nothing. The extra
+              element selector outranks it wherever it sits. */}
           <style
             set:html={
-              `html:root{--font-display:'${headingFace.family}','Outfit',system-ui,-apple-system,sans-serif` +
+              `html:root{--font-display:'${headingFace.family}','Inter',system-ui,-apple-system,sans-serif` +
               (headingFace.track ? `;--h-track:${headingFace.track}` : '') +
               (headingFace.word ? `;--h-word:${headingFace.word}` : '') +
               `}`
@@ -150,6 +169,26 @@ const FONT_CSS =
       )
     }
 
+    <!-- Meta Pixel, only when META_PIXEL_ID is set. While it is empty this
+         block emits nothing — not a script, not a comment — so the privacy
+         page's "no advertising or tracking cookies" stays true by
+         construction rather than by anyone remembering. Turning it on is a
+         two-part change: the ID here AND the disclosure on /privacy.
+
+         The Lead event fires on the thank-you page only. That is the one
+         page you cannot reach without having submitted the form, so it is
+         the honest conversion signal; firing Lead on /free-mock itself
+         would count everyone who merely saw the ad land. -->
+
+    {
+      META_PIXEL_ID && (
+        <>
+          <script is:inline set:html={pixelSnippet}></script>
+          <noscript set:html={pixelNoscript}></noscript>
+        </>
+      )
+    }
+
     <!-- Swap .no-js for .js before first paint so [data-reveal] elements are
          hidden only when JS can actually reveal them again. -->
     <script is:inline>
@@ -159,24 +198,16 @@ const FONT_CSS =
   </head>
 
   <body>
-    <Nav transparent={transparentNav} />
+    {bare ? <BareHeader /> : <Nav />}
 
-    <main id="main" class:list={[{ 'main--bleed': bleed }]}>
+    <main id="main">
       <slot />
     </main>
 
-    <Footer />
+    {bare ? <BareFooter /> : <Footer />}
 
     <script>
       import '../scripts/reveal.js';
-      import '../scripts/buttons.js';
-      import '../scripts/ambient.js';
     </script>
   </body>
 </html>
-
-<style is:global>
-  /* Pages that aren't the home page start below a solid nav, so they need no
-     extra offset. The home page's nav is fixed, hence .main--bleed. */
-  .main--bleed { padding-top: 0; }
-</style>

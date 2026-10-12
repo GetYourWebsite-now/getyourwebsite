@@ -19,6 +19,13 @@ interface Props {
   };
   reveal?: boolean;
   /**
+   * The concept-site treatment: smaller type, tighter padding, no hover
+   * lift. These sit below the real client work on /work and must not
+   * compete with it — the hierarchy is what keeps the page honest about
+   * which of these someone actually paid for.
+   */
+  quiet?: boolean;
+  /**
    * Heading level for the business name. On /work the cards sit directly under
    * the page's h1, so they're h2; on the home page they sit under a section h2,
    * so they're h3. Getting this wrong skips a level and fails accessibility
@@ -27,11 +34,11 @@ interface Props {
   level?: 2 | 3;
 }
 
-const { project, reveal = false, level = 3 } = Astro.props;
+const { project, reveal = false, level = 3, quiet = false } = Astro.props;
 const Heading = `h${level}`;
 ---
 
-<article class="project" data-reveal={reveal ? '' : undefined}>
+<article class:list={['project', { 'project--quiet': quiet }]} data-reveal={reveal ? '' : undefined}>
   <a class="project__shot" href={url(project.href)} target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">
     <img
       src={url(project.shot)}
@@ -65,25 +72,20 @@ const Heading = `h${level}`;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    background: var(--white);
-    border: 1px solid var(--line-light);
-    border-radius: var(--radius-lg);
-    transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-      border-color var(--dur) var(--ease);
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    transition: border-color var(--dur) var(--ease);
   }
 
   .project:hover,
-  .project:focus-within {
-    transform: translateY(-4px);
-    border-color: var(--gold-line);
-    box-shadow: var(--shadow-light);
-  }
+  .project:focus-within { border-color: #d2d5db; }
 
   .project__shot {
     display: block;
     overflow: hidden;
-    background: var(--silver-light);
-    border-bottom: 1px solid var(--line-light);
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
     aspect-ratio: 4 / 3;
   }
 
@@ -92,10 +94,7 @@ const Heading = `h${level}`;
     height: 100%;
     object-fit: cover;
     object-position: top center;
-    transition: transform 500ms var(--ease);
   }
-
-  .project:hover .project__shot img { transform: scale(1.035); }
 
   .project__body {
     display: flex;
@@ -110,24 +109,17 @@ const Heading = `h${level}`;
 
   .project__body p {
     color: var(--ink-soft);
-    font-size: 0.98rem;
+    font-size: var(--t-small);
     flex: 1;
   }
 
   .project__link { margin-top: var(--s-2); }
 
-  /* On dark sections the card flips to the panel colours. */
-  :global(.section--dark) .project {
-    background: var(--panel);
-    border-color: var(--line-dark);
-  }
+  /* Quiet variant ---------------------------------------------------------- */
 
-  :global(.section--dark) .project__shot { border-bottom-color: var(--line-dark); }
-  :global(.section--dark) .project__body :is(h2, h3) { color: var(--white); }
-  :global(.section--dark) .project__body p { color: var(--silver); }
-
-  @media (prefers-reduced-motion: reduce) {
-    .project:hover { transform: none; }
-    .project:hover .project__shot img { transform: none; }
-  }
+  .project--quiet .project__body { padding: var(--s-3); gap: 0.35rem; }
+  .project--quiet .project__body :is(h2, h3) { font-size: 1rem; margin-top: 0.1rem; }
+  .project--quiet .project__body p { font-size: var(--t-label); line-height: 1.5; }
+  .project--quiet .project__link { font-size: var(--t-label); margin-top: var(--s-2); }
+  .project--quiet .badge { font-size: 0.6875rem; padding: 0.2rem 0.45rem; }
 </style>

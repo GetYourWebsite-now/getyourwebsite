@@ -25,14 +25,7 @@ const BASE = process.env.BASE ?? 'http://localhost:4321';
 const PANEL_W = 720;
 
 const CANDIDATES = [
-  { id: 'outfit', label: 'Outfit (current)', css: '' },
-  {
-    id: 'clash',
-    label: 'Clash Display',
-    family: 'Clash Display',
-    file: 'ClashDisplay-Variable.woff2',
-    range: '200 700',
-  },
+  { id: 'inter', label: 'Inter (current)', css: '' },
   {
     id: 'cabinet',
     label: 'Cabinet Grotesk',
@@ -53,7 +46,7 @@ const VIEWS = [
   { id: 'hero', path: '/', selector: null, settle: 2600 },
   { id: 'pricing', path: '/pricing', selector: null, settle: 900 },
   // A white section, to see the face on light as well as dark.
-  { id: 'white', path: '/benefits', selector: '.section:not(.section--dark)', settle: 900 },
+  { id: 'white', path: '/why-us', selector: '.section', settle: 900 },
   // The headline on its own, near native size — this is where the character of
   // a face actually shows, and it's invisible in a downscaled page shot.
   { id: 'letterforms', path: '/', selector: '.hero__title', settle: 2600, width: 860 },
@@ -67,7 +60,7 @@ const faceCss = (c) =>
          font-weight: ${c.range};
          font-display: swap;
        }
-       :root { --font-display: '${c.family}', 'Outfit', system-ui, sans-serif; }`
+       :root { --font-display: '${c.family}', 'Inter', system-ui, sans-serif; }`
     : '';
 
 const browser = await chromium.launch({

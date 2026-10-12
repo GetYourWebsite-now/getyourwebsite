@@ -1,25 +1,18 @@
 ---
 /**
- * Sticky site navigation.
+ * Sticky site navigation. White, one hairline bottom border, no blur.
  *
- * On the home page it starts transparent over the hero and turns solid black
- * once you scroll (see the inline script at the bottom). Everywhere else it
- * is solid from the start.
+ * Solid on every page including the home page: there is no longer a dark
+ * hero for it to float over.
  */
 import { NAV_LINKS, PORTAL_URL } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
-interface Props {
-  /** true only on the home page, where the nav floats over the hero */
-  transparent?: boolean;
-}
-
-const { transparent = false } = Astro.props;
 const here = Astro.url.pathname;
 ---
 
-<header class:list={['nav', { 'nav--float': transparent }]} data-nav>
+<header class="nav" data-nav>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="nav__inner shell">
@@ -49,7 +42,7 @@ const here = Astro.url.pathname;
       )
     }
 
-    <a class="btn btn--gold btn--sm nav__cta" href={url('/contact')}>Free Mockup</a>
+    <a class="btn btn--primary btn--sm nav__cta" href={url('/free-mock')}>Get a free mock</a>
 
     <button
       class="nav__burger"
@@ -77,16 +70,12 @@ const here = Astro.url.pathname;
           </a>
         ))
       }
-      {/* Benefits lost its header slot to "How it works" but is still a live
-          page, so the drawer keeps it — along with the footer and the home
-          page, that's three ways to reach it. */}
-      <a
-        href={url('/benefits')}
-        aria-current={isActive(here, '/benefits') ? 'page' : undefined}
-      >
-        Benefits
+      {/* Demo is out of the desktop bar but belongs in the drawer: on a
+          phone this list is the whole site. */}
+      <a href={url('/demo')} aria-current={isActive(here, '/demo') ? 'page' : undefined}>
+        Demo
       </a>
-      <a class="btn btn--gold nav__drawer-cta" href={url('/contact')}>Free Mockup</a>
+      <a class="btn btn--primary nav__drawer-cta" href={url('/free-mock')}>Get a free mock</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
       {PORTAL_URL && (
@@ -103,31 +92,15 @@ const here = Astro.url.pathname;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--black);
-    border-bottom: 1px solid transparent;
-    transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
-  }
-
-  /* On the home page the bar floats over the hero until you scroll. */
-  .nav--float {
-    position: fixed;
-    inset-inline: 0;
-    background: transparent;
-  }
-
-  .nav--float.is-stuck,
-  .nav:not(.nav--float) {
-    background: rgba(10, 10, 12, 0.88);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    border-bottom-color: var(--line-dark);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
   }
 
   .nav__inner {
     display: flex;
     align-items: center;
     gap: var(--s-4);
-    min-height: 72px;
+    min-height: 68px;
   }
 
   .nav__brand {
@@ -140,72 +113,52 @@ const here = Astro.url.pathname;
   .nav__links {
     display: none;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.15rem;
   }
 
   .nav__link {
     position: relative;
-    padding: 0.5rem 0.85rem;
-    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9375rem;
     font-weight: 500;
-    color: var(--silver);
+    color: var(--ink-soft);
     text-decoration: none;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-sm);
     transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
   }
 
+  .nav__link:hover {
+    color: var(--ink);
+    background: var(--bg-alt);
+  }
+
+  /* The current page is marked by ink weight, not by the accent — the accent
+     belongs to the CTA, and a coloured nav link competes with it. */
+  .nav__link[aria-current='page'] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
   /* Sign in. Deliberately quiet and set apart from the main link group: the
-     gold CTA is the primary action and this must not compete with it. The rule
-     on the left is what separates it — clients arrive here knowing they have an
-     account, so it only has to be findable, not loud. */
+     CTA is the primary action and this must not compete with it. Clients
+     arrive here knowing they have an account, so it only has to be findable. */
   .nav__signin {
     display: none;
     align-items: center;
-    padding: 0.5rem 0.85rem;
-    margin-left: 0.55rem;
-    padding-left: 1.4rem;
-    border-left: 1px solid var(--line-dark);
-    font-size: 0.92rem;
+    margin-left: 0.5rem;
+    padding: 0.5rem 0 0.5rem 1.25rem;
+    border-left: 1px solid var(--line);
+    font-size: 0.9375rem;
     font-weight: 500;
-    color: var(--silver);
+    color: var(--ink-soft);
     text-decoration: none;
     white-space: nowrap;
     transition: color var(--dur) var(--ease);
   }
 
-  .nav__signin:hover { color: var(--white); }
+  .nav__signin:hover { color: var(--ink); }
 
-  .nav__drawer-signin {
-    margin-top: 0.25rem;
-    text-align: center;
-    font-size: 0.95rem;
-    color: var(--silver);
-  }
-
-  .nav__link:hover {
-    color: var(--white);
-    background: rgba(230, 231, 235, 0.07);
-  }
-
-  /* The current page gets a small gold dot rather than a colour change, so the
-     gold stays reserved for the CTA. */
-  .nav__link[aria-current='page'] {
-    color: var(--white);
-  }
-
-  .nav__link[aria-current='page']::after {
-    content: '';
-    position: absolute;
-    bottom: 0.15rem;
-    left: 50%;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--gold);
-    transform: translateX(-50%);
-  }
-
-  .nav__cta { display: none; }
+  .nav__cta { display: none; margin-left: 0.75rem; }
 
   /* Burger ---------------------------------------------------------------- */
 
@@ -217,18 +170,18 @@ const here = Astro.url.pathname;
     width: 44px;
     height: 44px;
     padding: 0 10px;
-    border-radius: var(--radius);
+    border-radius: var(--radius-sm);
     transition: background var(--dur) var(--ease);
   }
 
-  .nav__burger:hover { background: rgba(230, 231, 235, 0.08); }
+  .nav__burger:hover { background: var(--bg-alt); }
 
   .nav__burger-bar {
     display: block;
     width: 100%;
     height: 1.5px;
-    background: var(--white);
-    transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+    background: var(--ink);
+    transition: transform var(--dur) var(--ease);
   }
 
   .nav__burger[aria-expanded='true'] .nav__burger-bar:first-child {
@@ -242,10 +195,8 @@ const here = Astro.url.pathname;
   /* Drawer ---------------------------------------------------------------- */
 
   .nav__drawer {
-    background: rgba(10, 10, 12, 0.97);
-    -webkit-backdrop-filter: blur(14px);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--line-dark);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
   }
 
   .nav__drawer[hidden] { display: none; }
@@ -253,37 +204,44 @@ const here = Astro.url.pathname;
   .nav__drawer-links {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 0;
     width: min(100% - 2.5rem, var(--shell));
     margin-inline: auto;
-    padding-block: var(--s-3) var(--s-5);
+    padding-block: var(--s-2) var(--s-5);
   }
 
   .nav__drawer-links a {
-    padding: 0.85rem 0.5rem;
-    font-family: var(--font-display);
-    font-size: 1.35rem;
+    padding: 0.9rem 0.25rem;
+    font-size: 1.0625rem;
     font-weight: 500;
-    letter-spacing: -0.02em;
-    color: var(--silver-light);
+    color: var(--ink);
     text-decoration: none;
-    border-bottom: 1px solid var(--line-dark);
+    border-bottom: 1px solid var(--line);
   }
 
-  .nav__drawer-links a[aria-current='page'] { color: var(--gold); }
+  .nav__drawer-links a[aria-current='page'] { font-weight: 600; }
 
   .nav__drawer-cta {
-    margin-top: var(--s-3);
+    margin-top: var(--s-4);
     border-bottom: 0 !important;
-    color: var(--black) !important;
+    color: #fff !important;
     justify-content: center;
+  }
+
+  .nav__drawer-signin {
+    margin-top: var(--s-3);
+    text-align: center;
+    border-bottom: 0 !important;
+    font-size: 0.9375rem;
+    color: var(--ink-soft) !important;
+    font-weight: 500 !important;
   }
 
   /* Desktop --------------------------------------------------------------- */
 
-  /* 1060, not 900. The desktop row now carries five links, a Sign in link and
-     the gold CTA; at 900 it had 81px of slack before any of that was added, so
-     the burger keeps the job further up than it used to. Below this the drawer
+  /* 1060, not 900. The desktop row carries five links, a Sign in link and the
+     CTA; at 900 it had 81px of slack before any of that was added, so the
+     burger keeps the job further up than it used to. Below this the drawer
      holds everything comfortably. */
   @media (min-width: 1060px) {
     .nav__signin { display: inline-flex; }
@@ -293,21 +251,10 @@ const here = Astro.url.pathname;
     .nav__burger { display: none; }
     .nav__drawer { display: none !important; }
   }
+
 </style>
 
 <script>
-  // --- Solid-on-scroll -----------------------------------------------------
-  // Only the floating (home page) nav needs this.
-  const nav = document.querySelector<HTMLElement>('[data-nav]');
-
-  if (nav?.classList.contains('nav--float')) {
-    const onScroll = () => {
-      nav.classList.toggle('is-stuck', window.scrollY > 24);
-    };
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-  }
-
   // --- Mobile drawer -------------------------------------------------------
   const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
   const drawer = document.querySelector<HTMLElement>('[data-drawer]');

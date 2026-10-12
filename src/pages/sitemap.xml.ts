@@ -5,6 +5,11 @@
  * indexing — they're the portfolio. 404 is deliberately left out.
  *
  * If you add a page, add it to PAGES below.
+ *
+ * /free-mock is deliberately absent and must stay that way: it is the ad
+ * landing page, it carries <meta name="robots" content="noindex">, and
+ * listing it here would ask search engines to index a page we have told
+ * them not to.
  */
 import type { APIRoute } from 'astro';
 import { PROJECTS } from '../data/site.js';
@@ -15,7 +20,6 @@ const PAGES = [
   { path: '/demo', priority: '0.8' },
   { path: '/how-it-works', priority: '0.8' },
   { path: '/pricing', priority: '0.9' },
-  { path: '/benefits', priority: '0.7' },
   { path: '/why-us', priority: '0.7' },
   { path: '/contact', priority: '0.9' },
   { path: '/privacy', priority: '0.3' },

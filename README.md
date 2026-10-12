@@ -54,10 +54,8 @@ src/
   styles/
     global.css     the whole design system: colours, type, spacing, components
   scripts/
-    hero.js        the build-and-launch hero, drawn on a 2D canvas
     buttons.js     the button press interaction
     reveal.js      the scroll-reveal animation
-    ambient.js     starts the dark sections' ambient drift, pauses it off screen
     demo.js        the demo sandbox
 
 tools/             checks and screenshot harnesses — see "Verifying changes"
@@ -87,7 +85,8 @@ pricing page and the home page teaser.
 
 1. Put the HTML at `public/techstore.html`.
 2. Save a screenshot to `public/shots/techstore.webp`.
-3. Add one object to the `PROJECTS` array in `src/data/site.js`.
+3. Add one object to the `PROJECTS` array in `src/data/site.js`, with
+   `kind: 'concept'`.
 
 The grid picks it up automatically.
 
@@ -95,204 +94,82 @@ The grid picks it up automatically.
 
 ## Design system
 
-Four colours and nothing else — white, black, silver and gold. They're defined
-at the top of `src/styles/global.css` along with a couple of derived colours
-that exist purely for contrast:
+Everything visual is a token in `:root` at the top of `src/styles/global.css`.
+Change a token, not a page.
 
-| Token | Use |
-| --- | --- |
-| `--white` `--black` | backgrounds and text |
-| `--silver` `--silver-light` | secondary text and borders on dark |
-| `--gold` | the accent — CTAs and highlights only, kept rare on purpose |
-| `--ink-soft` | muted text on white (silver fails contrast there) |
-| `--gold-deep` | gold that's legible on white |
+**Surfaces.** Two light ones that alternate down a page (`--bg` white,
+`--bg-alt` grey) and one dark one (`--footer`) used only by the footer.
+`npm run verify` fails if a second dark surface appears, or if two sections
+with the same surface end up adjacent.
 
-Every pairing meets WCAG AA. **Never put plain `--gold` text on white** — use
-`--gold-deep`.
+**Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
+case-study sector labels. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
+4.64:1 against a 4.5 requirement — so `npm run verify:contrast` is
+load-bearing, not a formality.
 
-Type is Clash Display for headings, Work Sans for body and JetBrains Mono for
-labels and figures. The heading face is self-hosted from `public/fonts/`; the
-other two come from Google Fonts.
+**One accent.** `--accent` (indigo) carries links, primary buttons, focus
+rings, the highlighted pricing tier and the live badge. If something needs
+to stand out and it is none of those, the answer is weight or whitespace.
 
-`HEADING_FONT` in `src/data/site.js` is the switch — `clash`, `cabinet`, `sora`
-or `outfit`. BaseLayout preloads the right file and points `--font-display` at
-it. Each face can also carry its own `track`, which overrides `--h-track`: a
-wider face has to be set tighter to hold the same line counts, and that belongs
-to the face rather than to the layout.
+**Gold is not an accent.** `--gold` is the brand mark and the free-mock
+badge. Nothing else, and never as text: it measures 1.65:1 on white.
 
-Two tokens travel with the face: `--h-track` and `--h-word`. They are a pair
-and have to be tuned together — opening the word gaps widens every line, so the
-letters have to go tighter to pay for it. Clash Display runs at -0.055em with
-0.08em of word spacing.
+**Lines.** `--line` is decorative and allowed to be faint. `--line-input` is
+the edge of an interactive control, and has to clear 3:1 on *both* light
+surfaces — WCAG 1.4.11. Using `--line` on an input is a real bug; the old
+site had exactly that at 1.4:1.
 
-**If you change the heading font, run `npm run verify:wraps`.** Swapping the
-face changes the width of every heading on the site, so "does it still look
-right" is a question about forty headings, not the one you happened to look at.
-It counts the line boxes for each and flags orphans — a line much shorter than
-the rest, anywhere in the heading — at desktop and mobile. Clash Display needed
-four adjustments to match Outfit's line counts, all recorded in the CSS next to
-the values: `--h-track` to -0.055em, `--t-h3` down from 1.6rem, the final CTA
-heading down from 3.4rem, and `--t-display`'s mobile end down so "Websites that
-are" stops breaking across two lines and orphaning "are".
+**No atmosphere.** No gradients, no glow, no glass, no bento, no mesh, no
+textures. Borders and whitespace separate things. The single shadow,
+`--shadow-shot`, lifts product screenshots and nothing else.
 
-Sections alternate: `.section` for white, `.section--dark` for black. Add
-`.has-stars` for the star texture and `.has-glow` for the gold halo.
+**Radii.** 8px cards, 6px buttons and inputs. Nothing larger.
 
-### Dark-section atmosphere
+### Type
 
-Every dark section drifts, very slightly, in the same visual language as the
-hero — so the site reads as one thing rather than a space hero bolted onto a
-normal website. It's all in `global.css` §6, all CSS, and there are four layers:
+Inter and JetBrains Mono, both self-hosted in `public/fonts/`. There is no
+Google Fonts request on this site.
 
-| Layer | What it is | Cycle |
-| --- | --- | --- |
-| the section's own `background-image` | four stars that never move | — |
-| `::before` | five more stars, breathing | 13s |
-| `::after` | a gold and a silver lobe drifting across the section | 19s |
-| `.card::after` / `.tier__sheen::before` | a narrow gold band crossing a card, like a reflection travelling over metal | 14s |
-| gold `.btn--gold::after` on dark | a white glint | 12s |
+Inter carries the `wght` and `opsz` axes in one file, so
+`font-optical-sizing: auto` gives display headlines and text-cut body copy
+from one 73KB download — which is why there is no separate display face.
+Never set `font-variation-settings` for `opsz`; it overrides that.
 
-Three knobs control the whole thing, at the top of §6: `--sheen-gold`,
-`--sheen-silver` and `--spec-a`. Turn those down and everything gets subtler
-together. `.has-glow` sections raise `--sheen-gold` on their own.
+Mono is only for the browser-frame URL, step numbers and code-like strings.
+Eyebrows are rare and set in Inter (see `.eyebrow` in `global.css` and the
+rule in CLAUDE.md). **Not** for prices: they are Inter with
+`font-variant-numeric: tabular-nums`, because mono figures read as a
+terminal readout rather than a number someone is being asked to pay.
 
-Four rules if you touch any of it:
+Note the Fontsource subset does not carry Inter's `cv*`/`ss*` tables, so
+character variants are no-ops and are deliberately not declared. `tnum`
+does work.
 
-1. **White sections stay clean.** Nothing here applies to `.section`.
-2. **Text must stay readable.** The sheens lighten the background, so contrast
-   is a real constraint, not a formality. `npm run verify:contrast` freezes the
-   animations at ten points in the cycle, hides all the content, and measures
-   the brightest backdrop each dark band ever reaches against `--silver`. It
-   currently passes at about 7.8:1 against a 4.5:1 requirement — that's the
-   headroom you'd be spending.
-3. **Background level only.** Every layer sits at `z-index: -1` behind the
-   content, which is why the sections and cards need `isolation: isolate`.
-   `.tier` can't take `overflow: hidden` (the "Most popular" flag hangs over
-   its top edge), so the pricing card uses a `.tier__sheen` span to clip instead.
-4. **Motion is opt-in.** `src/scripts/ambient.js` adds `ambient-live` to
-   `<html>` after load, and only then does anything animate; it also pauses
-   sections while they're off screen. With JS off, or under
-   `prefers-reduced-motion`, you get the same gradients holding still — which is
-   a design state we checked, not a fallback.
+`HEADING_FONT` in `src/data/site.js` can point headings at Cabinet Grotesk
+or Sora for comparison. **Run `npm run verify:wraps` after
+any change** — swapping the face changes the width of every heading on the
+site, which is a question about forty headings rather than the one you
+looked at.
 
-### Buttons
-
-There is one button system, defined once in `global.css`. Use it — don't style
-a button inline, or the site drifts.
+### Components
 
 | Class | Use |
 | --- | --- |
-| `.btn .btn--gold` | primary. One per screen; it's the thing we want clicked. |
-| `.btn .btn--ghost` | secondary, on a dark background |
-| `.btn .btn--outline` | secondary, on a light background |
-| `.link-arrow` | tertiary — a text link with a gold arrow |
+| `.btn .btn--primary` | the thing we want clicked; one per screen |
+| `.btn .btn--secondary` | the alternative next to it |
+| `.link-arrow` | tertiary — a text link with an arrow |
+| `.card` | a bordered box; no shadow, no hover lift |
+| `.shot` | a product screenshot, with the one shadow |
 
-Sizes are `.btn--sm`, nothing (medium), and `.btn--lg`.
+Sizes are `.btn--sm`, nothing (medium), `.btn--lg`. Hover is a colour change
+and nothing else — the old system had a ring, a sweep and a press ripple,
+and all three read as a template.
 
-The hover and press effects are space-themed: a dark "event horizon" ring
-tightens inward on hover, a lensing sweep crosses the secondary buttons, and
-pressing collapses a ring inward instead of the usual outward ripple. All of it
-is decoration — `src/scripts/buttons.js` never touches the click, and none of
-it runs under reduced motion, where the colour and focus changes carry the
-feedback on their own.
-
-### The hero
-
-The animation is the pitch, in five stages: fragments of a website drift in
-space, you ask for what you want, the pieces assemble into a mockup, it
-launches, and the CTAs land on clean black. `src/scripts/hero.js` draws it on a
-2D canvas — no 3D library, no textures, no images.
-
-| Stage | What happens | Copy |
-| --- | --- | --- |
-| `open` | fragments drift in a ring around the headline | Websites that are out of this world. |
-| `prompt` | a bar rises, a request types itself in, the send button presses, the bar lifts off | You tell us what you want. |
-| `build` | the pieces come back down and assemble | We design it. We build it. |
-| `launch` | the mockup flies up out of frame | Then we launch it. |
-| `close` | empty frame, CTAs on clean black | Above and beyond. |
-
-Things to edit:
-
-- **`LAYOUT`** — the assembled site. Each entry is one piece, positioned in
-  normalised coordinates (`-0.5` to `0.5` across the mockup) so it scales with
-  the viewport. `g` is the assembly group: lower numbers fly in first, which
-  is what makes the build legible.
-- **`BEATS_VH`** — the scroll windows for the five lines of copy.
-- **`REQUEST`** — the sentence that types into the prompt bar. Keep it short
-  (it has to fit the bar at 390px wide) and keep it tied to a real client — it
-  names Rosa's Bakery, whose site is the one that assembles immediately after.
-
-**The prompt stage** has its own windows: `BAR_IN_VH`, `TYPE_VH`, `PRESS_VH`,
-`LIFT_VH`. The gap between `TYPE_VH` ending and `PRESS_VH` starting is the
-important one — the typed request is copy, so it has to be finished and then
-sit still long enough to read before the send fires, and that gap is what
-guarantees it. The pieces are deliberately stowed above the frame while the bar
-is up and come back down through the point it exits, so the build reads as an
-answer to the request rather than something that was always going to happen.
-
-Two rules the scene must never break, both from design review:
-
-1. **Nothing sits behind or crosses the copy.** The opening beat scatters
-   fragments into a ring *around* the headline, the middle beats put the copy
-   at the bottom with the mockup above it, and by the finale everything has
-   physically left the frame. The `clearOfCopy()` helper enforces the first of
-   those by measuring the real headline box and pushing any overlapping piece
-   outward, and there's an automated test for all three (see "Verifying").
-2. **No stretch of the scroll is visually empty.** There is always the mockup,
-   the debris field, or both, in motion.
-
-On desktop the scene also drifts gently with the mouse, so it feels alive
-before you scroll.
-
-**Pacing.** Scroll-linked opacity on its own can't keep copy readable — flick
-through the hero and every line is gone before you've read it, however wide
-the windows are. So the timeline has a speed limit: `MIN_PLAY_S` in
-`hero.js` is the fewest seconds the whole sequence can take. Scroll slower
-than that and it's a pure scrub, frame for frame; scroll faster and it plays
-at that pace rather than skipping. The hold windows are sized against it, so
-every beat gets at least ~0.9s of full-opacity reading time even for someone
-who flicks the entire hero in one go.
-
-**The scroll gate.** While the sequence is unfinished, downward scrolling can't
-carry you past the end of the pin — otherwise a hard flick lands you in Our Work
-having never seen the prompt bar, the assembly or the launch. It is once per
-visit; after the hero has played through, scrolling behaves normally forever.
-
-It works by *preventing* the scroll, not correcting it. Wheel, touch and key
-input are intercepted with non-passive listeners and cancelled the moment a
-gesture would cross the pin, and the swallowed distance is fed into the
-catch-up boost so pushing harder finishes the sequence sooner. The rAF clamp is
-still there, but only as a backstop for dragging the scrollbar, which produces
-no cancellable event.
-
-The obvious-looking version — let it scroll, then put it back in the render
-loop — is wrong, and wrong in a way that a test reading the DOM in rAF cannot
-see: the browser paints the section below the hero and only then gets moved
-back, so the correction is always one frame late. On video that is a white band
-sliding up behind "Above and beyond." and then snapping away. `verify.mjs`
-measures it from the scroll event and from real screenshots of the fold for
-exactly that reason.
-
-Two smaller traps, both of which produced visible glitches:
-
-- The last event *before* the wall is the one that jumps it. Intercepting only
-  once already at the pin let a 900px wheel tick arriving 450px short scroll the
-  full 900. Deltas are clamped to the remaining room instead.
-- Releasing the moment the timeline finishes releases mid-flick, and whatever
-  the browser still has queued lands in one frame. The gate waits for input to
-  go quiet (`GATE_QUIET_MS`) and throws the swallowed delta away, so the page
-  resumes from rest.
-
-`MIN_PLAY_S` scales with the sequence, and this is the easiest thing to get
-wrong. It's 6.9s for 450vh of scroll. Add a stage without raising it in
-proportion and you haven't added anything — you've just sped every existing
-beat up to pay for the new one.
-
-If you retime the beats, re-run the pacing check (below) — the two are a
-matched pair, and widening a hold without checking the limit is how copy
-starts flashing past again.
-
----
+Shared components worth knowing: `CaseStudy.astro` (full, `compact` and
+`thumb` variants, one set of facts), `WebsiteCompare.astro` (used by the
+home page and `/why-us`), `VersionTree.astro` (geometry lives in
+`src/data/version-tree.js` so the social card cannot drift from it),
+`TierCard`, `CarePlan`, `ComparisonTable`, `Faq`.
 
 ## Analytics
 
@@ -394,71 +271,65 @@ through the nav, the Our Work cards and the demo sandbox.
 
 ### The automated checks
 
-Most of the things that have broken on this site broke invisibly, so they're
-tests now rather than things to remember. They live in `tools/` and each one
-needs `npm run dev` running in another terminal.
+Most of what has broken on this site broke invisibly, so it is a test rather
+than something to remember. Each needs `npm run dev` in another terminal.
 
 ```bash
-npm run verify           # 36 checks: links, the demo flow, hero copy clearance,
-                         # reduced motion, the contact form, buttons, ambient layers
-npm run verify:pacing    # flick-scroll the hero in 3s; every line readable ≥0.8s,
-                         # and the request finishes typing and rests before it sends
-npm run verify:contrast  # text contrast under the moving ambient gradients, and
-                         # the typed request over the prompt bar's own backdrop
-npm run verify:wraps     # how every heading wraps at desktop and mobile
-npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank screen
-npm run verify:portal    # fails if the /demo sandbox has fallen behind the real portal
-npm run shots:ambient    # screenshots of the dark sections, hover and reduced motion
-npm run shots:teaser     # regenerate the home page's portal image from the sandbox
+npm run verify           # links resolve · the demo sandbox flow end to end ·
+                         # reduced motion · the contact form · the button
+                         # system · light surfaces · the portal captures ·
+                         # then the word budget (verify:words)
+npm run verify:words     # visible words in <main> per page, against a budget:
+                         # home and how-it-works 550, why-us 600
+npm run verify:contrast  # every text node on every page against the surface
+                         # it is actually painted on, plus button and
+                         # form-control edges (WCAG 1.4.3 and 1.4.11)
+npm run verify:wraps     # how every heading wraps at 1440 and 390
+npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank
+                         # screen
+npm run verify:portal    # fails if /demo has fallen behind the real portal
 ```
 
-`tools/shots.mjs` is a general screenshot harness if you want to eyeball
-something: `node tools/shots.mjs .shots "pricing=/pricing" "hero70=/@0.7"`, where
-`@0.7` scrubs the hero to 70% of its scroll.
+What each one has actually caught, so you know what you lose by skipping it:
+`verify` found a second dark surface and two adjacent same-surface sections;
+`verify:contrast` found an indigo button at 2.60:1 on the footer, a form
+border at 2.89:1, and our own sandbox chrome rendering near-white on light
+grey; `verify:wraps` found a headline breaking to three lines with the
+middle one orphaned.
 
-One thing to know before you trust a failure: headless Chrome renders this site
-at roughly 6fps, and `hero.js` deliberately clamps each frame's time step, so the
-hero's timeline advances at about 0.6× wall time in these tests. That's why the
-settle waits look absurdly long (12 seconds). Shorten them and the hero tests
-start failing on half-finished frames that look exactly like real bugs.
+Regenerating things:
+
+```bash
+npm run shots:portal     # the client-portal screenshots on the home page.
+                         # Needs the portal running — see the header of
+                         # tools/portal-shots.mjs
+npm run shots:clients    # the ARK and ChemEd screenshots, from the live sites
+npm run shots:og         # public/og.png, the social card, plus favicon.svg
+                         # and apple-touch-icon.png — all from
+                         # public/brand/mark.svg
+npm run record           # .shots/phase7/home.webm: 6s of the home page
+                         # scrolling, for judging the animations
+node tools/shots.mjs .shots "home=/" "work=/work"   # ad-hoc page captures
+node tools/font-compare.mjs                          # heading faces side by side
+```
 
 ### And by hand
 
-For the hero there are two things worth checking yourself, because they're about
-feel: flick-scroll the whole hero in a couple of seconds and confirm you can
-actually read all four lines, and scroll it slowly to confirm it still tracks
-your finger rather than playing on its own. If you changed the hero, scroll it
-slowly from top to bottom and watch for stutter, then turn on "Reduce motion" in
-**System Settings → Accessibility → Display** and reload to confirm the static
-fallback still shows the headline and both buttons.
+Turn on "Reduce motion" in **System Settings → Accessibility → Display** and
+reload the home page: the hero's version tree should be fully drawn and
+completely still, with the Live badge on Online orders. The four drawings
+in src/components/anim/ should each show their finished picture, still. `npm run verify`
+checks that nothing is animating; it cannot check that what is left looks
+deliberate.
 
-Lighthouse: run it against `npm run preview`, not the dev server. Expect 100 on
-accessibility, best practices and SEO, and 0ms Total Blocking Time, everywhere.
-Performance is 100 on most pages but bounces between about 95 and 100 on `/demo`
-and `/benefits` depending on which image wins the Largest Contentful Paint race —
-that's measurement noise, so don't chase a three-point drop on one run.
+Check the pricing comparison table at 390px by eye. It swaps to a stacked
+list there, and it must never scroll sideways.
 
----
-
-## `[EDIT]` placeholders — the list of things left for you
-
-Search the project for `[EDIT]` to find them all. In priority order:
-
-| # | What | Where |
-| --- | --- | --- |
-| 1 | **Your email address** — the form destination and the footer address | `CONTACT_EMAIL` in `src/data/site.js` |
-| 2 | **Web3Forms access key** — until this is set the contact form cannot send | `WEB3FORMS_KEY` in `src/data/site.js` |
-| 3 | **Final tier prices** — currently $150 / $350 / $600+ | `TIERS` in `src/data/site.js` |
-| 4 | **Social links** — add them or leave the array empty to hide the row | `SOCIALS` in `src/data/site.js` |
-| 5 | **Your names, school and town** | `src/pages/why-us.astro`, in the `.story__names` block |
-| 6 | **Team photo** — drop it at `public/team.webp`, then swap the placeholder for an `<img>` | `src/pages/why-us.astro` and `src/pages/index.astro` |
-| 7 | **A real statistic with a source**, if you want one on Benefits | `src/pages/benefits.astro`, the `.stat-slot` block |
-| 8 | **Custom domain** when you buy one | see "Deploying" above |
-| 9 | **GoatCounter site code**, if you want visitor stats | `GOATCOUNTER_ID` in `src/data/site.js` |
-| 10 | **Portal URL** — turns the "Sign in" link on. Left empty because `portal.getyourwebsite.now` answered HTTP 522 on every attempt | `PORTAL_URL` in `src/data/site.js` |
-| 11 | **Maintenance plan price**, quoted in the hosting/domain FAQ | `src/pages/pricing.astro` |
-
----
+One thing to know before you trust a screenshot: a large WebP can report
+`complete` with a real `naturalWidth` and still not be rasterised when the
+capture happens, so it shoots as an empty box that looks exactly like a
+broken path. `tools/shots.mjs` awaits `img.decode()` first. Do the same in
+anything you write.
 
 ## Notes and known limitations
 
@@ -471,11 +342,11 @@ Search the project for `[EDIT]` to find them all. In priority order:
   fullscreen only for `<video>`. Both paths are covered by `npm run verify`.
 - **The demo sandbox mirrors our client app** (`GetYourWebsiteAdmin`,
   `development` branch, the **`client/`** workspace — not `frontend/`, which is
-  the staff admin app). After changing the sandbox, run `npm run shots:teaser`:
-  the home page shows a picture of it (`public/shots/demo.webp`) and that
-  picture is not generated by the build, so it can silently go stale — it did
-  exactly that when the portal moved from mint to gold. `npm run verify`
-  checks the asset's accent hue and fails if it's from the old design.
+  the staff admin app). After changing the sandbox, run `npm run shots:portal`:
+  the home page shows pictures of the real portal, and they are not generated
+  by the build, so they can silently go stale — they did exactly that when the
+  portal moved from mint to gold. `npm run verify` checks the accent hue of
+  `public/shots/portal-my-website.webp` and fails if it is from the old design.
   If that app's screens change, update
   `src/components/DemoSandbox.astro` and `src/scripts/demo.js` to match — the
   whole value of that page is that it's honest.

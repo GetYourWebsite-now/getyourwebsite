@@ -8,14 +8,16 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "verify": "node tools/verify.mjs",
-    "verify:pacing": "node tools/pacing.mjs",
+    "verify": "node tools/verify.mjs && node tools/words.mjs",
+    "verify:words": "node tools/words.mjs",
     "verify:contrast": "node tools/contrast.mjs",
     "verify:wraps": "node tools/wraps.mjs",
     "verify:voids": "node tools/voids.mjs",
     "verify:portal": "node tools/portal-sync.mjs",
-    "shots:ambient": "node tools/ambient-shots.mjs",
-    "shots:teaser": "node tools/teaser.mjs"
+    "shots:portal": "node tools/portal-shots.mjs",
+    "shots:clients": "node tools/client-shots.mjs",
+    "shots:og": "node tools/og.mjs",
+    "record": "node tools/record.mjs"
   },
   "dependencies": {
     "astro": "^5.16.2"

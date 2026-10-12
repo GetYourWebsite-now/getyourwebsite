@@ -9,32 +9,69 @@
      2. Reset         a small, boring reset
      3. Base          html/body/headings/links
      4. Layout        .shell, .section, .stack helpers
-     5. Components    buttons, cards, badges, eyebrows, forms
-     6. Atmosphere    the ambient motion every dark section shares
-     7. Reveal        scroll-reveal animation (see src/scripts/reveal.js)
+     5. Components    buttons, cards, badges, forms
+     6. Reveal        scroll-reveal animation (see src/scripts/reveal.js)
+
+   The house style, in four rules:
+
+     1. Light first. Sections alternate --bg and --bg-alt. The footer is the
+        only dark surface on the site.
+     2. One accent. --accent (deep indigo) carries links, primary buttons,
+        focus rings and the highlighted pricing tier. --gold is the free-mock
+        badge, nothing else, and never text.
+     3. No atmosphere. No gradients, no glow, no stars, no glassmorphism, no
+        mesh. Borders and whitespace do the separating. The one shadow on the
+        site lifts product screenshots off the page.
+     4. Small radii. 8px on cards, 6px on buttons and inputs, nothing larger.
+
+   `npm run verify:contrast` enforces rule 1's consequence — every piece of
+   text on the site must clear 4.5:1 against the backdrop it is actually
+   painted on. Some of the pairings below have under half a point of headroom,
+   so that check is load-bearing, not a formality.
    ========================================================================== */
 
 /* ── 1. Tokens ─────────────────────────────────────────────────────────── */
 
-/* Self-hosted heading faces ------------------------------------------------
-   Declared here, selected in src/data/site.js (HEADING_FONT). A @font-face is
-   lazy: the browser downloads a face only when something actually uses it, so
-   having all three declared costs nothing until one is switched on.
+/* Type faces -------------------------------------------------------------
+   Two files, both self-hosted, both variable, both with permissive licences
+   (SIL Open Font License 1.1). Nothing is fetched from a third party: there
+   is no Google Fonts request on this site, which is one less connection on
+   the critical path and one less company watching our visitors.
 
-   Licences, both of which permit self-hosting for commercial use:
-     Clash Display, Cabinet Grotesk — ITF Free Font License (Fontshare)
-     Sora — SIL Open Font License 1.1 (Google Fonts)
+   Inter carries BOTH the `wght` and `opsz` axes in one file, which is why
+   there is no separate "Inter Display". `font-optical-sizing: auto` (set on
+   body below) feeds the rendered size into the `opsz` axis automatically, so
+   a 72px headline gets the tight, closed display cut and 17px body text gets
+   the open, legible text cut — from the same 73KB.
 
-   These are variable fonts, so the weight range covers every heading weight
-   from one file. font-display: swap means a slow font never blocks the text. */
+   Known limitation: this is the Fontsource latin subset, and it does not
+   carry Inter's character-variant or stylistic-set tables. `cv11` (the
+   single-storey a) and `ss01` are no-ops here, so they are deliberately not
+   declared — a font-feature-settings line that does nothing is worse than no
+   line at all. `tnum` (tabular figures) DID survive and is used below. If a
+   character variant is ever genuinely wanted, it means moving to the full
+   Inter release, which is roughly five times the size. */
 
 @font-face {
-  font-family: 'Clash Display';
-  src: url('/fonts/ClashDisplay-Variable.woff2') format('woff2');
-  font-weight: 200 700;
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Variable.woff2') format('woff2');
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('/fonts/JetBrainsMono-Variable.woff2') format('woff2');
+  font-weight: 100 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* The alternate heading faces, kept for comparison only — see HEADING_FONT in
+   src/data/site.js and `node tools/font-compare.mjs`. A @font-face is lazy:
+   the browser downloads a face only when something actually uses it, so
+   having these declared costs nothing while Inter is selected. */
 
 @font-face {
   font-family: 'Cabinet Grotesk';
@@ -53,64 +90,98 @@
 }
 
 :root {
-  /* Brand palette — white, black, silver and gold only. Nothing else.
-     Keep it that way; the restraint is the whole look. */
-  --white: #ffffff;
-  --black: #0a0a0c;
-  --silver: #a9adb6;
-  --silver-light: #e6e7eb;
+  /* Surfaces ------------------------------------------------------------
+     Two light surfaces that alternate down the page, and one dark one at the
+     very bottom. That's the whole set. A third surface is how a site starts
+     looking busy. */
+  --bg: #ffffff;        /* page */
+  --bg-alt: #f6f7f9;    /* alternating sections, screenshot wells */
+  --footer: #0a0a0c;    /* the single dark surface on the site */
+
+  /* Ink ------------------------------------------------------------------
+     Measured contrast, which is the only reason to pick these exact values:
+       --ink        on --bg  19.78:1   on --bg-alt  18.45:1
+       --ink-soft   on --bg   8.23:1   on --bg-alt   7.68:1
+       --ink-muted  on --bg   4.98:1   on --bg-alt   4.64:1  ← thin headroom
+       --accent     on --bg   7.61:1   on --bg-alt   7.10:1
+     --ink-muted on --bg-alt clears AA by 0.14 of a point. It is fine at any
+     size, but it is the first thing that breaks if anyone darkens --bg-alt or
+     lightens --ink-muted, so change neither without re-running
+     `npm run verify:contrast`. */
+  --ink: #0a0a0c;       /* headings */
+  --ink-soft: #4a4f58;  /* body */
+  --ink-muted: #6b7079; /* captions, sector labels, meta */
+
+  /* Lines ----------------------------------------------------------------
+     Two, for two different jobs. --line is decorative: it separates cards and
+     sections and is allowed to be faint (1.24:1). --line-input is the edge of
+     an interactive control — a form field, or the outline of a secondary
+     button — which WCAG 1.4.11 requires to clear 3:1 against what surrounds
+     it. It has to clear it on BOTH light surfaces, not just white, because a
+     form or an outlined button lands on an alternating section as often as
+     not: #868c95 measures 3.39:1 on --bg and 3.16:1 on --bg-alt. (The first
+     value tried, #8d939c, was 3.09:1 on white but only 2.89:1 on --bg-alt,
+     which the contrast check caught.) Using --line on a control would be a
+     real accessibility bug, and the old site had exactly that at 1.4:1. */
+  --line: #e6e7eb;
+  --line-input: #868c95;
+
+  /* The one accent. Links, primary buttons, focus rings, the highlighted
+     pricing tier. If something needs to stand out and it isn't one of those,
+     the answer is weight or whitespace, not a second colour. */
+  --accent: #2f3dd6;
+  --accent-hover: #2531b0;
+  --accent-soft: rgba(47, 61, 214, 0.08);
+
+  /* The free-mock badge. Nothing else — not even the logo since Phase 7 — and
+     NEVER as text:
+     --gold on white measures 1.65:1. On the badge it is a background with
+     --ink on top, which measures 11.96:1. */
   --gold: #f5c24b;
 
-  /* Working colours derived from the palette above.
-     WCAG AA notes (all measured against their intended background):
-       --silver     on --black  → 8.4:1  ✓ body text on dark
-       --gold       on --black  → 11.2:1 ✓ any size on dark
-       --ink-soft   on --white  → 8.2:1  ✓ body text on light
-       --gold-deep  on --white  → 6.2:1  ✓ headings and links on light
-     Never put plain --gold text on white; use --gold-deep instead. */
-  --ink-soft: #4a4f58;   /* muted text on light backgrounds */
-  --gold-deep: #7a5b0e;  /* gold that is legible on white */
-  --gold-soft: rgba(245, 194, 75, 0.12);
-  --gold-line: rgba(245, 194, 75, 0.32);
+  /* Footer-local ink. #c9ccd2 on --footer is 12.29:1. */
+  --footer-ink: #c9ccd2;
+  --footer-line: rgba(230, 231, 235, 0.16);
 
-  /* Surfaces */
-  --panel: #101015;              /* raised card on a dark section */
-  --panel-2: #16161d;            /* hover / nested card */
-  --line-dark: rgba(230, 231, 235, 0.14);
-  --line-light: #e6e7eb;
-
-  /* Type — Outfit for headings, Work Sans for body, JetBrains Mono for
-     labels, stats and anything that should read as "data". */
-  --font-display: 'Outfit', system-ui, -apple-system, sans-serif;
-  /* Heading tracking. A token because it belongs to the face, not the layout:
-     a wider display face needs to be set tighter to hold the same line counts.
-     BaseLayout overrides this alongside --font-display when a self-hosted face
-     is selected, so switching fonts carries its own tracking with it. */
-  --h-track: -0.035em;
-  /* Word spacing for headings, paired with --h-track. Tightening the letters
-     also tightens the gaps between words, and past a point a display line stops
-     reading as words at all. This buys the gaps back without loosening the
-     letterforms. Set per face alongside --h-track. */
-  --h-word: normal;
-  --font-body: 'Work Sans', system-ui, -apple-system, sans-serif;
+  /* Type ------------------------------------------------------------------
+     One family for everything readable, one mono for anything that should
+     read as data. --font-display is pointed at a different family only when
+     HEADING_FONT in src/data/site.js selects one; by default it is Inter,
+     separated from body text by size, weight and the optical-size axis
+     rather than by being a different typeface. */
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
 
+  /* Heading tracking. A token because it belongs to the face, not the layout:
+     a wider display face has to be set tighter to hold the same line counts.
+     BaseLayout overrides this alongside --font-display when an alternate face
+     is selected, so switching fonts carries its own tracking with it.
+     Inter at -0.025em: the opsz axis has already closed the headline up, so
+     it needs far less manual tracking than the old display face did. */
+  --h-track: -0.025em;
+  --h-word: normal;
+
   /* Fluid type scale. clamp(min, preferred, max) so it grows with the
-     viewport without a single media query. */
-  /* The hero headline. The mobile end came down (2.75rem/1.6rem -> 2.6rem/1.3rem)
-     because at the old size Clash Display broke "Websites that are" across two
-     lines on a 390px screen, orphaning "are" on a line of its own. Desktop is
-     untouched: the preferred term still clears the 6rem cap well before 1440px. */
-  --t-display: clamp(2.6rem, 1.3rem + 5.6vw, 6rem);
-  --t-h1: clamp(2.25rem, 1.5rem + 3.4vw, 4rem);
-  --t-h2: clamp(1.75rem, 1.3rem + 2.1vw, 2.85rem);
-  --t-h3: clamp(1.25rem, 1.1rem + 0.8vw, 1.5rem);
-  --t-lead: clamp(1.05rem, 0.99rem + 0.35vw, 1.3rem);
-  --t-body: 1rem;
-  --t-small: 0.9rem;
+     viewport without a single media query.
+
+     The display size tops out at 72px, not 96px. Fintech heroes run 56–72px;
+     past that a headline stops reading as confident and starts reading as a
+     poster, which is the register this redesign is moving away from. */
+  --t-display: clamp(2.5rem, 1.2rem + 4.6vw, 4.5rem);
+  --t-h1: clamp(2.1rem, 1.5rem + 2.6vw, 3.25rem);
+  --t-h2: clamp(1.6rem, 1.3rem + 1.5vw, 2.25rem);
+  --t-h3: clamp(1.15rem, 1.08rem + 0.35vw, 1.3rem);
+  --t-lead: clamp(1.1rem, 1.03rem + 0.35vw, 1.25rem);  /* 20px at full size */
+  --t-body: 1.0625rem;                                  /* 17px */
+  --t-small: 0.9375rem;
   --t-label: 0.75rem;
 
-  /* Spacing — spacious scale (the design brief asks for generous whitespace) */
+  /* The longest a line of body text is allowed to get. 60ch is about 11 words
+     at this size, which is the top of the comfortable range. */
+  --measure: 60ch;
+
+  /* Spacing */
   --s-1: 0.5rem;
   --s-2: 0.75rem;
   --s-3: 1rem;
@@ -119,21 +190,23 @@
   --s-6: 3rem;
   --s-7: 4rem;
   --s-8: 6rem;
-  --section-y: clamp(4.5rem, 3rem + 7vw, 9rem);
+  /* 64px on a phone, 112px at 1440 — Stripe's spacing, Phase 7. */
+  --section-y: clamp(4rem, 2.886rem + 4.571vw, 7rem);
 
   --shell: 1200px;   /* max content width */
   --shell-narrow: 780px;
 
-  --radius: 14px;
-  --radius-lg: 22px;
-  --radius-pill: 999px;
+  --radius: 8px;      /* cards, wells, screenshots */
+  --radius-sm: 6px;   /* buttons, inputs, badges */
 
-  --ease: cubic-bezier(0.16, 1, 0.3, 1);  /* expo.out — everything uses this */
-  --dur: 220ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 180ms;
 
-  --shadow-gold: 0 14px 40px rgba(245, 194, 75, 0.18);
-  --shadow-dark: 0 24px 60px rgba(0, 0, 0, 0.45);
-  --shadow-light: 0 18px 44px rgba(10, 10, 12, 0.09);
+  /* The only shadow on the site. It exists to lift a product screenshot off
+     the page so it reads as a thing rather than a picture. Cards use a
+     --line border instead; a bordered card and a shadowed card next to each
+     other is how a page starts looking like three designs. */
+  --shadow-shot: 0 1px 2px rgba(10, 10, 12, 0.06), 0 12px 32px rgba(10, 10, 12, 0.08);
 }
 
 /* ── 2. Reset ──────────────────────────────────────────────────────────── */
@@ -184,12 +257,22 @@ html {
 body {
   font-family: var(--font-body);
   font-size: var(--t-body);
-  line-height: 1.65;
-  color: var(--black);
-  background: var(--white);
+  line-height: 1.6;
+  color: var(--ink-soft);
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
+
+  /* Feeds the rendered font size into Inter's `opsz` axis, so headings get
+     the display cut and body text gets the text cut with no per-element
+     declarations. Do not set font-variation-settings for opsz anywhere —
+     that property overrides this one and pins every size to the same cut. */
+  font-optical-sizing: auto;
+
+  /* Figures line up in columns — prices, specs, stats, the comparison table.
+     Confirmed present in this subset; see the @font-face note above. */
+  font-variant-numeric: tabular-nums;
 }
 
 h1,
@@ -198,35 +281,38 @@ h3,
 h4 {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 1.06;
+  line-height: 1.12;
   letter-spacing: var(--h-track);
   word-spacing: var(--h-word);
+  color: var(--ink);
   text-wrap: balance;
 }
 
 h1 { font-size: var(--t-h1); }
 h2 { font-size: var(--t-h2); }
-h3 { font-size: var(--t-h3); letter-spacing: -0.02em; line-height: 1.2; }
+h3 { font-size: var(--t-h3); line-height: 1.3; }
 
-p { text-wrap: pretty; }
+p { text-wrap: pretty; max-width: var(--measure); }
 
 a {
-  color: inherit;
-  text-decoration-color: var(--gold-line);
-  text-underline-offset: 0.22em;
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
 }
+
+a:hover { color: var(--accent-hover); }
 
 /* One focus style for the whole site. Never remove it — it is how keyboard
    users know where they are. */
-:where(a, button, input, textarea, select, [tabindex]):focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-  border-radius: 4px;
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 ::selection {
-  background: var(--gold);
-  color: var(--black);
+  background: var(--accent-soft);
+  color: var(--ink);
 }
 
 /* Screen-reader-only text (used for the skip link and icon button labels) */
@@ -248,10 +334,11 @@ a {
   z-index: 200;
   transform: translate(-50%, -120%);
   padding: 0.7rem 1.2rem;
-  background: var(--gold);
-  color: var(--black);
+  background: var(--accent);
+  color: #fff;
   font-weight: 600;
-  border-radius: 0 0 var(--radius) var(--radius);
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   transition: transform var(--dur) var(--ease);
 }
 
@@ -275,36 +362,28 @@ a {
   margin-inline: auto;
 }
 
-/* A page section. Add .section--dark for a black space section, or nothing
-   for the default white one. They are meant to alternate. */
+/* A page section. Add .section--alt for the grey surface. They alternate;
+   two of the same surface in a row is a missing boundary, not a style. */
 .section {
   position: relative;
   padding-block: var(--section-y);
+  background: var(--bg);
 }
 
-.section--dark {
-  /* background-color (not the `background` shorthand — that would wipe out
-     the star field), plus position/overflow/isolation, are all set in §6
-     alongside the rest of the ambient layers. */
-  color: var(--silver-light);
+.section--alt {
+  background: var(--bg-alt);
 }
 
-.section--dark h1,
-.section--dark h2,
-.section--dark h3 {
-  color: var(--white);
-}
-
-.section--tight { padding-block: clamp(3rem, 2rem + 4vw, 5rem); }
+.section--tight { padding-block: clamp(2.75rem, 2rem + 3.4vw, 4.5rem); }
 
 /* Vertical rhythm helper: .stack puts a consistent gap between children. */
 .stack > * + * { margin-top: var(--s-3); }
 .stack-4 > * + * { margin-top: var(--s-4); }
 .stack-6 > * + * { margin-top: var(--s-6); }
 
-/* Section header block — eyebrow, heading, lead paragraph. */
+/* Section header block — (rarely) an eyebrow, a heading, a lead paragraph. */
 .section-head {
-  max-width: 46rem;
+  max-width: 44rem;
   margin-bottom: var(--s-7);
 }
 
@@ -313,37 +392,30 @@ a {
   text-align: center;
 }
 
+/* A label above a heading. Used rarely: only where it says something the
+   heading doesn't — the topic a pronoun in the headline refers to, or who the
+   page is for. Most sections have none; the headline carries it.
+
+   Inter 500 at 14px, sentence case, in the accent, 12px above the heading.
+   It used to be mono, uppercase and tracked, which read as a terminal
+   readout on a light page. Mono is now only for the browser-frame URL, step
+   numbers and code-like strings. */
 .eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
   font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--gold-deep);
-  margin-bottom: var(--s-3);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
 }
-
-.section--dark .eyebrow { color: var(--gold); }
-
-/* The little gold tick before an eyebrow */
-.eyebrow::before {
-  content: '';
-  width: 1.6rem;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.7;
-}
-
-.section-head--center .eyebrow::before { display: none; }
 
 .lead {
   font-size: var(--t-lead);
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--ink-soft);
-  max-width: 40rem;
+  max-width: 38rem;
 }
 
 /* A lead paragraph always needs air under the heading it follows. */
@@ -352,209 +424,105 @@ a {
   margin-top: var(--s-4);
 }
 
-.section-head--center .lead { margin-inline: auto; }
-.section--dark .lead { color: var(--silver); }
+/* Every child, not just the lead: paragraphs carry a 60ch measure, which is
+   narrower than the head for small text — so a short paragraph centred its
+   text inside a box that was itself pinned left. */
+.section-head--center > * { margin-inline: auto; }
 
 /* ── 5. Components ─────────────────────────────────────────────────────── */
 
 /* Buttons ----------------------------------------------------------------
    One system, three levels, used everywhere on the site:
 
-     .btn--gold      primary. One per screen — it's the thing we want clicked.
-     .btn--ghost     secondary on a dark background.
-     .btn--outline   secondary on a light background.
-     .link-arrow     tertiary — a text link with a gold arrow.
+     .btn--primary    the thing we want clicked. One per screen.
+     .btn--secondary  the alternative action next to it.
+     .link-arrow      tertiary — a text link with an arrow.
 
-   Sizes are .btn--sm / (default) / .btn--lg. Never hand-roll a button; if you
-   need a new variant, add it here so every one on the site stays in step.
+   Sizes are .btn--sm / (default) / .btn--lg.
 
-   The micro-interactions are space-themed: a dark "event horizon" ring
-   tightens inward on hover, a lensing sweep
-   crosses the secondary buttons, and pressing collapses a ring inward
-   instead of the usual outward ripple. All of it is decoration layered on
-   top — none of it delays or blocks the click. */
+   There are no decorative layers here any more. The previous system had an
+   "event horizon" ring, a lensing sweep and a press ripple; all three were
+   the kind of flourish that reads as a template, which is the thing this
+   design is arguing against. Hover is a colour change and nothing else. */
 
 .btn {
-  position: relative;
-  isolation: isolate;     /* so the ::before/::after layers sit behind the label */
-  overflow: hidden;       /* clips the press ripple to the button's shape */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
   min-height: var(--btn-h);
   padding: 0 var(--btn-px);
   font-family: var(--font-body);
   font-size: var(--btn-fs);
-  font-weight: 600;
-  letter-spacing: -0.012em;
+  font-weight: 550;
+  letter-spacing: -0.008em;
   line-height: 1;
   border: 1px solid transparent;
-  border-radius: var(--btn-radius);
+  border-radius: var(--radius-sm);
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  transition: transform 180ms var(--ease), background 200ms var(--ease),
-    color 200ms var(--ease), border-color 200ms var(--ease), box-shadow 220ms var(--ease);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 
 /* Default size (md) */
 .btn {
   --btn-h: 48px;
-  --btn-px: 1.55rem;
+  --btn-px: 1.4rem;
   --btn-fs: 1rem;
-  --btn-radius: 12px;
 }
 
-.btn--sm { --btn-h: 40px; --btn-px: 1.1rem; --btn-fs: 0.9rem; --btn-radius: 10px; }
-.btn--lg { --btn-h: 56px; --btn-px: 2rem; --btn-fs: 1.05rem; --btn-radius: 14px; }
+.btn--sm { --btn-h: 40px; --btn-px: 1rem; --btn-fs: 0.9375rem; }
+.btn--lg { --btn-h: 56px; --btn-px: 1.75rem; --btn-fs: 1.0625rem; }
 
-/* The event-horizon ring. Sits inside the button and tightens toward the
-   edge on hover. On the gold button it's dark — an actual horizon inside the
-   glowing disk. */
-.btn::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 8px;
-  border: 1px solid transparent;
-  border-radius: calc(var(--btn-radius) - 5px);
-  opacity: 0;
-  pointer-events: none;
-  transition: inset 260ms var(--ease), opacity 260ms var(--ease),
-    border-color 260ms var(--ease);
+.btn--primary {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
-.btn:hover::before { inset: 3.5px; opacity: 1; }
-
-/* Primary --------------------------------------------------------------- */
-
-.btn--gold {
-  color: var(--black);
-  /* A gradient plus an inner highlight, so it reads as a lit surface rather
-     than a flat fill. */
-  background: linear-gradient(180deg, #ffd873 0%, var(--gold) 46%, #e8ad2e 100%);
-  border-color: #dda226;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.6),
-    inset 0 -1px 0 rgba(10, 10, 12, 0.08),
-    0 1px 2px rgba(10, 10, 12, 0.22),
-    0 8px 20px -8px rgba(245, 194, 75, 0.5);
+.btn--primary:hover {
+  color: #fff;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
-.btn--gold:hover {
-  transform: translateY(-1px);
-  background: linear-gradient(180deg, #ffe08d 0%, #f8cb5e 46%, var(--gold) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.75),
-    0 2px 4px rgba(10, 10, 12, 0.2),
-    0 14px 34px -10px rgba(245, 194, 75, 0.75);
+.btn--secondary {
+  color: var(--ink);
+  background: var(--bg);
+  border-color: var(--line-input);
 }
 
-.btn--gold:hover::before { border-color: rgba(10, 10, 12, 0.26); }
-
-.btn--gold:active {
-  transform: translateY(0) scale(0.985);
-  box-shadow:
-    inset 0 2px 5px rgba(10, 10, 12, 0.28),
-    0 1px 2px rgba(10, 10, 12, 0.2);
+.btn--secondary:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
-/* Secondary on dark ------------------------------------------------------ */
-
-.btn--ghost {
-  color: var(--white);
-  background: rgba(230, 231, 235, 0.045);
-  border-color: rgba(230, 231, 235, 0.24);
+/* The footer is the only dark surface, and the accent fill measures 2.60:1
+   against it — under the 3:1 WCAG 1.4.11 asks for to identify a control. So
+   the primary button inverts there: a white fill is 19.78:1 both at its edge
+   and under its label. `npm run verify:contrast` measures every button fill
+   against whatever it is painted on, so this stays honest. */
+.foot .btn--primary {
+  color: var(--ink);
+  background: #fff;
+  border-color: #fff;
 }
 
-.btn--ghost:hover {
-  transform: translateY(-1px);
-  color: var(--gold);
-  border-color: var(--gold);
-  background: rgba(245, 194, 75, 0.09);
-  box-shadow: 0 10px 26px -12px rgba(245, 194, 75, 0.5);
-}
-
-.btn--ghost:hover::before { border-color: rgba(245, 194, 75, 0.4); }
-.btn--ghost:active { transform: translateY(0) scale(0.985); }
-
-/* Secondary on light ----------------------------------------------------- */
-
-.btn--outline {
-  color: var(--black);
-  background: transparent;
-  border-color: rgba(10, 10, 12, 0.2);
-}
-
-.btn--outline:hover {
-  transform: translateY(-1px);
-  border-color: var(--gold-deep);
-  background: var(--gold-soft);
-  box-shadow: 0 10px 24px -14px rgba(10, 10, 12, 0.45);
-}
-
-.btn--outline:hover::before { border-color: rgba(122, 91, 14, 0.35); }
-.btn--outline:active { transform: translateY(0) scale(0.985); }
-
-/* Lensing sweep, secondary buttons only. A band of light crossing the
-   surface as the pointer arrives. */
-.btn--ghost::after,
-.btn--outline::after {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  background: linear-gradient(
-    100deg,
-    transparent 34%,
-    rgba(245, 194, 75, 0.26) 50%,
-    transparent 66%
-  );
-  transform: translateX(-115%);
-  pointer-events: none;
-}
-
-.btn--ghost:hover::after,
-.btn--outline:hover::after {
-  transform: translateX(115%);
-  transition: transform 620ms var(--ease);
-}
-
-/* Press ripple. Created by src/scripts/buttons.js at the pointer position,
-   then collapses inward rather than expanding out — matter crossing the
-   horizon rather than a stone hitting a pond. */
-.btn__ripple {
-  position: absolute;
-  z-index: -1;
-  border-radius: 50%;
-  pointer-events: none;
-  background: radial-gradient(circle, transparent 52%, currentColor 70%, transparent 86%);
-  animation: btn-collapse 480ms var(--ease) forwards;
-}
-
-@keyframes btn-collapse {
-  from { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-  to   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-}
-
-/* Focus. Two rings — a dark one and a gold one — so that whichever
-   background the button is sitting on, one of them is clearly visible.
-   A gold-only ring would disappear against the gold button itself. */
-.btn:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
-  box-shadow: 0 0 0 1.5px var(--black), 0 0 0 6px rgba(245, 194, 75, 0.28);
+.foot .btn--primary:hover {
+  color: var(--ink);
+  background: var(--footer-ink);
+  border-color: var(--footer-ink);
 }
 
 .btn:disabled,
 .btn[aria-disabled='true'] {
   opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
 }
 
 .btn-row {
@@ -565,69 +533,57 @@ a {
 
 .btn-row--center { justify-content: center; }
 
-/* Tertiary: a text link with a gold arrow that slides on hover. Same family
-   as the buttons — the arrow is already gold, the label joins it. */
+/* Tertiary: a text link with an arrow that slides on hover. */
 .link-arrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-weight: 600;
+  gap: 0.45rem;
+  font-weight: 550;
   text-decoration: none;
-  color: var(--black);
-  transition: color 200ms var(--ease);
+  color: var(--accent);
+  transition: color var(--dur) var(--ease);
 }
-
-.section--dark .link-arrow { color: var(--silver-light); }
 
 .link-arrow::after {
   content: '→';
-  font-family: var(--font-mono);
-  color: var(--gold-deep);
-  transition: transform 200ms var(--ease), color 200ms var(--ease);
+  transition: transform var(--dur) var(--ease);
 }
 
-.section--dark .link-arrow::after { color: var(--gold); }
+.link-arrow:hover { color: var(--accent-hover); }
+.link-arrow:hover::after { transform: translateX(3px); }
 
-.link-arrow:hover { color: var(--gold-deep); }
-.section--dark .link-arrow:hover { color: var(--gold); }
-.link-arrow:hover::after { transform: translateX(4px); }
-
-/* Cards ------------------------------------------------------------------ */
+/* Cards ------------------------------------------------------------------
+   A border and nothing else. No shadow, no lift on hover, no gradient. */
 
 .card {
   position: relative;
   display: flex;
   flex-direction: column;
   padding: var(--s-5);
-  background: var(--white);
-  border: 1px solid var(--line-light);
-  border-radius: var(--radius-lg);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition: border-color var(--dur) var(--ease);
 }
 
-.card:hover {
-  transform: translateY(-4px);
-  border-color: var(--gold-line);
-  box-shadow: var(--shadow-light);
-}
-
-.section--dark .card {
-  background: var(--panel);
-  border-color: var(--line-dark);
-  color: var(--silver-light);
-}
-
-.section--dark .card:hover {
-  background: var(--panel-2);
-  border-color: var(--gold-line);
-  box-shadow: var(--shadow-dark);
-}
+.card:hover { border-color: #d2d5db; }
 
 .card h3 { margin-bottom: var(--s-2); }
-
 .card p { color: var(--ink-soft); }
-.section--dark .card p { color: var(--silver); }
+
+/* A card sitting on the grey surface needs a white fill to stay separate. */
+.section--alt .card { background: var(--bg); }
+
+/* Screenshot well — the one place the shadow is used. */
+.shot {
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  box-shadow: var(--shadow-shot);
+}
+
+.shot img { width: 100%; height: auto; }
 
 /* Grid helpers ----------------------------------------------------------- */
 
@@ -645,75 +601,53 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
+  padding: 0.28rem 0.6rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--line-light);
-  color: var(--ink-soft);
-  background: var(--white);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--line);
+  color: var(--ink-muted);
+  background: var(--bg);
 }
 
+/* The free-mock badge — the only place gold appears on the site.
+   Gold as a background with --ink on top measures 11.96:1. */
 .badge--gold {
   background: var(--gold);
   border-color: var(--gold);
-  color: var(--black);
+  color: var(--ink);
   font-weight: 600;
 }
 
-.section--dark .badge {
-  background: rgba(230, 231, 235, 0.06);
-  border-color: var(--line-dark);
-  color: var(--silver);
-}
-
-.section--dark .badge--gold {
-  background: var(--gold-soft);
-  border-color: var(--gold-line);
-  color: var(--gold);
-}
-
-/* A big number / stat */
-.stat-num {
-  font-family: var(--font-mono);
-  font-size: clamp(2rem, 1.4rem + 2.4vw, 3rem);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  color: var(--gold-deep);
-  line-height: 1;
-}
-
-.section--dark .stat-num { color: var(--gold); }
-
 /* Forms ------------------------------------------------------------------ */
 
-.field { display: flex; flex-direction: column; gap: 0.45rem; }
+.field { display: flex; flex-direction: column; gap: 0.4rem; }
 
 .field > label,
 .fieldset-legend {
   font-size: var(--t-small);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  color: var(--ink);
+  letter-spacing: -0.005em;
 }
 
 .field .hint {
   font-size: var(--t-small);
-  color: var(--ink-soft);
+  color: var(--ink-muted);
 }
 
 .input,
 .textarea,
 .select {
   width: 100%;
-  padding: 0.85rem 1rem;
+  max-width: none;
+  padding: 0.75rem 0.9rem;
   font-size: 1rem;
-  color: var(--black);
-  background: var(--white);
-  border: 1px solid rgba(10, 10, 12, 0.2);
-  border-radius: var(--radius);
+  color: var(--ink);
+  background: var(--bg);
+  /* --line-input, not --line: a form control's boundary has to clear 3:1. */
+  border: 1px solid var(--line-input);
+  border-radius: var(--radius-sm);
   transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
@@ -723,12 +657,12 @@ a {
 .textarea:focus,
 .select:focus {
   outline: none;
-  border-color: var(--gold-deep);
-  box-shadow: 0 0 0 3px var(--gold-soft);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .input::placeholder,
-.textarea::placeholder { color: #8b9098; }
+.textarea::placeholder { color: var(--ink-muted); }
 
 .input[aria-invalid='true'],
 .textarea[aria-invalid='true'] { border-color: #b3261e; }
@@ -738,20 +672,20 @@ a {
   display: flex;
   align-items: flex-start;
   gap: 0.7rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid rgba(10, 10, 12, 0.2);
-  border-radius: var(--radius);
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--line-input);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
 }
 
-.radio-card:hover { border-color: var(--gold-deep); }
+.radio-card:hover { border-color: var(--accent); }
 
-.radio-card input { margin-top: 0.28rem; accent-color: var(--gold-deep); }
+.radio-card input { margin-top: 0.28rem; accent-color: var(--accent); }
 
 .radio-card:has(input:checked) {
-  border-color: var(--gold-deep);
-  background: var(--gold-soft);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 /* The honeypot field. Real people never see or focus it; bots fill it in. */
@@ -763,274 +697,22 @@ a {
   overflow: hidden;
 }
 
-/* ── 6. Dark-section atmosphere ─────────────────────────────────────────────
-
-   Every dark section gets the same ambient treatment, so the site reads as
-   one piece with the hero rather than a lively hero bolted onto flat pages.
-   It's the hero's own vocabulary — soft gold and silver bloom gradients,
-   sparse stars, a specular sweep like light travelling over metal — stretched
-   out and slowed right down.
-
-   Three layers, all on pseudo-elements, all animating transform or opacity
-   only so they stay on the compositor:
-
-     .section--dark          half the stars, static
-     .section--dark::before  the other half, breathing (so twinkle looks
-                             per-star rather than the whole sky pulsing)
-     .section--dark::after   the drifting gold/silver sheen
-
-   Everything here is background-level. The alphas are deliberately tiny: the
-   brightest the backdrop ever gets is measured in the verification pass, and
-   silver body text has to stay above 4.5:1 over the peak of it. If you turn
-   these up, re-run that check — it is the whole reason the numbers look
-   over-cautious.
-
-   ------------------------------------------------------------------------- */
-
-:root {
-  /* Peak alpha of each bloom lobe. Small on purpose — see the note above. */
-  --sheen-gold: 0.055;
-  --sheen-silver: 0.032;
-  /* Peak alpha of the specular band that crosses cards and gold buttons. */
-  --spec-a: 0.1;
-}
-
-/* Sections with .has-glow sit behind a heading and can carry a little more. */
-.has-glow {
-  --sheen-gold: 0.08;
-}
-
-/* The static half of the star field. Note background-color rather than the
-   `background` shorthand, which would wipe out this image. */
-.section--dark,
-.foot {
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background-color: var(--black);
-  background-image:
-    radial-gradient(1.2px 1.2px at 12% 18%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.4px 1.4px at 58% 24%, rgba(245, 194, 75, 0.45), transparent),
-    radial-gradient(1px 1px at 74% 71%, rgba(255, 255, 255, 0.34), transparent),
-    radial-gradient(1.3px 1.3px at 22% 79%, rgba(245, 194, 75, 0.3), transparent);
-  background-size: 620px 620px;
-}
-
-/* The breathing half. Only some of the stars fade, which is what stops it
-   reading as one synchronised pulse. */
-.section--dark::before,
-.foot::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(1px 1px at 32% 62%, rgba(255, 255, 255, 0.42), transparent),
-    radial-gradient(1.1px 1.1px at 88% 36%, rgba(255, 255, 255, 0.46), transparent),
-    radial-gradient(1px 1px at 45% 88%, rgba(255, 255, 255, 0.32), transparent),
-    radial-gradient(1px 1px at 66% 12%, rgba(255, 255, 255, 0.36), transparent),
-    radial-gradient(1.2px 1.2px at 8% 47%, rgba(245, 194, 75, 0.3), transparent);
-  background-size: 620px 620px;
-  opacity: 0.78;
-}
-
-/* The sheen: two soft lobes, one gold and one silver, drifting across the
-   section together. Oversized and inset negatively so the edges never enter
-   frame; the section's own overflow:hidden does the clipping. */
-.section--dark::after,
-.foot::after {
-  content: '';
-  position: absolute;
-  inset: -35% -25%;
-  z-index: -1;
-  pointer-events: none;
-  background-image:
-    radial-gradient(
-      38% 44% at 32% 34%,
-      rgba(245, 194, 75, var(--sheen-gold)),
-      transparent 70%
-    ),
-    radial-gradient(
-      32% 38% at 71% 66%,
-      rgba(230, 231, 235, var(--sheen-silver)),
-      transparent 72%
-    );
-}
-
-@keyframes star-breathe {
-  from { opacity: 0.42; }
-  to   { opacity: 0.9; }
-}
-
-@keyframes sheen-drift {
-  from { transform: translate3d(-5%, -2.5%, 0) scale(1); }
-  to   { transform: translate3d(6%, 3.5%, 0) scale(1.09); }
-}
-
-/* Specular sweep ---------------------------------------------------------
-   A narrow band of gold light crossing a dark card, like a reflection
-   travelling over brushed metal. The keyframes spend most of the cycle
-   parked off the right edge, so it reads as an occasional glint rather than
-   a strobe. Opacity (not the gradient) carries the hover boost, because
-   opacity transitions smoothly and stays on the compositor. */
-
-@keyframes spec-sweep {
-  0%   { transform: translateX(-135%); }
-  38%  { transform: translateX(135%); }
-  100% { transform: translateX(135%); }
-}
-
-.section--dark .card,
-.section--dark .project {
-  isolation: isolate;
-  /* Needed to clip the sweep. Neither of these has children that overflow. */
-  overflow: hidden;
-}
-
-.section--dark .card::after,
-.section--dark .project::after,
-.tier__sheen::before {
-  content: '';
-  position: absolute;
-  inset: -25% -50%;
-  z-index: -1;
-  pointer-events: none;
-  background-image: linear-gradient(
-    104deg,
-    transparent 42%,
-    rgba(245, 194, 75, var(--spec-a)) 50%,
-    transparent 58%
-  );
-  transform: translateX(-135%);
-  opacity: 0.6;
-  transition: opacity 260ms var(--ease);
-}
-
-.section--dark .card:hover::after,
-.section--dark .project:hover::after,
-.tier:hover .tier__sheen::before {
-  opacity: 1;
-}
-
-/* The pricing card needs its own element rather than a pseudo: the "Most
-   popular" flag deliberately hangs over the top edge, so .tier can't take
-   overflow:hidden. The span clips the sweep instead. */
-.tier__sheen {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* .tier is position:relative but that alone is not a stacking context, so a
-   z-index:-1 child would paint *behind* the card's own background and vanish.
-   isolate makes .tier a stacking context, which puts the sheen above the
-   background and below the content — where it belongs. It does not clip, so
-   the "Most popular" flag still hangs over the top edge. */
-.tier {
-  isolation: isolate;
-}
-
-/* A glint on the gold CTAs, but only on dark backgrounds — the nav button and
-   anything on white stays exactly as it was. Paused while you're interacting
-   with it so it never fights the hover treatment. */
-.section--dark .btn--gold::after,
-.foot .btn--gold::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: linear-gradient(
-    100deg,
-    transparent 44%,
-    rgba(255, 255, 255, 0.45) 50%,
-    transparent 56%
-  );
-  transform: translateX(-150%);
-}
-
-/* Everything above is static: gradients that cost a plain paint and nothing
-   more. The motion is gated on a class src/scripts/ambient.js adds once the
-   page has finished loading.
-
-   The reason is that an animated transform gets its own compositor layer, and
-   those layers have to be allocated and rastered before the first frame can be
-   presented. On a page like /pricing that's a dark section, the footer and
-   three cards, each layer larger than the element it belongs to. Deferring the
-   start moves that work out of load, and it's free: nobody has scrolled to a
-   dark section in the first second anyway.
-
-   Honest note for whoever reads this next — this is prevention, not a measured
-   fix. Lighthouse on this site swings by several points run to run because a
-   large image can win or lose the LCP race, and that noise is bigger than the
-   effect being avoided. Don't go hunting for the regression this prevents; it
-   just costs nothing to not do the work early.
-
-   A visitor with JS off keeps the static gradients, which is the same thing
-   prefers-reduced-motion gets — see the bottom of this file. */
-:root.ambient-live .section--dark::before,
-:root.ambient-live .foot::before {
-  animation: star-breathe 13s ease-in-out infinite alternate;
-}
-
-:root.ambient-live .section--dark::after,
-:root.ambient-live .foot::after {
-  animation: sheen-drift 19s ease-in-out infinite alternate;
-}
-
-:root.ambient-live .section--dark .card::after,
-:root.ambient-live .section--dark .project::after,
-:root.ambient-live .tier__sheen::before {
-  animation: spec-sweep 14s linear infinite;
-}
-
-:root.ambient-live .section--dark .btn--gold::after,
-:root.ambient-live .foot .btn--gold::after {
-  animation: spec-sweep 12s linear infinite;
-}
-
-.section--dark .btn--gold:hover::after,
-.section--dark .btn--gold:focus-visible::after,
-.foot .btn--gold:hover::after,
-.foot .btn--gold:focus-visible::after {
-  animation-play-state: paused;
-  opacity: 0;
-}
-
-/* Offscreen sections stop animating. src/scripts/ambient.js adds the class. */
-.ambient-paused::before,
-.ambient-paused::after,
-.ambient-paused .card::after,
-.ambient-paused .project::after,
-.ambient-paused .tier__sheen::before,
-.ambient-paused .btn--gold::after {
-  animation-play-state: paused;
-}
-
-/* Hairline divider that fades out at both ends */
+/* Hairline divider */
 .rule {
   height: 1px;
   border: 0;
-  background: linear-gradient(90deg, transparent, var(--line-light), transparent);
+  background: var(--line);
 }
 
-.section--dark .rule {
-  background: linear-gradient(90deg, transparent, rgba(230, 231, 235, 0.18), transparent);
-}
-
-/* ── 7. Scroll reveal ──────────────────────────────────────────────────── */
+/* ── 6. Scroll reveal ──────────────────────────────────────────────────── */
 
 /* Elements marked data-reveal start slightly down and transparent, then get
    .is-visible from src/scripts/reveal.js when they scroll into view.
    Note the no-JS safety net below: if JS never runs, everything is visible. */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 600ms var(--ease), transform 600ms var(--ease);
+  transform: translateY(14px);
+  transition: opacity 500ms var(--ease), transform 500ms var(--ease);
 }
 
 [data-reveal].is-visible {
@@ -1039,7 +721,7 @@ a {
 }
 
 /* Stagger children of a [data-reveal-group] */
-[data-reveal-group] > [data-reveal] { transition-delay: calc(var(--i, 0) * 70ms); }
+[data-reveal-group] > [data-reveal] { transition-delay: calc(var(--i, 0) * 60ms); }
 
 html.no-js [data-reveal] {
   opacity: 1;
@@ -1067,41 +749,7 @@ html.no-js [data-reveal] {
     transform: none !important;
   }
 
-  /* Buttons keep their colour, border and focus feedback — only the
-     decorative motion goes. */
-  /* The ambient layers keep their gradients — they just stop moving, parked
-     at a pose that looks deliberate rather than mid-sweep. */
-  .section--dark::before,
-  .section--dark::after,
-  .foot::before,
-  .foot::after,
-  .section--dark .card::after,
-  .section--dark .project::after,
-  .tier__sheen::before,
-  .section--dark .btn--gold::after,
-  .foot .btn--gold::after {
-    animation: none !important;
-  }
-
-  .section--dark::before,
-  .foot::before { opacity: 0.7; }
-
-  .section--dark::after,
-  .foot::after { transform: translate3d(0, 0, 0) scale(1.04); }
-
-  .section--dark .card::after,
-  .section--dark .project::after,
-  .tier__sheen::before { transform: translateX(-18%); opacity: 0.7; }
-
-  .section--dark .btn--gold::after,
-  .foot .btn--gold::after { transform: translateX(-30%); opacity: 0.6; }
-
-  .btn:hover { transform: none; }
-  .btn:active { transform: none; }
-  .btn::before { transition: opacity 0.01ms, border-color 0.01ms; inset: 3.5px; }
-  .btn--ghost::after,
-  .btn--outline::after { display: none; }
-  .btn__ripple { display: none; }
+  /* Buttons and links keep their colour, border and focus feedback — only the
+     movement goes. */
   .link-arrow:hover::after { transform: none; }
-  .card:hover { transform: none; }
 }

@@ -14,8 +14,6 @@
  *   backend/src/siteRevisionPreview.js → the picker script injected into the preview
  */
 
-const root = document.querySelector('[data-sandbox]');
-if (root) init(root);
 
 // ── Seed data ──────────────────────────────────────────────────────────────
 // Shapes mirror what /api/client/sites returns in the real app.
@@ -69,11 +67,72 @@ function seed() {
       { id: 's3', label: 'Menu photo', assetId: null },
     ],
 
+    /**
+     * Theme colors for the latest approved version — ThemeColorsPanel. The
+     * starting values are the sample bakery page's own palette, so the seven
+     * fields describe the site you see. `applied` is what Save last stored;
+     * until then the preview is untouched.
+     */
+    theme: {
+      versionNumber: 3,
+      colors: {
+        background: '#FBF5EC', surface: '#FFFFFF', text: '#3A2A20', muted: '#8A7565',
+        primary: '#C0633A', accent: '#D99A52', border: '#E7DCCB',
+      },
+      applied: null,
+      saved: false,
+    },
+
     // Change requests sent during this demo session.
     sent: [],
     // The workspace, when it's open.
     revising: null,
   };
+}
+
+// ── Ported from client/src/siteOnboarding.js ───────────────────────────────
+
+const COLOR_ROLES = [
+  { key: 'background', label: 'Page background', example: '#FAF6F0' },
+  { key: 'surface', label: 'Cards / panels', example: '#FFFFFF' },
+  { key: 'text', label: 'Main text', example: '#1F1A16' },
+  { key: 'muted', label: 'Secondary text', example: '#6F675F' },
+  { key: 'primary', label: 'Primary / buttons', example: '#C45C26' },
+  { key: 'accent', label: 'Accent / highlights', example: '#E8B86D' },
+  { key: 'border', label: 'Lines / borders', example: '#E4D9CC' },
+];
+
+const HEX_RE = /^#([0-9A-Fa-f]{6})$/;
+
+function isValidHex(value) {
+  return HEX_RE.test(String(value || '').trim());
+}
+
+function normalizeHex(value) {
+  let s = String(value || '').trim();
+  if (!s) return '';
+  if (s[0] !== '#') s = `#${s}`;
+  if (/^#[0-9A-Fa-f]{3}$/.test(s)) {
+    s = `#${s[1]}${s[1]}${s[2]}${s[2]}${s[3]}${s[3]}`;
+  }
+  return isValidHex(s) ? s.toUpperCase() : s;
+}
+
+/**
+ * The sample bakery page's CSS variables for a saved palette. A generated
+ * site reads theme.js; the bakery page is hand-built, so its variables are
+ * mapped role for role. Its button hover colour is not one of the seven, so
+ * it is derived from the primary the way a darker shade would be.
+ */
+function themeCss(c) {
+  const darker = (hex) => {
+    const n = parseInt(hex.slice(1), 16);
+    const f = (v) => Math.round(v * 0.8).toString(16).padStart(2, '0');
+    return `#${f(n >> 16)}${f((n >> 8) & 255)}${f(n & 255)}`;
+  };
+  return `:root{--cream:${c.background}!important;--card:${c.surface}!important;` +
+    `--ink:${c.text}!important;--muted:${c.muted}!important;--terra:${c.primary}!important;` +
+    `--terra-d:${darker(c.primary)}!important;--gold:${c.accent}!important;--line:${c.border}!important}`;
 }
 
 // ── Ported from client/src/clientRevision.js ───────────────────────────────
@@ -313,6 +372,9 @@ function init(root) {
     send: $('[data-send]'),
     log: $('[data-log]'),
     logItems: $('[data-log-items]'),
+    themeFields: $('[data-theme-fields]'),
+    themeSave: $('[data-theme-save]'),
+    themeSaved: $('[data-theme-saved]'),
   };
 
   const fmtDate = (iso) =>
@@ -501,8 +563,20 @@ function init(root) {
         : live
           ? 'Live now'
           : `Approved ${fmtDate(x.approvedAt)}`;
+      // The portal marks the hosted node with a solid indigo Live pill.
+      if (live) {
+        const pill = document.createElement('span');
+        pill.className = 'vtree-card__live';
+        pill.textContent = 'Live';
+        card.appendChild(pill);
+      }
       el.vtree.appendChild(card);
     });
+
+    // The lineage of the live version — every edge from the root down to it —
+    // is drawn in the accent, the way the portal lights the selected path.
+    const lit = new Set();
+    for (let n = state.hosting.hostedVersion; byN.has(n); n = byN.get(n).parent) lit.add(n);
 
     // Edges.
     //
@@ -531,7 +605,7 @@ function init(root) {
             `M${x1},${par.y} C${mid},${par.y} ${mid},${x.y} ${x2},${x.y}`
           );
           path.setAttribute('fill', 'none');
-          path.setAttribute('stroke', 'rgba(230,231,235,0.28)');
+          path.setAttribute('class', `vtree-edge${lit.has(x.n) ? ' is-lit' : ''}`);
           // Non-scaling so the curve keeps an even weight despite the stretched
           // aspect ratio — without it the line thins horizontally and thickens
           // vertically.
@@ -550,13 +624,14 @@ function init(root) {
     list.forEach((v) => {
       const li = document.createElement('li');
       li.className = 'portal-version-item';
+      // RealSiteTab's markup: the pill sits beside the title, as
+      // `dash-pill dash-pill--wait` — grey, because nothing is approved yet.
       li.innerHTML = `
         <div>
-          <div class="portal-version-name"></div>
+          <div class="portal-version-name"><span></span> <span class="dash-pill dash-pill--wait">In review</span></div>
           <div class="portal-meta"></div>
-        </div>
-        <span class="portal-status">In review</span>`;
-      li.querySelector('.portal-version-name').textContent = `Version ${v.versionNumber}`;
+        </div>`;
+      li.querySelector('.portal-version-name span').textContent = `Version ${v.versionNumber}`;
       li.querySelector('.portal-meta').textContent =
         `Sent ${fmtDate(v.sentAt)} · we build it, then approve it`;
       el.pending.appendChild(li);
@@ -587,7 +662,7 @@ function init(root) {
       name.textContent = `Version ${v.versionNumber}${v.label ? ` · ${v.label}` : ''}`;
       if (live) {
         const pill = document.createElement('span');
-        pill.className = 'dash-pill';
+        pill.className = 'dash-pill dash-pill--live';
         pill.textContent = 'Live';
         name.appendChild(pill);
       }
@@ -732,6 +807,47 @@ function init(root) {
     });
   }
 
+  /** ThemeColorsPanel: a picker and a hex field per role, one Save. */
+  function renderTheme() {
+    el.themeFields.innerHTML = '';
+    COLOR_ROLES.forEach((role) => {
+      const label = document.createElement('label');
+      label.className = 'client-onboarding-color-field';
+      label.innerHTML = `
+        <span class="client-onboarding-color-field__label"></span>
+        <span class="client-onboarding-color-field__row">
+          <input type="color" />
+          <input type="text" spellcheck="false" />
+        </span>`;
+      label.querySelector('.client-onboarding-color-field__label').textContent = role.label;
+      const [picker, text] = label.querySelectorAll('input');
+      picker.setAttribute('aria-label', `${role.label} color picker`);
+      picker.dataset.themeRole = role.key;
+      text.dataset.themeRole = role.key;
+      el.themeFields.appendChild(label);
+    });
+    syncTheme();
+    el.themeSave.textContent = 'Save colors';
+    el.themeSaved.hidden = !state.theme.saved;
+  }
+
+  /** Push state into the fields without rebuilding them, so typing keeps
+      focus. Every field, the one being typed in included: the real inputs are
+      controlled, so they show the normalised value as you type. */
+  function syncTheme() {
+    const { colors } = state.theme;
+    el.themeFields.querySelectorAll('input').forEach((input) => {
+      const value = colors[input.dataset.themeRole] || '';
+      const role = COLOR_ROLES.find((r) => r.key === input.dataset.themeRole);
+      if (input.type === 'color') input.value = (isValidHex(value) ? value : role.example).toLowerCase();
+      else {
+        input.value = value;
+        input.setAttribute('aria-invalid', String(value.length > 0 && !isValidHex(value)));
+      }
+    });
+    el.themeSave.disabled = COLOR_ROLES.some((r) => !isValidHex(colors[r.key] || ''));
+  }
+
   function renderLog() {
     el.log.hidden = state.sent.length === 0;
     el.logItems.innerHTML = '';
@@ -865,6 +981,13 @@ function init(root) {
       if (tweak) {
         const s = doc.createElement('style');
         s.textContent = tweak;
+        doc.head.appendChild(s);
+      }
+
+      // Colors saved from the Theme colors panel, for the version they belong to.
+      if (state.theme.applied && versionNumber === state.theme.versionNumber) {
+        const s = doc.createElement('style');
+        s.textContent = themeCss(state.theme.applied);
         doc.head.appendChild(s);
       }
 
@@ -1185,9 +1308,41 @@ function init(root) {
       renderPending();
       renderHosting();
       renderAssets();
+      renderTheme();
       renderLog();
       return;
     }
+
+    // Save colors. Like photo saves, it always succeeds here — there is no
+    // theme.js behind the demo — so the round trip is mimicked and the
+    // palette is applied to this version's preview.
+    if (t.hasAttribute('data-theme-save')) {
+      const next = {};
+      COLOR_ROLES.forEach((r) => { next[r.key] = normalizeHex(state.theme.colors[r.key]); });
+      el.themeSave.disabled = true;
+      el.themeSaved.hidden = true;
+      el.themeSave.textContent = 'Saving…';
+      setTimeout(() => {
+        state.theme.colors = next;
+        state.theme.applied = { ...next };
+        state.theme.saved = true;
+        renderTheme();
+        if (state.revising?.versionNumber === state.theme.versionNumber) {
+          loadPreview(state.revising.versionNumber);
+        }
+      }, 450);
+      return;
+    }
+  });
+
+  // Typing or picking a color: normalise as the real panel does, clear Saved.
+  el.themeFields.addEventListener('input', (e) => {
+    const input = e.target.closest('input[data-theme-role]');
+    if (!input) return;
+    state.theme.colors[input.dataset.themeRole] = normalizeHex(input.value);
+    state.theme.saved = false;
+    el.themeSaved.hidden = true;
+    syncTheme();
   });
 
   el.overall.addEventListener('input', () => {
@@ -1246,5 +1401,13 @@ function init(root) {
   renderPending();
   renderHosting();
   renderAssets();
+  renderTheme();
   renderLog();
 }
+
+// Started last, not at the top: init renders immediately, and the module-level
+// constants above (COLOR_ROLES among them) are not initialised until the whole
+// module has run. Called from the top, renderTheme hit them in their temporal
+// dead zone and the sandbox never booted.
+const root = document.querySelector('[data-sandbox]');
+if (root) init(root);
