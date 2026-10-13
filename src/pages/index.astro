@@ -348,12 +348,12 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
 
   .hero__cta { margin-top: var(--s-5); }
 
-  /* The beta note: one line under the buttons, the same quiet weight as
-     the live-sites line below it. */
+  /* The beta note and the live-sites line. --ink-soft, not --ink-muted:
+     this section carries grain, and muted text under it drops under AA. */
   .hero__beta {
     margin-top: var(--s-4);
     font-size: var(--t-small);
-    color: var(--ink-muted);
+    color: var(--ink-soft);
     max-width: 30rem;
   }
 
@@ -364,12 +364,11 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   .hero__live {
     margin-top: var(--s-4);
     font-size: var(--t-small);
-    color: var(--ink-muted);
+    color: var(--ink-soft);
     max-width: 30rem;
   }
 
-  .hero__live a { color: var(--ink-soft); text-decoration-color: var(--line-input); }
-  .hero__live a:hover { color: var(--accent); text-decoration-color: currentColor; }
+  .hero__live a { color: var(--accent); }
 
   /* Capped so the stacked hero does not render the tree at 1100px wide with
      24px labels. Has no effect in the two-column layout, where the column is
@@ -379,7 +378,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   .hero__caption {
     margin-top: var(--s-3);
     font-size: var(--t-small);
-    color: var(--ink-muted);
+    color: var(--ink-soft);
     max-width: 34rem;
   }
 
@@ -457,7 +456,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   /* Platform: the dark band ---------------------------------------------- */
 
   .platform { --light-at: 70% 20%; }
-  .platform .feature { border-top-color: var(--footer-line); }
+  .platform .feature { border-top-color: rgba(255, 255, 255, 0.28); }
   .platform .feature__copy p { color: var(--footer-ink); }
   .platform .platform-shot { border-color: var(--footer-line); }
 
@@ -473,9 +472,9 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
      it before it starts moving. */
   .feature {
     display: grid;
-    gap: var(--s-4);
+    gap: var(--s-5);
     align-items: center;
-    padding-block: var(--s-6);
+    padding-block: var(--s-7);
     border-top: 1px solid var(--line);
   }
 

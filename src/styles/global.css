@@ -394,8 +394,9 @@ a:hover { color: var(--accent-hover); }
 .section--tight { padding-block: clamp(2.75rem, 2rem + 3.4vw, 4.5rem); }
 
 /* The one dark band: the home page's platform section. --footer surface,
-   --footer-ink body, white headings. Links go footer-style, because the
-   accent measures 2.60:1 on this surface. */
+   --footer-ink body, white headings. Links are white too: the accent
+   measures 2.60:1 on this surface, and footer-ink is the body colour, so
+   a link in it doesn't read as a link. */
 .section--dark {
   background: var(--footer);
   color: var(--footer-ink);
@@ -403,8 +404,11 @@ a:hover { color: var(--accent-hover); }
 
 .section--dark :is(h1, h2, h3) { color: #fff; }
 .section--dark :is(p, .lead) { color: var(--footer-ink); }
-.section--dark :is(a, .link-arrow) { color: var(--footer-ink); }
-.section--dark :is(a, .link-arrow):hover { color: #fff; }
+/* Links are white, body is --footer-ink. The accent is 2.60:1 on this
+   surface, and painting links the same grey as the paragraph made them
+   disappear into it. White is 19:1 here, including under the band's light. */
+.section--dark :is(a, .link-arrow) { color: #fff; }
+.section--dark :is(a, .link-arrow):hover { color: var(--footer-ink); }
 
 /* Depth ------------------------------------------------------------------
    Grain and one radial light, on four sections of the home page and nowhere
@@ -442,13 +446,13 @@ a:hover { color: var(--accent-hover); }
 
 .section--dark.depth::before { mix-blend-mode: screen; }
 
-/* The merge diagram's stage: its own full-height section. */
+/* The merge diagram's stage. Padding rather than a forced viewport: a
+   100svh well left the diagram as a small cluster in a field of grey. */
 @media (min-width: 1024px) {
   .section--stage {
     display: grid;
     align-content: center;
-    min-height: 100svh;
-    padding-block: 160px;
+    padding-block: clamp(5.5rem, 4rem + 4vw, 8rem);
   }
 }
 

@@ -56,9 +56,15 @@
  * ------
  * Desktop (1120 and up): five columns — names, paths, mark, paths, names —
  * on a shared subgrid, so the three headers, the three names and the three
- * price lines each sit on one row. Each path area is 240px, the mark 96px.
+ * price blocks each sit on one row. Each path area is 260px, the mark 112px.
  * 1120 rather than 1024: below it the outside columns are under 216px and
  * "They do the work" no longer fits beside its paths.
+ *
+ * The paths are --ink-soft. --line-input on this grey stage is about 3:1
+ * and, with the grain over it, the lines read as a smudge rather than a
+ * diagram. Prices are figures, not a sentence: the two outside ranges and
+ * ours share one shape (a quiet label, a figure, a note) so the comparison
+ * is the thing you see.
  *
  * Narrower: both outside blocks side by side on top, all six paths
  * converging down into the mark, then ours. Not left–mark–right stacked:
@@ -82,12 +88,13 @@ const agency = MARKET_RANGES.agency;
 const startup = money(startupPrice(STARTUP_TIERS[0]));
 const maintenance = money(MAINTENANCE_TIERS[0].monthly);
 
-// Desktop paths: three name rows 44px apart, meeting the mark's side. The
-// mark sits 9px inside its 96px column, so the paths overrun their 240px box
-// by that much to touch it.
-const ROWS = [22, 66, 110];
-const left = ROWS.map((y) => `M0 ${y} C124 ${y} 124 66 249 66`);
-const right = ROWS.map((y) => `M240 ${y} C116 ${y} 116 66 -9 66`);
+// Desktop paths: three name rows 56px tall, meeting the middle of the mark's
+// side. The mark is 98px wide inside a 112px column, and its side vertex sits
+// about 11px in from the column edge, so the paths overrun their 260px box
+// by 12px and tuck into the hex rather than stopping short of it.
+const ROWS = [28, 84, 140];
+const left = ROWS.map((y) => `M0 ${y} C130 ${y} 130 84 272 84`);
+const right = ROWS.map((y) => `M260 ${y} C130 ${y} 130 84 -12 84`);
 
 // Narrow paths: from under each block down to the mark's top point.
 const FROM = [[40, 280], [80, 240], [120, 200]];
@@ -106,7 +113,11 @@ const down = FROM.flatMap(([l, r]) => [
     <ul class="merge__names">
       <li>Squarespace</li><li>Wix</li><li>Replit</li>
     </ul>
-    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span>/mo</span> <span class="nw">+ your evenings</span></p>
+    <p class="merge__price">
+      <span class="merge__price-k">Typically</span>
+      <span class="merge__price-fig nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span><span class="merge__unit">/mo</span></span>
+      <span class="merge__price-note">+ your evenings</span>
+    </p>
   </div>
 
   <div class="merge__col merge__col--agency">
@@ -117,13 +128,17 @@ const down = FROM.flatMap(([l, r]) => [
     <ul class="merge__names">
       <li>Design studios</li><li>Freelancers</li><li>Dev shops</li>
     </ul>
-    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span> <span class="nw">one-time</span></p>
+    <p class="merge__price">
+      <span class="merge__price-k">Typically</span>
+      <span class="merge__price-fig nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span>
+      <span class="merge__price-note">one-time</span>
+    </p>
   </div>
 
-  <svg class="merge__paths merge__paths--l" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
+  <svg class="merge__paths merge__paths--l" viewBox="0 0 260 168" aria-hidden="true" focusable="false">
     {left.map((d, i) => <path class="merge__line" d={d} pathLength="1" style={`--i:${i}`}></path>)}
   </svg>
-  <svg class="merge__paths merge__paths--r" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
+  <svg class="merge__paths merge__paths--r" viewBox="0 0 260 168" aria-hidden="true" focusable="false">
     {right.map((d, i) => <path class="merge__line" d={d} pathLength="1" style={`--i:${i}`}></path>)}
   </svg>
   <svg class="merge__paths merge__paths--down" viewBox="0 0 320 92" aria-hidden="true" focusable="false">
@@ -143,7 +158,17 @@ const down = FROM.flatMap(([l, r]) => [
       <h3 class="merge__head">GetYourWebsite</h3>
       <p class="merge__verb">We do the work</p>
     </div>
-    <p class="merge__price"><span class="merge__part">Startup from <span class="merge__n">{startup}</span>{BETA.on ? ' in the beta' : ''}</span><span class="merge__sep"> · </span><span class="merge__part">Maintenance from <span class="merge__n">{maintenance}</span>/mo</span></p>
+    <p class="merge__price merge__price--ours">
+      <span class="merge__part">
+        <span class="merge__price-k">Startup from</span>
+        <span class="merge__price-fig"><span class="merge__n">{startup}</span></span>
+        <span class="merge__price-note">{BETA.on ? 'in the beta' : 'one-time'}</span>
+      </span>
+      <span class="merge__part">
+        <span class="merge__price-k">Maintenance from</span>
+        <span class="merge__price-fig"><span class="merge__n">{maintenance}</span><span class="merge__unit">/mo</span></span>
+      </span>
+    </p>
   </div>
 </div>
 
@@ -169,16 +194,17 @@ const down = FROM.flatMap(([l, r]) => [
     grid-column: 1 / -1;
     grid-row: 2;
     width: 100%;
-    max-width: 480px;
+    max-width: 420px;
     height: auto;
-    margin: var(--s-4) auto 0;
+    /* Tuck the path ends into the top of the hex, so they meet it. */
+    margin: var(--s-5) auto -12px;
     overflow: visible;
   }
 
   .merge__hub { grid-column: 1 / -1; grid-row: 3; display: flex; justify-content: center; }
-  .merge__mark { width: auto; height: 72px; overflow: visible; }
+  .merge__mark { width: auto; height: 88px; overflow: visible; }
 
-  .merge__ours { grid-column: 1 / -1; grid-row: 4; margin-top: var(--s-4); }
+  .merge__ours { grid-column: 1 / -1; grid-row: 4; margin-top: var(--s-5); }
 
   /* The column header: whose option this is. Small and quiet, so the verb
      under it reads as a description of that option rather than a slogan.
@@ -198,9 +224,12 @@ const down = FROM.flatMap(([l, r]) => [
     color: var(--ink-soft);
   }
 
+  /* The same size in all three columns, so "You do the work" reads as a
+     description of that column and not as a second headline. The price
+     figures below are what this diagram is for, and they are larger. */
   .merge__verb {
-    margin-top: 0.35rem;
-    font-size: var(--t-h3);
+    margin-top: 0.3rem;
+    font-size: 1.0625rem;
     font-weight: 600;
     letter-spacing: -0.015em;
     line-height: 1.25;
@@ -213,20 +242,40 @@ const down = FROM.flatMap(([l, r]) => [
     line-height: 1.9;
   }
 
-  /* One style for all three price lines, the same as our prices elsewhere:
-     Inter, ink, tabular figures on the figures (.merge__n) only. On the whole
-     line, tnum would widen the hyphen in "one-time" too. */
+  /* One shape for all three prices: a quiet label, a figure, a note.
+     Inter, ink, tabular figures on the figures (.merge__n) only — on the
+     whole line, tnum would widen the hyphen in "one-time" too. */
   .merge__price {
-    margin: var(--s-2) auto 0;
-    font-size: var(--t-small);
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.45;
-    max-width: 22rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin: var(--s-3) auto 0;
+    max-width: 16rem;
     transition: opacity 300ms var(--ease);
   }
 
-  .merge__ours .merge__price { margin-top: 0.35rem; }
+  .merge__price-k,
+  .merge__price-note {
+    font-size: var(--t-small);
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--ink-soft);
+  }
+
+  .merge__price-fig {
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+
+  .merge__unit {
+    font-size: 0.62em;
+    font-weight: 550;
+    letter-spacing: 0;
+    margin-left: 0.06em;
+  }
 
   /* A range never breaks inside itself, and neither does its unit. */
   .nw { white-space: nowrap; }
@@ -234,10 +283,19 @@ const down = FROM.flatMap(([l, r]) => [
   /* The figures hold still while they count. */
   .merge__n { font-variant-numeric: tabular-nums; }
 
-  /* Ours is two prices. Narrow, one per line and no separator; desktop, one
-     line with a middle dot. */
-  .merge__part { display: block; }
-  .merge__sep { display: none; }
+  /* Ours is two prices, stacked on a narrow screen. The figure is the
+     larger of the three, which is the comparison. */
+  .merge__price--ours {
+    gap: var(--s-4);
+    max-width: none;
+    align-items: center;
+  }
+
+  .merge__part {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
 
   /* Waiting for the first count: hidden rather than showing a zero someone
      could read as a price. merge.js below removes it as the count starts. */
@@ -247,10 +305,10 @@ const down = FROM.flatMap(([l, r]) => [
      are subgrids with the parent's row gap, so all three rows line up. */
   @media (min-width: 1120px) {
     .merge {
-      grid-template-columns: minmax(0, 1fr) 240px 96px 240px minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr) 260px 112px 260px minmax(0, 1fr);
       grid-template-rows: auto auto auto;
       column-gap: 0;
-      row-gap: var(--s-4);
+      row-gap: var(--s-5);
       max-width: none;
     }
 
@@ -260,21 +318,27 @@ const down = FROM.flatMap(([l, r]) => [
       grid-template-rows: subgrid;
       gap: var(--s-4);
     }
-    .merge__col--diy { grid-column: 1; text-align: right; padding-right: var(--s-4); }
-    .merge__col--agency { grid-column: 5; text-align: left; padding-left: var(--s-4); }
+    .merge__col--diy { grid-column: 1; text-align: right; padding-right: var(--s-5); }
+    .merge__col--agency { grid-column: 5; text-align: left; padding-left: var(--s-5); }
 
-    .merge__names { line-height: 44px; white-space: nowrap; align-self: center; }
-    .merge__names li { height: 44px; }
+    .merge__names { line-height: 56px; white-space: nowrap; align-self: center; }
+    .merge__names li { height: 56px; }
     .merge__price { margin: 0; max-width: none; align-self: start; }
-    .merge__part { display: inline; }
-    .merge__sep { display: inline; }
+    .merge__price-fig { font-size: 1.375rem; }
+    .merge__price--ours {
+      flex-direction: row;
+      justify-content: center;
+      gap: var(--s-7);
+      align-items: flex-start;
+    }
+    .merge__price--ours .merge__price-fig { font-size: 2.125rem; }
 
     .merge__paths--l,
     .merge__paths--r {
       display: block;
       grid-row: 2;
-      width: 240px;
-      height: 132px;
+      width: 260px;
+      height: 168px;
       align-self: center;
       overflow: visible;
     }
@@ -283,7 +347,7 @@ const down = FROM.flatMap(([l, r]) => [
     .merge__paths--down { display: none; }
 
     .merge__hub { grid-column: 3; grid-row: 2; align-self: center; }
-    .merge__mark { height: 96px; }
+    .merge__mark { height: 112px; }
 
     /* Ours: header and verb on the headers' row, price on the prices' row,
        both across the middle three columns. */
@@ -295,8 +359,8 @@ const down = FROM.flatMap(([l, r]) => [
   /* Drawing. Base styles are the end state. */
   .merge__line {
     fill: none;
-    stroke: var(--line-input);
-    stroke-width: 1.5;
+    stroke: var(--ink-soft);
+    stroke-width: 1.75;
     stroke-linecap: round;
     stroke-dasharray: 1;
   }

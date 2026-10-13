@@ -28,7 +28,7 @@
    Approved chip are untouched. */
 .section--dark .anim:not(.anim--bare) {
   background: transparent;
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.42);
 }
 
 .section--dark .anim .a-card { stroke: rgba(255, 255, 255, 0.24); }
