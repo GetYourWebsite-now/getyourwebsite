@@ -58,7 +58,7 @@ const lines = isStartup
 ---
 
 <article
-  class:list={['tier', { 'tier--popular': tier.popular, 'tier--teaser': teaser }]}
+  class:list={['tier', 'lift', { 'tier--popular': tier.popular, 'tier--teaser': teaser }]}
   data-reveal={reveal ? '' : undefined}
 >
   {tier.popular && <span class="tier__flag">Most popular</span>}
@@ -101,19 +101,22 @@ const lines = isStartup
     flex-direction: column;
     padding: var(--s-5);
     background: var(--bg);
-    border: 1px solid var(--line);
     border-radius: var(--radius);
-    transition: border-color var(--dur) var(--ease);
   }
 
+  /* Border, shadow, hover rise and their transition come from .lift in
+     global.css. */
   .tier:hover { border-color: #d2d5db; }
 
   .tier--popular {
     border-color: var(--accent);
-    box-shadow: inset 0 0 0 1px var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent), var(--lift);
   }
 
-  .tier--popular:hover { border-color: var(--accent); }
+  .tier--popular:hover {
+    border-color: var(--accent);
+    box-shadow: inset 0 0 0 1px var(--accent), var(--lift-hover);
+  }
 
   .tier__flag {
     position: absolute;

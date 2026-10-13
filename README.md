@@ -98,9 +98,10 @@ Everything visual is a token in `:root` at the top of `src/styles/global.css`.
 Change a token, not a page.
 
 **Surfaces.** Two light ones that alternate down a page (`--bg` white,
-`--bg-alt` grey) and one dark one (`--footer`) used only by the footer.
-`npm run verify` fails if a second dark surface appears, or if two sections
-with the same surface end up adjacent.
+`--bg-alt` grey) and one dark one (`--footer`), used by the footer and by
+the single dark band on the home page (`.section--dark`, the platform
+section). `npm run verify` fails on a third dark surface, a dark band off
+the home page, or two adjacent sections with the same surface.
 
 **Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
 case-study sector labels. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
@@ -119,9 +120,15 @@ the edge of an interactive control, and has to clear 3:1 on *both* light
 surfaces — WCAG 1.4.11. Using `--line` on an input is a real bug; the old
 site had exactly that at 1.4:1.
 
-**No atmosphere.** No gradients, no glow, no glass, no bento, no mesh, no
-textures. Borders and whitespace separate things. The single shadow,
-`--shadow-shot`, lifts product screenshots and nothing else.
+**Depth, in listed places only.** Grain (`--grain`, a data-URI noise at 4%)
+and one radial light per section, on the home page's hero, merge stage,
+dark band and closing CTA band — `.depth` — and nowhere else. `--lift` on
+tier cards, case-study frames, drawing wells and the hero browser frame,
+rising 2px on hover. A light edge on primary buttons, on hover only.
+`--shadow-shot` for product screenshots. No gradient on text, no glow, no
+glass, no bento, no colour that is not a token. `npm run verify` holds the
+list; `verify:contrast` measures text on a depth section against the
+darkest pixel the grain and light can put under it.
 
 **Radii.** 8px cards, 6px buttons and inputs. Nothing larger.
 
@@ -159,11 +166,14 @@ looked at.
 | `.btn .btn--secondary` | the alternative next to it |
 | `.link-arrow` | tertiary — a text link with an arrow |
 | `.card` | a bordered box; no shadow, no hover lift |
-| `.shot` | a product screenshot, with the one shadow |
+| `.lift` | a card that lifts: border, `--lift`, 2px rise on hover |
+| `.shot` | a product screenshot, with `--shadow-shot` |
+| `.depth` | grain and radial light — the four home sections only |
 
-Sizes are `.btn--sm`, nothing (medium), `.btn--lg`. Hover is a colour change
-and nothing else — the old system had a ring, a sweep and a press ripple,
-and all three read as a template.
+Sizes are `.btn--sm`, nothing (medium), `.btn--lg`. Hover is a colour change,
+plus a 1px light edge on primary buttons, inside the button's box — the old
+system had a ring, a sweep and a press ripple, and all three read as a
+template. `verify` allows that one layer and no other.
 
 Shared components worth knowing: `CaseStudy.astro` (full, `compact` and
 `thumb` variants, one set of facts), `WebsiteCompare.astro` (used by the
@@ -277,13 +287,14 @@ than something to remember. Each needs `npm run dev` in another terminal.
 ```bash
 npm run verify           # links resolve · the demo sandbox flow end to end ·
                          # reduced motion · the contact form · the button
-                         # system · light surfaces · the portal captures ·
+                         # system · surfaces and depth · the portal captures ·
                          # then the word budget (verify:words)
 npm run verify:words     # visible words in <main> per page, against a budget:
                          # home 570, how-it-works 550, why-us 600
 npm run verify:contrast  # every text node on every page against the surface
-                         # it is actually painted on, plus button and
-                         # form-control edges (WCAG 1.4.3 and 1.4.11)
+                         # it is actually painted on (worst pixel on a depth
+                         # section), plus button and form-control edges
+                         # (WCAG 1.4.3 and 1.4.11)
 npm run verify:wraps     # how every heading wraps at 1440 and 390
 npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank
                          # screen
@@ -295,7 +306,8 @@ npm run verify:beta      # builds with beta on and off; fails if the switch
 
 What each one has actually caught, so you know what you lose by skipping it:
 `verify` found a second dark surface and two adjacent same-surface sections;
-`verify:contrast` found an indigo button at 2.60:1 on the footer, a form
+`verify:contrast` found the merge headers at 4.14:1 on the grain, an indigo
+button at 2.60:1 on the footer, a form
 border at 2.89:1, and our own sandbox chrome rendering near-white on light
 grey; `verify:wraps` found a headline breaking to three lines with the
 middle one orphaned.

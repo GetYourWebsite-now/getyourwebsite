@@ -1,161 +1,364 @@
 ---
 /**
- * The positioning section: the two ways people usually get a website, and
- * where we sit between them.
+ * The positioning section, drawn as a diagram: the two ways people usually
+ * get a website, and where we sit between them.
  *
- * Left, the do-it-yourself builders; right, the agencies. Lines run from both
- * into the centre, where our mark draws itself in — the hexagon's outline
- * first, then the fill, then the two pages.
+ * Left, building it yourself; right, hiring someone. Three paths run in from
+ * each side, the same curve mirrored, and meet at our mark. Each column has
+ * the same four parts in the same order — who it is for, who does the work,
+ * three names, what it costs — so the three can be read across as rows.
  *
- * The names on either side are plain text in our own type. No logos, no brand
- * colours, and no claim about any of them beyond the one line under each
- * heading — the comparison is about who does the work, not about whose
- * product is better.
+ * The headers say whose option each column is ("If you build it yourself"),
+ * and the verbs sit under them. On the earlier version "You do the work"
+ * stood alone as a heading and was read as our pitch.
  *
- * The price is read from STARTUP_TIERS, the one place prices live — the
- * beta price while beta is on, said as such.
+ * The names are plain text in our own type. No logos, no brand colours, no
+ * claim about any of them beyond the line their column shares.
  *
- * 7s loop. The base styles are the final frame (see anim.css).
+ * Prices
+ * ------
+ * The three price lines have one shape — a range or a starting price, and
+ * its unit — so the comparison is like for like. The two outside ranges are
+ * MARKET_RANGES in site.js; ours is computed from STARTUP_TIERS and
+ * MAINTENANCE_TIERS (the beta price while beta is on, said as such). No
+ * per-competitor price anywhere, and "Typically" on both ranges.
+ *
+ * Checked October 13, 2026. Figures below are USD with the currency sign
+ * left off, because a dollar sign followed by a digit in any .astro file —
+ * comments included — fails the prices-live-in-site.js rule.
+ *
+ *   Build it yourself, 18–49 a month (billed annually):
+ *     https://www.squarespace.com/pricing  Basic 19, Core 29, Plus 49
+ *     https://www.wix.com/plans            Light 17.77, Core 29.77, Business 39.77
+ *     https://replit.com/pricing           Core 18 (20 billed monthly)
+ *   The low end is the cheapest paid plan of the three, rounded up; the
+ *   high end is the dearest mid plan. Left out: the commerce tiers
+ *   (Squarespace Advanced 99, Wix Business Elite 159.77) and monthly
+ *   billing, which runs higher (Squarespace Basic 25) — "Typically" covers
+ *   both.
+ *
+ *   Hire someone, 2,000–10,000 one-time:
+ *     https://clutch.co/web-designers/pricing  (updated September 21, 2026,
+ *       from verified client reviews) — "Web design agencies typically
+ *       charge 2,000 to 100,000"; "Most web design projects reviewed on
+ *       Clutch usually cost less than 10,000."
+ *     https://www.webfx.com/web-design/pricing/website-costs/  (2,000+
+ *       businesses surveyed) — "500 to 5,000+ for professionally designed
+ *       sites from an agency or freelancers"; agency design "3,000 to
+ *       30,000+".
+ *   The low end is Clutch's agency floor; freelancers can come in under it
+ *   (WebFX's 500), which "Typically" has to carry. The high end is Clutch's
+ *   "most projects" ceiling.
+ *
+ * Layout
+ * ------
+ * Desktop (1120 and up): five columns — names, paths, mark, paths, names —
+ * on a shared subgrid, so the three headers, the three names and the three
+ * price lines each sit on one row. Each path area is 240px, the mark 96px.
+ * 1120 rather than 1024: below it the outside columns are under 216px and
+ * "They do the work" no longer fits beside its paths.
+ *
+ * Narrower: both outside blocks side by side on top, all six paths
+ * converging down into the mark, then ours. Not left–mark–right stacked:
+ * that reads as a sequence (DIY, then us, then agencies).
+ *
+ * Motion
+ * ------
+ * One 8s loop. Paths draw in from the outside over 1.2s, the pairs 120ms
+ * apart; the mark fades up as the first one lands; the end state holds 3s;
+ * then the paths drain into the mark and it fades, and the loop starts
+ * again. The prices count up once, on the first play — a number ticking
+ * every 8s is noise — and are static on every later loop. Reduced motion:
+ * the base styles are the end state (see anim.css) and nothing counts.
  */
 import './anim.css';
-import { BETA, STARTUP_TIERS, money, startupPrice } from '../../data/site.js';
+import { BETA, MARKET_RANGES, STARTUP_TIERS, MAINTENANCE_TIERS, money, startupPrice } from '../../data/site.js';
 
-const from = money(startupPrice(STARTUP_TIERS[0]));
+const diy = MARKET_RANGES.diy;
+const agency = MARKET_RANGES.agency;
+const startup = money(startupPrice(STARTUP_TIERS[0]));
+const maintenance = money(MAINTENANCE_TIERS[0].monthly);
 
-// Where the lines start, on the centre drawing's left and right edges, and
-// where they meet the mark.
-const LEFT = [36, 76, 124, 164];
-const RIGHT = [72, 128];
-const left = LEFT.map((y) => `M0 ${y} C64 ${y} 72 100 124 100`);
-const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
+// Desktop paths: three name rows 44px apart, meeting the mark's side. The
+// mark sits 9px inside its 96px column, so the paths overrun their 240px box
+// by that much to touch it.
+const ROWS = [22, 66, 110];
+const left = ROWS.map((y) => `M0 ${y} C124 ${y} 124 66 249 66`);
+const right = ROWS.map((y) => `M240 ${y} C116 ${y} 116 66 -9 66`);
+
+// Narrow paths: from under each block down to the mark's top point.
+const FROM = [[40, 280], [80, 240], [120, 200]];
+const down = FROM.flatMap(([l, r]) => [
+  `M${l} 0 C${l} 48 160 44 160 92`,
+  `M${r} 0 C${r} 48 160 44 160 92`,
+]);
 ---
 
-<div class="merge">
-  <div class="merge__side merge__side--diy">
-    <ul class="merge__names" aria-label="Website builders">
-      <li>Squarespace</li><li>Wix</li><li>Base44</li><li>Replit</li>
+<div class="anim anim--bare merge" data-anim data-merge>
+  <div class="merge__col merge__col--diy">
+    <div class="merge__top">
+      <h3 class="merge__head">If you build it yourself</h3>
+      <p class="merge__verb">You do the work</p>
+    </div>
+    <ul class="merge__names">
+      <li>Squarespace</li><li>Wix</li><li>Replit</li>
     </ul>
-    <h2>You do the work</h2>
-    <p>Templates and prompts. Nights and weekends. Yours to maintain.</p>
+    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span>/mo</span> <span class="nw merge__unit">+ your evenings</span></p>
   </div>
 
-  <div class="merge__centre">
-    <figure class="anim anim--bare merge__fig" data-anim>
-      <svg viewBox="0 0 320 200" role="presentation" aria-hidden="true" focusable="false">
-        {[...left, ...right].map((d, i) => (
-          <path class="merge__line" d={d} pathLength="1" style={`--i:${i}`}></path>
-        ))}
-        <g transform="translate(128 68)">
-          <path class="merge__hex" d="M32 2 L58 17 L58 47 L32 62 L6 47 L6 17 Z" pathLength="1"></path>
-          <rect class="merge__page" x="18" y="18" width="18" height="18"></rect>
-          <rect class="merge__page merge__page--2" x="28" y="28" width="18" height="18"></rect>
-        </g>
-      </svg>
-    </figure>
-    <h2>Done for you. Without the agency bill.</h2>
-    <p>Built by our software, checked by a person, hosted and kept current. From {from}{BETA.on ? ' in the beta' : ''}.</p>
+  <div class="merge__col merge__col--agency">
+    <div class="merge__top">
+      <h3 class="merge__head">If you hire an agency</h3>
+      <p class="merge__verb">They do the work</p>
+    </div>
+    <ul class="merge__names">
+      <li>Design studios</li><li>Freelancers</li><li>Dev shops</li>
+    </ul>
+    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span> <span class="nw merge__unit">one-time</span></p>
   </div>
 
-  <div class="merge__side merge__side--agency">
-    <ul class="merge__names" aria-label="Agencies">
-      <li>Design studios</li><li>Marketing agencies</li>
-    </ul>
-    <h2>They do the work</h2>
-    <p>Done for you, at agency prices and agency timelines.</p>
+  <svg class="merge__paths merge__paths--l" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
+    {left.map((d, i) => <path class="merge__line" d={d} pathLength="1" style={`--i:${i}`}></path>)}
+  </svg>
+  <svg class="merge__paths merge__paths--r" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
+    {right.map((d, i) => <path class="merge__line" d={d} pathLength="1" style={`--i:${i}`}></path>)}
+  </svg>
+  <svg class="merge__paths merge__paths--down" viewBox="0 0 320 92" aria-hidden="true" focusable="false">
+    {down.map((d, i) => <path class="merge__line" d={d} pathLength="1" style={`--i:${Math.floor(i / 2)}`}></path>)}
+  </svg>
+
+  <div class="merge__hub">
+    <svg class="merge__mark" viewBox="4 0 56 64" aria-hidden="true" focusable="false">
+      <path class="merge__hex" d="M32 2 L58 17 L58 47 L32 62 L6 47 L6 17 Z"></path>
+      <rect class="merge__page" x="18" y="18" width="18" height="18"></rect>
+      <rect class="merge__page" x="28" y="28" width="18" height="18"></rect>
+    </svg>
+  </div>
+
+  <div class="merge__ours">
+    <h3 class="merge__head">GetYourWebsite</h3>
+    <p class="merge__price"><span class="merge__part">Startup from <span class="merge__n">{startup}</span>{BETA.on ? ' in the beta' : ''}</span><span class="merge__sep"> · </span><span class="merge__part">Maintenance from <span class="merge__n">{maintenance}</span>/mo</span></p>
   </div>
 </div>
 
 <style>
+  /* Narrow first: both outside blocks side by side, paths down, mark, ours. */
   .merge {
     display: grid;
-    gap: var(--s-6);
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--s-4);
     text-align: center;
-  }
-
-  /* Stacked: the two familiar options, then the answer. */
-  .merge__side--diy { order: 1; }
-  .merge__side--agency { order: 2; }
-  .merge__centre { order: 3; }
-
-  /* Three h2s, peers: the section has no heading above them, so h3s would
-     skip a level after the hero's h1. Sized as the h3s they look like. */
-  .merge h2 { font-size: var(--t-h3); margin-top: var(--s-3); }
-  .merge p { color: var(--ink-soft); margin: var(--s-2) auto 0; max-width: 22rem; }
-  .merge__centre h2 { font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem); }
-  .merge__centre p { color: var(--ink); }
-
-  .merge__names {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.25rem 1rem;
-    list-style: none;
-    padding: 0;
-    color: var(--ink-muted);
-    font-size: var(--t-small);
-  }
-
-  .merge__fig {
-    margin: 0;
-    max-width: 360px;
+    max-width: 640px;
     margin-inline: auto;
   }
 
-  .merge__fig svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .merge__col { display: flex; flex-direction: column; gap: var(--s-3); }
+  .merge__col--diy { grid-column: 1; grid-row: 1; }
+  .merge__col--agency { grid-column: 2; grid-row: 1; }
 
-  @media (min-width: 900px) {
+  .merge__paths--l,
+  .merge__paths--r { display: none; }
+
+  .merge__paths--down {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    margin: var(--s-4) auto 0;
+    overflow: visible;
+  }
+
+  .merge__hub { grid-column: 1 / -1; grid-row: 3; display: flex; justify-content: center; }
+  .merge__mark { width: auto; height: 72px; overflow: visible; }
+
+  .merge__ours { grid-column: 1 / -1; grid-row: 4; margin-top: var(--s-4); }
+
+  /* The column header: whose option this is. Small and quiet, so the verb
+     under it reads as a description of that option rather than a slogan.
+
+     --ink-soft, not the --ink-muted the brief asked for. --ink-muted on
+     --bg-alt has 0.14 of a point of AA headroom, and the stage's grain
+     alone takes more than that: its darkest pixel puts these at 4.25:1, the
+     light's centre at 4.14:1 (npm run verify:contrast). Moving the light
+     could not help, since the grain is everywhere. Size and weight still
+     keep it quieter than the verb under it. */
+  .merge__head {
+    font-family: var(--font-body);
+    font-size: var(--t-small);
+    font-weight: 500;
+    letter-spacing: normal;
+    line-height: 1.4;
+    color: var(--ink-soft);
+  }
+
+  .merge__verb {
+    margin-top: 0.35rem;
+    font-size: var(--t-h3);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    color: var(--ink);
+  }
+
+  .merge__names {
+    color: var(--ink-soft);
+    font-size: var(--t-small);
+    line-height: 1.9;
+  }
+
+  /* One style for all three price lines, the same as our prices elsewhere:
+     Inter, ink, tabular figures. */
+  .merge__price {
+    margin: var(--s-2) auto 0;
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.45;
+    max-width: 22rem;
+    transition: opacity 300ms var(--ease);
+  }
+
+  .merge__ours .merge__price { margin-top: 0.35rem; }
+
+  /* A range never breaks inside itself, and neither does its unit. */
+  .nw { white-space: nowrap; }
+
+  /* Tabular figures set Inter's hyphen on a figure-width slot, which spaced
+     "one-time" out as "one - time". The unit is words, not figures. */
+  .merge__unit { font-variant-numeric: normal; }
+
+  /* Ours is two prices. Narrow, one per line and no separator; desktop, one
+     line with a middle dot. */
+  .merge__part { display: block; }
+  .merge__sep { display: none; }
+
+  /* Waiting for the first count: hidden rather than showing a zero someone
+     could read as a price. merge.js below removes it as the count starts. */
+  .merge.is-pre-count .merge__price { opacity: 0; }
+
+  /* Desktop: one shared grid. Rows: header block, names, price. The columns
+     are subgrids with the parent's row gap, so all three rows line up. */
+  @media (min-width: 1120px) {
     .merge {
-      grid-template-columns: 1fr 1.4fr 1fr;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) 240px 96px 240px minmax(0, 1fr);
+      grid-template-rows: auto auto auto;
+      column-gap: 0;
+      row-gap: var(--s-4);
+      max-width: none;
+    }
+
+    .merge__col {
+      grid-row: 1 / span 3;
+      display: grid;
+      grid-template-rows: subgrid;
       gap: var(--s-4);
     }
-    .merge__side--diy { order: 1; text-align: right; }
-    .merge__centre { order: 2; }
-    .merge__side--agency { order: 3; text-align: left; }
-    .merge__side p { margin-inline: 0; }
-    .merge__side--diy p { margin-left: auto; }
-    .merge__names { flex-direction: column; gap: 0.35rem; }
-    .merge__side--diy .merge__names { align-items: flex-end; }
-    .merge__side--agency .merge__names { align-items: flex-start; }
+    .merge__col--diy { grid-column: 1; text-align: right; padding-right: var(--s-4); }
+    .merge__col--agency { grid-column: 5; text-align: left; padding-left: var(--s-4); }
+
+    .merge__names { line-height: 44px; white-space: nowrap; align-self: center; }
+    .merge__names li { height: 44px; }
+    .merge__price { margin: 0; max-width: none; align-self: start; }
+    .merge__part { display: inline; }
+    .merge__sep { display: inline; }
+
+    .merge__paths--l,
+    .merge__paths--r {
+      display: block;
+      grid-row: 2;
+      width: 240px;
+      height: 132px;
+      align-self: center;
+      overflow: visible;
+    }
+    .merge__paths--l { grid-column: 2; }
+    .merge__paths--r { grid-column: 4; }
+    .merge__paths--down { display: none; }
+
+    .merge__hub { grid-column: 3; grid-row: 2; align-self: center; }
+    .merge__mark { height: 96px; }
+
+    /* Ours: header on the headers' row, price on the prices' row, both
+       across the middle three columns. */
+    .merge__ours { display: contents; }
+    .merge__ours .merge__head { grid-column: 2 / 5; grid-row: 1; align-self: start; }
+    .merge__ours .merge__price { grid-column: 2 / 5; grid-row: 3; margin: 0; }
   }
 
-  /* Drawing: final frame is everything drawn. */
-  .merge__line { fill: none; stroke: var(--line-input); stroke-width: 1.25; stroke-linecap: round; stroke-dasharray: 1; }
-  .merge__hex { fill: var(--accent); stroke: var(--accent); stroke-width: 2; stroke-dasharray: 1; stroke-linejoin: round; }
+  /* Drawing. Base styles are the end state. */
+  .merge__line {
+    fill: none;
+    stroke: var(--line-input);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 1;
+  }
+  .merge__hex { fill: var(--accent); stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
   .merge__page { fill: var(--bg); }
 
-  .merge__fig * { animation-duration: 7s; animation-iteration-count: infinite; animation-timing-function: var(--ease); animation-fill-mode: both; }
+  .merge__line,
+  .merge__mark {
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: var(--ease);
+    animation-fill-mode: both;
+  }
 
-  .merge__line { animation-name: merge-line; animation-delay: calc(var(--i) * 0.08s); }
-  .merge__hex { animation-name: merge-hex; }
-  .merge__page { animation-name: merge-page; }
-  .merge__page--2 { animation-name: merge-page-2; }
+  .merge__line { animation-name: merge-line; animation-delay: calc(var(--i) * 120ms); }
+  .merge__mark { animation-name: merge-mark; }
 
-  /* Lines draw in 0.3–2.2s, the outline 2.2–3.5s, fill 3.5s, pages 3.9s and
-     4.2s, hold to 6.3s, then everything clears for the next pass. */
+  /* 0.3s in, each path draws for 1.2s (landing at 1.5s for the first pair);
+     the mark fades up 1.5–2.0s; hold to 5.0s; the paths drain into the mark
+     5.0–6.2s and it fades by 6.6s; empty until the loop restarts. */
   @keyframes merge-line {
-    0%, 4%    { stroke-dashoffset: 1; opacity: 1; }
-    30%, 90%  { stroke-dashoffset: 0; opacity: 1; }
-    97%, 100% { stroke-dashoffset: 0; opacity: 0; }
+    0%, 3.75%   { stroke-dashoffset: 1; }
+    18.75%, 62.5% { stroke-dashoffset: 0; }
+    77.5%, 100% { stroke-dashoffset: -1; }
   }
-  @keyframes merge-hex {
-    0%, 30%   { stroke-dashoffset: 1; fill-opacity: 0; opacity: 1; }
-    48%       { stroke-dashoffset: 0; fill-opacity: 0; opacity: 1; }
-    54%, 90%  { stroke-dashoffset: 0; fill-opacity: 1; opacity: 1; }
-    97%, 100% { stroke-dashoffset: 0; fill-opacity: 1; opacity: 0; }
-  }
-  @keyframes merge-page {
-    0%, 54%   { opacity: 0; }
-    59%, 90%  { opacity: 1; }
-    97%, 100% { opacity: 0; }
-  }
-  @keyframes merge-page-2 {
-    0%, 58%   { opacity: 0; }
-    63%, 90%  { opacity: 1; }
-    97%, 100% { opacity: 0; }
+  @keyframes merge-mark {
+    0%, 18.75%  { opacity: 0; transform: translateY(6px); }
+    25%, 77.5%  { opacity: 1; transform: none; }
+    82.5%, 100% { opacity: 0; transform: none; }
   }
 </style>
 
 <script>
   import '../../scripts/anim.js';
+
+  // The one-time count. Starts with the CSS loop's first play (same element,
+  // same 25% threshold as anim.js) and lands as the mark does: 2.0s in,
+  // 600ms long. Never runs under reduced motion; without JS, or before it
+  // runs, the final prices are simply there.
+  const stage = document.querySelector('[data-merge]');
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (stage && !still && 'IntersectionObserver' in window) {
+    const nums = [...stage.querySelectorAll('.merge__n')].map((el) => ({
+      el,
+      to: Number(el.textContent.replace(/[^0-9]/g, '')),
+    }));
+    const show = (n) => '$' + Math.round(n).toLocaleString('en-US');
+
+    const count = () => {
+      const start = performance.now();
+      const step = (now) => {
+        const t = Math.min(1, (now - start) / 600);
+        const eased = 1 - Math.pow(1 - t, 3);
+        nums.forEach(({ el, to }) => { el.textContent = show(to * eased); });
+        if (t < 1) requestAnimationFrame(step);
+      };
+      nums.forEach(({ el }) => { el.textContent = show(0); });
+      stage.classList.remove('is-pre-count');
+      requestAnimationFrame(step);
+    };
+
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      stage.classList.add('is-pre-count');
+      setTimeout(count, 2000);
+    }, { threshold: 0.25 });
+    io.observe(stage);
+  }
 </script>

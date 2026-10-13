@@ -29,6 +29,23 @@
  * Alpha is composited, not ignored: a colour at 60% opacity over white is
  * measured as what it looks like, not as its opaque value.
  *
+ * Depth surfaces (STEP 10)
+ * ------------------------
+ * Four sections of the home page carry a radial light and a grain (.depth in
+ * global.css), and neither is a background-color, so the walk above would
+ * not see them. When the surface a glyph sits on is a .depth section, the
+ * backdrop is made worst-case for that glyph:
+ *
+ *   light   the gradient's alpha at the point of the text box nearest its
+ *           centre, composited over the section colour. It darkens a light
+ *           surface and lightens the dark band, so nearest is worst on both.
+ *   grain   the darkest pixel the blend can make: multiply at the ::before's
+ *           opacity over black noise on light surfaces, screen over white
+ *           noise on the dark band.
+ *
+ * Measured this way, a glyph only passes if it passes on the worst pixel
+ * under it.
+ *
  * The /demo sandbox is skipped. It deliberately runs the client portal's own
  * dark token set (see CLAUDE.md) and is not ours to re-measure here; the
  * portal owns that. Everything else on every page is measured.
@@ -90,12 +107,51 @@ for (const path of PAGES) {
       ? fg.slice(0, 3)
       : [0, 1, 2].map((i) => Math.round(fg[i] * fg[3] + bg[i] * (1 - fg[3])));
 
+    // A .depth section's colour as the worst pixel under `box` sees it: its
+    // radial light at the nearest point to the light's centre, then the
+    // grain at its most extreme. See the header comment.
+    const depthWorst = (sec, colour, box) => {
+      const cs = getComputedStyle(sec);
+      const r = sec.getBoundingClientRect();
+      let c = colour.slice(0, 3);
+      const m = cs.backgroundImage.match(
+        /radial-gradient\(([\d.]+)% ([\d.]+)% at ([\d.]+)% ([\d.]+)%, rgba\(([^)]+)\)(?: 0%)?, (?:rgba\(0, 0, 0, 0\)|transparent) ([\d.]+)%\)/
+      );
+      // A light this cannot read would be measured as no light at all, which
+      // is the optimistic answer. Stop instead.
+      if (!m && cs.backgroundImage !== 'none') {
+        throw new Error(`contrast.mjs cannot read the light on .${sec.className.split(' ').join('.')}: ${cs.backgroundImage}`);
+      }
+      if (m) {
+        const [rx, ry, ax, ay] = m.slice(1, 5).map((v) => +v / 100);
+        const stop = +m[6] / 100;
+        const [lr, lg, lb, la] = m[5].split(',').map(Number);
+        const cx = r.left + ax * r.width, cy = r.top + ay * r.height;
+        const px = Math.min(Math.max(cx, box.left), box.right);
+        const py = Math.min(Math.max(cy, box.top), box.bottom);
+        const d = Math.hypot((px - cx) / (rx * r.width), (py - cy) / (ry * r.height));
+        const a = la * Math.max(0, 1 - d / stop);
+        c = over([lr, lg, lb, a], c);
+      }
+      const g = getComputedStyle(sec, '::before');
+      const o = +g.opacity || 0;
+      if (g.content !== 'none' && o > 0) {
+        c = g.mixBlendMode === 'screen'
+          ? c.map((v) => Math.round(255 - (255 - v) * (1 - o)))
+          : c.map((v) => Math.round(v * (1 - o)));
+      }
+      return c;
+    };
+
     // The surface a glyph actually sits on: the first opaque-enough ancestor
     // background, composited down from any translucent layers above it.
     const backdrop = (el) => {
       const stack = [];
       for (let n = el; n; n = n.parentElement) {
-        const c = parse(getComputedStyle(n).backgroundColor);
+        let c = parse(getComputedStyle(n).backgroundColor);
+        if (c && c[3] >= 0.999 && n.classList.contains('depth')) {
+          c = [...depthWorst(n, c, el.getBoundingClientRect()), 1];
+        }
         if (c && c[3] > 0) { stack.push(c); if (c[3] >= 0.999) break; }
       }
       let base = [255, 255, 255];

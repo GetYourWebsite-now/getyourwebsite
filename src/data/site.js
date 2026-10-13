@@ -325,6 +325,20 @@ export const startupPrice = (tier) => (BETA.on ? betaPrice(tier.price) : tier.pr
  */
 export const perRevision = (price, revisions) => Math.round((price * 100) / revisions) / 100;
 
+/**
+ * What the two alternatives typically cost, for the home page's merge
+ * diagram. Ranges, never a per-competitor price; the sources and the
+ * reasoning for each end are in MergeAnim.astro's header comment. Checked
+ * October 13, 2026 — re-check before changing either, and on any redesign.
+ *
+ *   diy     monthly, entry to mid plans of the builders named on the left
+ *   agency  one-time build of a small business site
+ */
+export const MARKET_RANGES = {
+  diy: { low: 18, high: 49 },
+  agency: { low: 2000, high: 10000 },
+};
+
 /** The things that are true whichever tiers someone picks. */
 export const EVERY_PLAN_INCLUDES = [
   'Unlimited pages',

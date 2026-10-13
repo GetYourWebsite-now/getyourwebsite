@@ -37,6 +37,11 @@ No superlatives we cannot prove, no invented statistics, no third-party logos
 implying endorsement. Cloudflare is described as a network we host on, quoting
 only their published figures, with a link so a visitor can check.
 
+The merge diagram's market ranges (`MARKET_RANGES` in `site.js`) are the
+same kind of claim: ranges, "Typically", never a per-competitor price, with
+the sources and the reasoning for each end in `MergeAnim.astro`. Re-check
+them against those sources before touching either number.
+
 Live consequences of this rule, each the result of actually checking:
 Allergy Rescue Kit is hosted on **Railway**, not on our Cloudflare setup, so its
 case study says nothing about hosting; Andy's Auto Shop is built and hosted by
@@ -56,12 +61,26 @@ Bakery client, and nothing copied from env files or real client data. Whatever
 is not real about it goes in the "What's different from the real thing" list on
 /demo — re-derive that list whenever the sandbox changes.
 
-**3. The design is light, flat and one accent.** The specifics:
+**3. The design is light, one accent, and subtle depth in listed places
+only.** "Still Stripe, not ClickUp": a plumber has to trust it. The specifics:
 
-- Sections alternate `--bg` and `--bg-alt`. **The footer is the only dark
-  surface on the site.** `npm run verify` fails on a second one.
-- **No gradients, glow, glass, bento or textures.** Borders and whitespace do
-  the separating. One shadow, `--shadow-shot`, for product screenshots only.
+- Sections alternate `--bg` and `--bg-alt`. **Two dark surfaces: the footer,
+  and the home page's platform band** (`.section--dark`, STEP 10).
+  `npm run verify` fails on a third, or on a dark band anywhere but `/`.
+- **Depth is a fixed list** (`global.css`, "Depth"): grain and one radial
+  light on four home sections — hero, merge stage, dark band, closing CTA —
+  and nowhere else; `--lift` on tier cards, case-study frames, drawing wells
+  and the hero browser frame; a hover-only light edge on primary buttons.
+  `verify` checks the list, the exact light, the grain's opacity and blend.
+  `grep -rn "linear-gradient\|radial-gradient" src` returns those lines and
+  no others.
+- **No gradient on text, no gradient fill on the mark, no glow, blur, glass,
+  bento, or colour that isn't a token.** `--shadow-shot` is for product
+  screenshots; `--lift` for the cards above. Nothing else casts a shadow.
+- **Grain costs contrast.** On `--bg-alt` it alone takes `--ink-muted` under
+  AA, so text on a depth section is measured against the worst pixel under
+  it (`verify:contrast`), and the merge headers are `--ink-soft` for that
+  reason.
 - **`--gold` is the brand mark and the free-mock badge. Nothing else, and never
   as text** — it is 1.65:1 on white. `--accent` does all the work.
 - **Prices live only in `src/data/site.js`.** `grep -rn '\$[0-9]' src

@@ -32,7 +32,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
        Left: the offer, and that we do the work. Right: the version tree,
        drawn rather than screenshotted — see VersionTree.astro.
   -->
-  <section class="section section--hero">
+  <section class="section section--hero depth">
     <div class="shell hero">
       <div class="hero__copy">
         <p class="eyebrow">Websites for local businesses</p>
@@ -73,7 +73,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
       </div>
 
       <figure class="hero__shot">
-        <div class="browser">
+        <div class="browser lift">
           <div class="browser__bar" aria-hidden="true">
             <span></span><span></span><span></span>
             <div class="browser__url">portal.getyourwebsite.now</div>
@@ -88,11 +88,15 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   </section>
 
   <!-- 2. Who does the work ---------------------------------------------------
-       The positioning, as a drawing. Replaced the with/without-a-website
-       comparison, which lives on /why-us now.
+       The positioning, as a diagram, on its own full-height stage. Replaced
+       the with/without-a-website comparison, which lives on /why-us now.
   -->
-  <section class="section section--alt">
+  <section class="section section--alt section--stage depth">
     <div class="shell">
+      <div class="section-head section-head--center merge-head" data-reveal>
+        <h2>Done for you. Without the agency bill.</h2>
+        <p class="lead">Built and hosted by our platform, checked by a person, priced like a tool — not a retainer.</p>
+      </div>
       <MergeAnim />
     </div>
   </section>
@@ -176,8 +180,10 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   <!-- 5. Platform ----------------------------------------------------------
        One real capture of the portal, then three drawings of the things it
        does that a still can't show. The drawings replaced three paragraphs.
+       The page's one dark band (STEP 10): the portal — the product — is the
+       thing that looks different.
   -->
-  <section class="section">
+  <section class="section section--dark depth platform">
     <div class="shell">
       <div class="section-head" data-reveal>
         <h2>Running the site is the part we built.</h2>
@@ -277,7 +283,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   </section>
 
   <!-- 8. Final CTA --------------------------------------------------------- -->
-  <section class="section section--alt cta-band">
+  <section class="section section--alt cta-band depth">
     <div class="shell-narrow" style="text-align:center" data-reveal>
       {
         BETA.on ? (
@@ -312,9 +318,11 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   /* Hero ----------------------------------------------------------------- */
 
   /* Tighter at the top than a standard section: the nav is already a band of
-     white above it, so a full --section-y leaves the headline floating. */
+     white above it, so a full --section-y leaves the headline floating.
+     Its radial light sits top right, behind the version tree. */
   .section--hero {
     padding-top: clamp(2.5rem, 1.6rem + 4vw, 5rem);
+    --light-at: 70% 20%;
   }
 
   .hero {
@@ -330,6 +338,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
      declaimed. At 48px it runs to three comfortable lines in this column. */
   .hero__title {
     font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
+    text-wrap: balance;
   }
 
   .hero__lead {
@@ -374,15 +383,12 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
     max-width: 34rem;
   }
 
-  /* A light browser frame around a product screenshot. The chrome is the one
-     place the shadow token is used — it lifts the shot off the page so it
-     reads as a thing rather than a picture of one. */
+  /* A light browser frame around the drawn tree. Border and shadow are the
+     card lift (.lift in global.css). */
   .browser {
     border-radius: var(--radius);
     overflow: hidden;
-    border: 1px solid var(--line);
     background: var(--bg);
-    box-shadow: var(--shadow-shot);
   }
 
   .browser__bar {
@@ -392,6 +398,8 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
     padding: 0.6rem 0.8rem;
     background: var(--bg-alt);
     border-bottom: 1px solid var(--line);
+    /* A faint highlight along the frame's top edge, inside it. */
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .browser__bar > span {
@@ -446,7 +454,16 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
 
   .step p { color: var(--ink-soft); }
 
-  /* Platform ------------------------------------------------------------- */
+  /* Platform: the dark band ---------------------------------------------- */
+
+  .platform { --light-at: 70% 20%; }
+  .platform .feature { border-top-color: var(--footer-line); }
+  .platform .feature__copy p { color: var(--footer-ink); }
+  .platform .platform-shot { border-color: var(--footer-line); }
+
+  /* Merge stage ------------------------------------------------------------ */
+
+  .merge-head { margin-bottom: var(--s-7); }
 
   .platform-shot { margin-bottom: var(--s-6); }
   .platform-shot img { width: 100%; height: auto; }
