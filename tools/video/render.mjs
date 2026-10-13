@@ -10,7 +10,8 @@
  * Look at the contact sheets before rendering video: a wrong frame is a code
  * fix, and finding it in a still is cheaper than in a 52s render.
  *
- * Every MP4 is H.264, yuv420p, and must come in at 20 MB or less. If one
+ * Every MP4 is H.264, yuv420p, limited range (color_range tv, BT.709), and
+ * must come in at 20 MB or less. If one
  * doesn't, it is re-rendered at a lower quality (CRF +3, twice at most) and
  * the run fails if it still doesn't fit.
  */
@@ -110,7 +111,10 @@ for (const id of Object.keys(CUTS)) {
   const file = `${OUT}${id}.mp4`;
   let crf = 20, bytes = Infinity;
   for (let attempt = 0; attempt < 3 && bytes > MAX_BYTES; attempt++, crf += 3) {
-    await renderMedia({ composition, serveUrl, codec: 'h264', crf, pixelFormat: 'yuv420p', outputLocation: file, imageFormat: 'jpeg', jpegQuality: 92 });
+    // bt709: Remotion converts to limited range (zscale range=limited) and
+    // tags the stream bt709 / color_range tv. Its 'default' passed the
+    // full-range JPEG frames straight through as yuvj420p.
+    await renderMedia({ composition, serveUrl, codec: 'h264', crf, pixelFormat: 'yuv420p', colorSpace: 'bt709', outputLocation: file, imageFormat: 'jpeg', jpegQuality: 92 });
     bytes = statSync(file).size;
     console.log(`  ${id} at CRF ${crf}: ${(bytes / 1048576).toFixed(1)} MB`);
   }

@@ -72,6 +72,21 @@ export function place(format: Format, box: { w: number; h: number; frac?: number
   return { s, width, height, left: (F.W - width) / 2, top: b.top + (b.bottom - b.top - height) / 2, widthShare: width / F.W, heightBound: byHeight < byWidth };
 }
 
+/* The end card ---------------------------------------------------------------- */
+
+/** Mark ≥ 160 / 200px; the offer line at headline size; CTA text ≥ 32 / 36px.
+ *  The 9:16 card stays centred above the bottom 320px (Scenes.tsx). */
+export const END_CARD = {
+  landscape: { mark: 160, wordmark: 40, beta: 40, offer: FORMATS.landscape.headSize, cta: 36 },
+  portrait: { mark: 200, wordmark: 44, beta: 44, offer: FORMATS.portrait.headSize, cta: 40 },
+} as const;
+
+/* The hook ------------------------------------------------------------------- */
+
+/** 16:9 only: the workbench and phone at ~50% of the frame's width, centred
+ *  in the band under the headline. No text in it, so no floor applies. */
+export const HOOK_BOX = { w: 900, h: 640, frac: 0.5 } as const;
+
 /* The phone in the site scene ---------------------------------------------- */
 
 /** No headline in that beat, so the phone gets the frame's height less a

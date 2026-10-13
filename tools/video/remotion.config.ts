@@ -9,3 +9,5 @@ Config.setJpegQuality(92);
 Config.setCodec('h264');
 Config.setCrf(20);
 Config.setPixelFormat('yuv420p');
+// Limited range, BT.709-tagged: the same as render.mjs.
+Config.setColorSpace('bt709');

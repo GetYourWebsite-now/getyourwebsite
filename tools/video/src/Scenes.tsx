@@ -10,7 +10,7 @@ import React from 'react';
 import { AbsoluteFill, Series } from 'remotion';
 import { ACCENT, TOKENS, frames, type Beat } from './script.ts';
 import { Fit, Headline, LowerThird, Place, Surface, ramp, useLayout, useSeconds, FONT } from './kit.tsx';
-import { DRAWINGS, PHONE_BAND, phoneScreenWidth } from './sizes.ts';
+import { DRAWINGS, END_CARD, HOOK_BOX, PHONE_BAND, phoneScreenWidth } from './sizes.ts';
 import { Mark } from './drawings/Mark.tsx';
 import { MergeDiagram } from './drawings/MergeDiagram.tsx';
 import { ClickToChange, ClickToChangeTall, CTC_BOX, CTC_TALL_BOX } from './drawings/ClickToChange.tsx';
@@ -39,9 +39,15 @@ const SceneView: React.FC<{ beat: Beat; t: number; offset: number }> = ({ beat, 
     case 'hook':
       return (
         <Surface tone="dark">
-          <Fit w={BENCH_BOX[0]} h={BENCH_BOX[1]} box={L.portrait ? { x: 90, y: 660, w: 900, h: 820 } : { x: 560, y: 270, w: 800, h: 740 }}>
-            <FaceDownPhone t={t} />
-          </Fit>
+          {L.portrait ? (
+            <Fit w={BENCH_BOX[0]} h={BENCH_BOX[1]} box={{ x: 90, y: 660, w: 900, h: 820 }}>
+              <FaceDownPhone t={t} />
+            </Fit>
+          ) : (
+            <Place box={{ ...HOOK_BOX, minText: 0, smallest: 'no text' }}>
+              <FaceDownPhone t={t} />
+            </Place>
+          )}
         </Surface>
       );
 
@@ -140,21 +146,22 @@ const SceneView: React.FC<{ beat: Beat; t: number; offset: number }> = ({ beat, 
 const EndCard: React.FC<{ lines: string[]; from: number }> = ({ lines, from }) => {
   const t = useSeconds();
   const L = useLayout();
-  const s = L.portrait ? 1.15 : 1;
+  const E = END_CARD[L.portrait ? 'portrait' : 'landscape'];
+  const s = L.portrait ? 1.15 : 1; // spacing only; type and mark sizes come from E
   const markDraw = Math.min(1, t / 0.9);
   const word = ramp(t, 0.45, 0.35);
   const cta = lines[lines.length - 1];
   const body = lines.slice(0, -1);
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', fontFamily: FONT, textAlign: 'center', paddingBottom: L.portrait ? 160 : 0 }}>
-      <Mark size={140 * s} draw={markDraw} />
-      <div style={{ marginTop: 22 * s, fontSize: 40 * s, fontWeight: 600, letterSpacing: '-0.02em', color: TOKENS.ink, opacity: word }}>GetYourWebsite</div>
+      <Mark size={E.mark} draw={markDraw} />
+      <div style={{ marginTop: 22 * s, fontSize: E.wordmark, fontWeight: 600, letterSpacing: '-0.02em', color: TOKENS.ink, opacity: word }}>GetYourWebsite</div>
       <div style={{ height: 56 * s }} />
       {body.map((line, i) => {
         const p = ramp(t, from + i * 0.15, 0.3);
         const first = i === 0 && body.length > 1;
         return (
-          <div key={i} style={{ maxWidth: L.portrait ? 900 : 1300, fontSize: (first ? 40 : 58) * s, fontWeight: first ? 500 : 600, letterSpacing: first ? 'normal' : '-0.025em', lineHeight: 1.15, color: first ? ACCENT : TOKENS.ink, marginBottom: 18 * s, opacity: p, transform: `translateY(${(1 - p) * 10}px)`, textWrap: 'balance' }}>
+          <div key={i} style={{ maxWidth: L.portrait ? 900 : 1300, fontSize: first ? E.beta : E.offer, fontWeight: first ? 500 : 600, letterSpacing: first ? 'normal' : '-0.025em', lineHeight: 1.15, color: first ? ACCENT : TOKENS.ink, marginBottom: 18 * s, opacity: p, transform: `translateY(${(1 - p) * 10}px)`, textWrap: 'balance' }}>
             {line}
           </div>
         );
@@ -162,7 +169,7 @@ const EndCard: React.FC<{ lines: string[]; from: number }> = ({ lines, from }) =
       {(() => {
         const p = ramp(t, from + body.length * 0.15, 0.3);
         return (
-          <div style={{ marginTop: 30 * s, padding: `${22 * s}px ${36 * s}px`, borderRadius: 6, background: ACCENT, color: '#fff', fontSize: 36 * s, fontWeight: 550, opacity: p, transform: `translateY(${(1 - p) * 10}px)`, maxWidth: L.portrait ? 940 : 'none' }}>
+          <div style={{ marginTop: 30 * s, padding: `${22 * s}px ${36 * s}px`, borderRadius: 6, background: ACCENT, color: '#fff', fontSize: E.cta, fontWeight: 550, opacity: p, transform: `translateY(${(1 - p) * 10}px)`, maxWidth: L.portrait ? 940 : 'none' }}>
             {cta}
           </div>
         );

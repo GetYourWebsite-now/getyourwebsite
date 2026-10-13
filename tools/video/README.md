@@ -23,7 +23,8 @@ npm run capture   # re-capture the Cedar & Stone site (after it changes)
 | `Ad9x16_V2.mp4` positioning | 1080×1920 | 15s |
 | `Ad9x16_V3.mp4` offer-forward | 1080×1920 | 15s |
 
-H.264, 30fps, each 20 MB or less (render.mjs checks). `out/` is gitignored.
+H.264, 30fps, yuv420p in limited range (color_range tv, BT.709-tagged), each
+20 MB or less (render.mjs checks the size). `out/` is gitignored.
 
 ## Where things are
 
