@@ -209,7 +209,7 @@ const MARKERS = [
   /homepage concept|A few details through the form/,
   /Like it\?|Buy your Startup plan/,
   /Start with a free mock|Get a free mock/,
-  // The MergeAnim price: "From $420 in the beta" vs "From $600".
+  // The MergeAnim price: "Startup from $420 in the beta" vs "Startup from $600".
   ...startupMarks.map((m) => new RegExp(m.replace(/[$.]/g, '\\$&') + '\\b')),
 ];
 

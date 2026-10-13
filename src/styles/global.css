@@ -12,17 +12,23 @@
      5. Components    buttons, cards, badges, forms
      6. Reveal        scroll-reveal animation (see src/scripts/reveal.js)
 
-   The house style, in four rules:
+   The house style, in five rules:
 
-     1. Light first. Sections alternate --bg and --bg-alt. The footer is the
-        only dark surface on the site.
+     1. Light first. Sections alternate --bg and --bg-alt. Two surfaces are
+        dark: the footer, and the home page's platform band (.section--dark),
+        which makes the portal — the product — the thing that looks
+        different. No third.
      2. One accent. --accent (deep indigo) carries links, primary buttons,
         focus rings and the highlighted pricing tier. --gold is the free-mock
         badge, nothing else, and never text.
-     3. No atmosphere. No gradients, no glow, no stars, no glassmorphism, no
-        mesh. Borders and whitespace do the separating. The one shadow on the
-        site lifts product screenshots off the page.
+     3. Subtle depth, in exactly the places listed in "Depth" below: grain
+        and one soft radial light on four sections of the home page, a lift
+        on cards, a light edge on primary buttons. No gradient on text, no
+        gradient fill on the mark, no glow, no blur, no glass, no colour that
+        is not a token. `npm run verify` fails on depth anywhere else.
      4. Small radii. 8px on cards, 6px on buttons and inputs, nothing larger.
+     5. Shadows are tokens: --lift for cards, --shadow-shot for product
+        screenshots. Nothing else casts one.
 
    `npm run verify:contrast` enforces rule 1's consequence — every piece of
    text on the site must clear 4.5:1 against the backdrop it is actually
@@ -96,7 +102,7 @@
      looking busy. */
   --bg: #ffffff;        /* page */
   --bg-alt: #f6f7f9;    /* alternating sections, screenshot wells */
-  --footer: #0a0a0c;    /* the single dark surface on the site */
+  --footer: #0a0a0c;    /* the footer, and the one dark band on the home page */
 
   /* Ink ------------------------------------------------------------------
      Measured contrast, which is the only reason to pick these exact values:
@@ -202,11 +208,19 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --dur: 180ms;
 
-  /* The only shadow on the site. It exists to lift a product screenshot off
-     the page so it reads as a thing rather than a picture. Cards use a
-     --line border instead; a bordered card and a shadowed card next to each
-     other is how a page starts looking like three designs. */
+  /* Product screenshots: lifts a capture off the page so it reads as a thing
+     rather than a picture of one. */
   --shadow-shot: 0 1px 2px rgba(10, 10, 12, 0.06), 0 12px 32px rgba(10, 10, 12, 0.08);
+
+  /* Card lift (STEP 10): tier cards, case-study frames, the drawing wells and
+     the hero's browser frame. Always with a 1px --line border; on hover the
+     second layer deepens and the card rises 2px. See .lift. */
+  --lift: 0 1px 2px rgba(10, 10, 12, 0.04), 0 8px 24px rgba(10, 10, 12, 0.06);
+  --lift-hover: 0 1px 2px rgba(10, 10, 12, 0.04), 0 8px 24px rgba(10, 10, 12, 0.1);
+
+  /* Grain: monochrome fractal noise, opaque, tiled at 160px. A data URI, so
+     no request. Used only by .depth, at 4% through a blend mode. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── 2. Reset ──────────────────────────────────────────────────────────── */
@@ -270,9 +284,12 @@ body {
      that property overrides this one and pins every size to the same cut. */
   font-optical-sizing: auto;
 
-  /* Figures line up in columns — prices, specs, stats, the comparison table.
-     Confirmed present in this subset; see the @font-face note above. */
-  font-variant-numeric: tabular-nums;
+  /* No tabular figures here. They used to be set on body, and Inter's tnum
+     puts more than digits on a figure-width slot: the hyphen goes from 0.44
+     to 0.65em, and . , : widen too. Across running text that rendered
+     "one - time", "51 - state", "stock - epinephrine". Tabular figures are
+     declared only where figures have to hold still: the prices on the tier
+     cards and the counting figures in the merge diagram. */
 }
 
 h1,
@@ -375,6 +392,65 @@ a:hover { color: var(--accent-hover); }
 }
 
 .section--tight { padding-block: clamp(2.75rem, 2rem + 3.4vw, 4.5rem); }
+
+/* The one dark band: the home page's platform section. --footer surface,
+   --footer-ink body, white headings. Links go footer-style, because the
+   accent measures 2.60:1 on this surface. */
+.section--dark {
+  background: var(--footer);
+  color: var(--footer-ink);
+}
+
+.section--dark :is(h1, h2, h3) { color: #fff; }
+.section--dark :is(p, .lead) { color: var(--footer-ink); }
+.section--dark :is(a, .link-arrow) { color: var(--footer-ink); }
+.section--dark :is(a, .link-arrow):hover { color: #fff; }
+
+/* Depth ------------------------------------------------------------------
+   Grain and one radial light, on four sections of the home page and nowhere
+   else: the hero, the merge stage, the dark band and the closing CTA band.
+   `npm run verify` holds that list.
+
+   The light is the section's background image, over its background colour.
+   One per section, at a top corner (--light-at, top left by default), never
+   centred. The grain is a ::before over the background and under the
+   content: multiply on light surfaces, screen on the dark band.
+
+   Contrast: the light and the grain both shift the backdrop. Text on these
+   sections is measured against the light at its own position plus the
+   darkest grain pixel — see tools/contrast.mjs. */
+.depth {
+  isolation: isolate;
+  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.06), transparent 70%);
+}
+
+.section--dark.depth {
+  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.18), transparent 70%);
+}
+
+.depth::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--grain);
+  background-size: 160px;
+  opacity: 0.04;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.section--dark.depth::before { mix-blend-mode: screen; }
+
+/* The merge diagram's stage: its own full-height section. */
+@media (min-width: 1024px) {
+  .section--stage {
+    display: grid;
+    align-content: center;
+    min-height: 100svh;
+    padding-block: 160px;
+  }
+}
 
 /* Vertical rhythm helper: .stack puts a consistent gap between children. */
 .stack > * + * { margin-top: var(--s-3); }
@@ -490,6 +566,28 @@ a:hover { color: var(--accent-hover); }
   border-color: var(--accent-hover);
 }
 
+/* Hover light: a 1px edge, brightest at the top-left corner and gone by
+   40% of the way across, over the existing darker fill. A mask-composited
+   border, so it stays inside the button's own box: no glow, no blur. */
+.btn--primary { position: relative; }
+
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.35), transparent 40%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+  pointer-events: none;
+}
+
+.btn--primary:hover::before { opacity: 1; }
+
 .btn--secondary {
   color: var(--ink);
   background: var(--bg);
@@ -518,6 +616,10 @@ a:hover { color: var(--accent-hover); }
   background: var(--footer-ink);
   border-color: var(--footer-ink);
 }
+
+/* A white edge on a white fill is nothing; leave it off rather than ship
+   an invisible layer. */
+.foot .btn--primary::before { content: none; }
 
 .btn:disabled,
 .btn[aria-disabled='true'] {
@@ -584,6 +686,16 @@ a:hover { color: var(--accent-hover); }
 }
 
 .shot img { width: 100%; height: auto; }
+
+/* Card lift: tier cards, case-study frames, the drawing wells, the hero's
+   browser frame. Nothing else. A bordered card and a lifted card side by
+   side is how a page starts looking like two designs, so these four lift
+   and plain .card stays flat. The transition lives under Scroll reveal
+   below, because these cards are also revealed. */
+.lift {
+  border: 1px solid var(--line);
+  box-shadow: var(--lift);
+}
 
 /* Grid helpers ----------------------------------------------------------- */
 
@@ -728,6 +840,22 @@ html.no-js [data-reveal] {
   transform: none;
 }
 
+/* A lifted card that is also revealed: the hover rise is 200ms with no
+   delay, so it must not inherit the reveal's 500ms or its stagger. Only the
+   reveal's fade keeps the stagger. */
+.lift,
+[data-reveal-group] > [data-reveal].lift {
+  transition: opacity 500ms var(--ease) calc(var(--i, 0) * 60ms),
+    transform 200ms var(--ease), box-shadow 200ms var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+/* After the reveal rules, so it wins over [data-reveal].is-visible. */
+.lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--lift-hover);
+}
+
 /* ── Reduced motion ────────────────────────────────────────────────────── */
 
 /* Anyone who has asked their OS to reduce motion gets a still, calm site.
@@ -752,4 +880,5 @@ html.no-js [data-reveal] {
   /* Buttons and links keep their colour, border and focus feedback — only the
      movement goes. */
   .link-arrow:hover::after { transform: none; }
+  .lift:hover { transform: none; }
 }

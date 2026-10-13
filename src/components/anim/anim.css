@@ -3,7 +3,8 @@
 
    The system is VersionTree.astro's: white cards on a --bg-alt well, --line
    and --line-input strokes, Inter labels, and indigo for the one thing that
-   matters in each drawing. No shadows, no gradients, no glow.
+   matters in each drawing. The well takes the card lift (--lift, STEP 10);
+   no gradients, no glow.
 
    Every animated element's BASE style is its final frame. The keyframes
    carry it back to the start and forward again; reduced motion turns the
@@ -15,7 +16,23 @@
   border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: var(--s-3);
+  box-shadow: var(--lift);
+  transition: transform 200ms var(--ease), box-shadow 200ms var(--ease);
 }
+
+.anim:not(.anim--bare):hover { transform: translateY(-2px); box-shadow: var(--lift-hover); }
+
+/* On the home page's dark band the frames go dark: no well, white strokes at
+   24%. What is drawn INSIDE them stays light, because it is a picture of the
+   client's site and of the portal, and both are light. The Live pill and the
+   Approved chip are untouched. */
+.section--dark .anim:not(.anim--bare) {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.section--dark .anim .a-card { stroke: rgba(255, 255, 255, 0.24); }
+.section--dark .anim .a-edge { stroke: rgba(255, 255, 255, 0.24); }
 
 .anim svg {
   display: block;
@@ -32,7 +49,7 @@
 }
 
 /* For a drawing that sits straight on the section, with no well around it. */
-.anim--bare { background: none; border: 0; padding: 0; border-radius: 0; }
+.anim--bare { background: none; border: 0; padding: 0; border-radius: 0; box-shadow: none; }
 
 /* Until the observer has seen it, an animation waits on its first frame. */
 :root[data-anim-ready] .anim:not(.is-playing) * { animation-play-state: paused !important; }
@@ -72,4 +89,5 @@
   .anim *,
   .anim *::before,
   .anim *::after { animation: none !important; }
+  .anim:not(.anim--bare):hover { transform: none; }
 }

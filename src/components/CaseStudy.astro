@@ -67,7 +67,7 @@ const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').repl
 
 <article class:list={['case', { 'case--flip': flip, 'case--compact': compact || thumb, 'case--thumb': thumb }]}>
   <figure class="case__shots">
-    <div class="case__desktop shot">
+    <div class="case__desktop shot lift">
       <img
         src={url(p.shot)}
         alt={`The ${p.name} website on a desktop screen.`}
@@ -135,7 +135,8 @@ const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').repl
   }
 
   /* Shots ----------------------------------------------------------------
-     The phone overlaps the bottom-left corner of the desktop shot. It is
+     The desktop frame takes the card lift (.lift); the phone keeps the
+     screenshot shadow, being a capture laid over it. The phone overlaps the bottom-left corner of the desktop shot. It is
      deliberately small: it is there to say "and it works on a phone", not to
      be read. */
 
