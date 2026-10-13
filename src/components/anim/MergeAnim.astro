@@ -37,7 +37,7 @@
  *   billing, which runs higher (Squarespace Basic 25) — "Typically" covers
  *   both.
  *
- *   Hire someone, 2,000–10,000 one-time:
+ *   Hire someone, 1,000–10,000 one-time:
  *     https://clutch.co/web-designers/pricing  (updated September 21, 2026,
  *       from verified client reviews) — "Web design agencies typically
  *       charge 2,000 to 100,000"; "Most web design projects reviewed on
@@ -46,9 +46,11 @@
  *       businesses surveyed) — "500 to 5,000+ for professionally designed
  *       sites from an agency or freelancers"; agency design "3,000 to
  *       30,000+".
- *   The low end is Clutch's agency floor; freelancers can come in under it
- *   (WebFX's 500), which "Typically" has to carry. The high end is Clutch's
- *   "most projects" ceiling.
+ *   The low end sits between the two sources' floors: under Clutch's 2,000
+ *   for agencies, because the column also names freelancers, and above
+ *   WebFX's 500 for agency-or-freelancer sites, which is the cheapest end
+ *   rather than the typical one. The high end is Clutch's "most projects"
+ *   ceiling.
  *
  * Layout
  * ------
@@ -65,11 +67,12 @@
  * Motion
  * ------
  * One 8s loop. Paths draw in from the outside over 1.2s, the pairs 120ms
- * apart; the mark fades up as the first one lands; the end state holds 3s;
- * then the paths drain into the mark and it fades, and the loop starts
- * again. The prices count up once, on the first play — a number ticking
- * every 8s is noise — and are static on every later loop. Reduced motion:
- * the base styles are the end state (see anim.css) and nothing counts.
+ * apart, and hold the finished picture until the loop restarts; then they
+ * fade out over 400ms and draw in again. The diagram is never empty: the
+ * mark fades up once, as the first path lands, and stays. The prices count
+ * up once, on the first play — a number ticking every 8s is noise — and
+ * are static on every later loop. Reduced motion: the base styles are the
+ * end state (see anim.css) and nothing counts.
  */
 import './anim.css';
 import { BETA, MARKET_RANGES, STARTUP_TIERS, MAINTENANCE_TIERS, money, startupPrice } from '../../data/site.js';
@@ -103,7 +106,7 @@ const down = FROM.flatMap(([l, r]) => [
     <ul class="merge__names">
       <li>Squarespace</li><li>Wix</li><li>Replit</li>
     </ul>
-    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span>/mo</span> <span class="nw merge__unit">+ your evenings</span></p>
+    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span>/mo</span> <span class="nw">+ your evenings</span></p>
   </div>
 
   <div class="merge__col merge__col--agency">
@@ -114,7 +117,7 @@ const down = FROM.flatMap(([l, r]) => [
     <ul class="merge__names">
       <li>Design studios</li><li>Freelancers</li><li>Dev shops</li>
     </ul>
-    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span> <span class="nw merge__unit">one-time</span></p>
+    <p class="merge__price">Typically <span class="nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span> <span class="nw">one-time</span></p>
   </div>
 
   <svg class="merge__paths merge__paths--l" viewBox="0 0 240 132" aria-hidden="true" focusable="false">
@@ -136,7 +139,10 @@ const down = FROM.flatMap(([l, r]) => [
   </div>
 
   <div class="merge__ours">
-    <h3 class="merge__head">GetYourWebsite</h3>
+    <div class="merge__top">
+      <h3 class="merge__head">GetYourWebsite</h3>
+      <p class="merge__verb">We do the work</p>
+    </div>
     <p class="merge__price"><span class="merge__part">Startup from <span class="merge__n">{startup}</span>{BETA.on ? ' in the beta' : ''}</span><span class="merge__sep"> · </span><span class="merge__part">Maintenance from <span class="merge__n">{maintenance}</span>/mo</span></p>
   </div>
 </div>
@@ -208,7 +214,8 @@ const down = FROM.flatMap(([l, r]) => [
   }
 
   /* One style for all three price lines, the same as our prices elsewhere:
-     Inter, ink, tabular figures. */
+     Inter, ink, tabular figures on the figures (.merge__n) only. On the whole
+     line, tnum would widen the hyphen in "one-time" too. */
   .merge__price {
     margin: var(--s-2) auto 0;
     font-size: var(--t-small);
@@ -224,9 +231,8 @@ const down = FROM.flatMap(([l, r]) => [
   /* A range never breaks inside itself, and neither does its unit. */
   .nw { white-space: nowrap; }
 
-  /* Tabular figures set Inter's hyphen on a figure-width slot, which spaced
-     "one-time" out as "one - time". The unit is words, not figures. */
-  .merge__unit { font-variant-numeric: normal; }
+  /* The figures hold still while they count. */
+  .merge__n { font-variant-numeric: tabular-nums; }
 
   /* Ours is two prices. Narrow, one per line and no separator; desktop, one
      line with a middle dot. */
@@ -279,10 +285,10 @@ const down = FROM.flatMap(([l, r]) => [
     .merge__hub { grid-column: 3; grid-row: 2; align-self: center; }
     .merge__mark { height: 96px; }
 
-    /* Ours: header on the headers' row, price on the prices' row, both
-       across the middle three columns. */
+    /* Ours: header and verb on the headers' row, price on the prices' row,
+       both across the middle three columns. */
     .merge__ours { display: contents; }
-    .merge__ours .merge__head { grid-column: 2 / 5; grid-row: 1; align-self: start; }
+    .merge__ours .merge__top { grid-column: 2 / 5; grid-row: 1; align-self: start; }
     .merge__ours .merge__price { grid-column: 2 / 5; grid-row: 3; margin: 0; }
   }
 
@@ -297,29 +303,27 @@ const down = FROM.flatMap(([l, r]) => [
   .merge__hex { fill: var(--accent); stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
   .merge__page { fill: var(--bg); }
 
-  .merge__line,
-  .merge__mark {
-    animation-duration: 8s;
-    animation-iteration-count: infinite;
-    animation-timing-function: var(--ease);
-    animation-fill-mode: both;
+  /* Each path draws 0–1.2s (the pairs 120ms apart), holds the finished
+     picture to 7.6s, and fades out 7.6–8.0s; the next pass draws in from
+     nothing. 15% of 8s is 1.2s, 95% is 7.6s. */
+  .merge__line {
+    animation: merge-line 8s var(--ease) calc(var(--i) * 120ms) infinite both;
   }
 
-  .merge__line { animation-name: merge-line; animation-delay: calc(var(--i) * 120ms); }
-  .merge__mark { animation-name: merge-mark; }
-
-  /* 0.3s in, each path draws for 1.2s (landing at 1.5s for the first pair);
-     the mark fades up 1.5–2.0s; hold to 5.0s; the paths drain into the mark
-     5.0–6.2s and it fades by 6.6s; empty until the loop restarts. */
   @keyframes merge-line {
-    0%, 3.75%   { stroke-dashoffset: 1; }
-    18.75%, 62.5% { stroke-dashoffset: 0; }
-    77.5%, 100% { stroke-dashoffset: -1; }
+    0%        { stroke-dashoffset: 1; opacity: 1; }
+    15%, 95%  { stroke-dashoffset: 0; opacity: 1; }
+    100%      { stroke-dashoffset: 0; opacity: 0; }
   }
+
+  /* The mark fades up once, as the first path lands, and stays. */
+  .merge__mark {
+    animation: merge-mark 500ms var(--ease) 1.2s 1 both;
+  }
+
   @keyframes merge-mark {
-    0%, 18.75%  { opacity: 0; transform: translateY(6px); }
-    25%, 77.5%  { opacity: 1; transform: none; }
-    82.5%, 100% { opacity: 0; transform: none; }
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
   }
 </style>
 
@@ -327,8 +331,8 @@ const down = FROM.flatMap(([l, r]) => [
   import '../../scripts/anim.js';
 
   // The one-time count. Starts with the CSS loop's first play (same element,
-  // same 25% threshold as anim.js) and lands as the mark does: 2.0s in,
-  // 600ms long. Never runs under reduced motion; without JS, or before it
+  // same 25% threshold as anim.js), as the mark finishes fading up: 1.7s
+  // in, 600ms long. Never runs under reduced motion; without JS, or before it
   // runs, the final prices are simply there.
   const stage = document.querySelector('[data-merge]');
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -357,7 +361,7 @@ const down = FROM.flatMap(([l, r]) => [
       if (!entries.some((e) => e.isIntersecting)) return;
       io.disconnect();
       stage.classList.add('is-pre-count');
-      setTimeout(count, 2000);
+      setTimeout(count, 1700);
     }, { threshold: 0.25 });
     io.observe(stage);
   }

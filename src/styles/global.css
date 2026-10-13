@@ -284,9 +284,12 @@ body {
      that property overrides this one and pins every size to the same cut. */
   font-optical-sizing: auto;
 
-  /* Figures line up in columns — prices, specs, stats, the comparison table.
-     Confirmed present in this subset; see the @font-face note above. */
-  font-variant-numeric: tabular-nums;
+  /* No tabular figures here. They used to be set on body, and Inter's tnum
+     puts more than digits on a figure-width slot: the hyphen goes from 0.44
+     to 0.65em, and . , : widen too. Across running text that rendered
+     "one - time", "51 - state", "stock - epinephrine". Tabular figures are
+     declared only where figures have to hold still: the prices on the tier
+     cards and the counting figures in the merge diagram. */
 }
 
 h1,

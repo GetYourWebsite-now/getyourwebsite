@@ -150,7 +150,9 @@ terminal readout rather than a number someone is being asked to pay.
 
 Note the Fontsource subset does not carry Inter's `cv*`/`ss*` tables, so
 character variants are no-ops and are deliberately not declared. `tnum`
-does work.
+does work — and puts the hyphen and `. , :` on a figure-width slot too, so
+it is declared on price figures only, never on `body`. On `body` it spaced
+every hyphenated word on the site ("one - time", "51 - state").
 
 `HEADING_FONT` in `src/data/site.js` can point headings at Cabinet Grotesk
 or Sora for comparison. **Run `npm run verify:wraps` after

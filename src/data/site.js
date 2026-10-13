@@ -336,7 +336,7 @@ export const perRevision = (price, revisions) => Math.round((price * 100) / revi
  */
 export const MARKET_RANGES = {
   diy: { low: 18, high: 49 },
-  agency: { low: 2000, high: 10000 },
+  agency: { low: 1000, high: 10000 },
 };
 
 /** The things that are true whichever tiers someone picks. */

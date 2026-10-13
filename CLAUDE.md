@@ -98,7 +98,9 @@ only.** "Still Stripe, not ClickUp": a plumber has to trust it. The specifics:
   is the same Inter 500 on the indigo tag.
 - Mono is only for the browser-frame URL, step numbers (01/02/03) and
   code-like strings. Nothing else — no uppercase, no tracking. Prices are
-  Inter with `tabular-nums`. The `/demo` sandbox is the one exception: it
+  Inter with `tabular-nums` — on the figures only, never on `body` or a line
+  of words: Inter's `tnum` also widens the hyphen and `. , :`, which once
+  rendered "one - time" and "51 - state" site-wide. The `/demo` sandbox is the one exception: it
   mirrors the portal's own mono labels (rule 2).
 - **`/privacy` and `/terms` are not edited for voice.** They are published legal
   text; they still say "mockup" and that is fine. `DemoSandbox.astro` keeps it
