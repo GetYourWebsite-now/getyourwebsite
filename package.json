@@ -14,6 +14,7 @@
     "verify:wraps": "node tools/wraps.mjs",
     "verify:voids": "node tools/voids.mjs",
     "verify:portal": "node tools/portal-sync.mjs",
+    "verify:beta": "node tools/beta-check.mjs",
     "shots:portal": "node tools/portal-shots.mjs",
     "shots:clients": "node tools/client-shots.mjs",
     "shots:og": "node tools/og.mjs",

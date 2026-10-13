@@ -60,7 +60,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com
 
 // Safe on a static build: each page is rendered on its own, so pathname is
 // known at build time. (Astro.url.searchParams is NOT — see free-mock.astro.)
-const isThanks = Astro.url.pathname.replace(/\/$/, '').endsWith('/free-mock/thanks');
+// Both landing pages' thank-yous count; only one of them is ever a real page,
+// because the other builds as a redirect (see BETA in src/data/site.js).
+const here = Astro.url.pathname.replace(/\/$/, '');
+const isThanks = here.endsWith('/free-mock/thanks') || here.endsWith('/beta/thanks');
 
 // Built here rather than inline: a nested interpolation inside a template
 // literal inside a set:html attribute does not survive Astro's parser.
@@ -173,12 +176,13 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
          block emits nothing — not a script, not a comment — so the privacy
          page's "no advertising or tracking cookies" stays true by
          construction rather than by anyone remembering. Turning it on is a
-         two-part change: the ID here AND the disclosure on /privacy.
+         two-part change: the ID here AND the disclosures on /cookies and
+         /privacy.
 
          The Lead event fires on the thank-you page only. That is the one
          page you cannot reach without having submitted the form, so it is
-         the honest conversion signal; firing Lead on /free-mock itself
-         would count everyone who merely saw the ad land. -->
+         the honest conversion signal; firing Lead on the landing page
+         itself would count everyone who merely saw the ad land. -->
 
     {
       META_PIXEL_ID && (

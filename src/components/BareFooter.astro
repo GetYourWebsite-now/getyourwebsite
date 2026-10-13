@@ -1,10 +1,11 @@
 ---
 /**
- * The footer for landing pages: copyright and the two legal links, which
- * have to be reachable from any page that collects an email address.
+ * The footer for landing pages: copyright and the legal links, which have
+ * to be reachable from any page that collects an email address.
  * Nothing else — see BareHeader for why.
  */
 import { url } from '../data/url.js';
+import { BETA } from '../data/site.js';
 
 const year = new Date().getFullYear();
 ---
@@ -15,6 +16,8 @@ const year = new Date().getFullYear();
     <p class="bare-foot__legal">
       <a href={url('/privacy')}>Privacy</a>
       <a href={url('/terms')}>Terms</a>
+      <a href={url('/cookies')}>Cookies</a>
+      {BETA.on && <a href={url('/beta-terms')}>Beta terms</a>}
     </p>
   </div>
 </footer>

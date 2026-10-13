@@ -46,6 +46,15 @@ const TARGETS = [
     label: 'ChemEd 2027 Interest Map',
     map: true,
   },
+  {
+    // Built and hosted by our platform. Its image slots stay hidden until the
+    // platform's loader marks each one ready (or missing), so a shot taken on
+    // `load` alone catches a page with holes in it.
+    slug: 'andysauto',
+    url: 'https://andysauto.org/',
+    label: "Andy's Auto Shop",
+    platformImages: true,
+  },
 ];
 
 const VIEWPORTS = [
@@ -143,6 +152,18 @@ for (const target of TARGETS.filter((t) => !only || t.slug === only)) {
         ),
         new Promise((r) => setTimeout(r, 8000)),
       ]);
+
+      if (target.platformImages) {
+        await page
+          .waitForFunction(
+            () => !document.querySelector(
+              '[data-placeholder-id]:not(.gywn-image-ready):not(.gywn-image-missing)'
+            ),
+            null,
+            { timeout: 20000 }
+          )
+          .catch(() => console.log(`  ! ${target.slug}-${vp.tag}: image slots still pending — REVIEW BEFORE SHIPPING`));
+      }
 
       let mapWarning = null;
       if (target.map) {

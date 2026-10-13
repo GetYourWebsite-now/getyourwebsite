@@ -12,6 +12,10 @@ import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
  * touches personal data — analytics, a CRM, a new email or AI provider — this
  * page has to change in the same commit. GOATCOUNTER_ID in particular: filling
  * it in means the "no analytics" line below stops being true.
+ *
+ * 2026-10-12: Cloudflare, in front of this site, injects its Web Analytics
+ * beacon at the edge (cookieless; zone setting, not this repo). The provider
+ * list says so. /cookies has the full inventory.
  */
 ---
 
@@ -81,11 +85,12 @@ import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
     <li>Private site previews set a short-lived cookie (a few hours at most) so only you can see your unpublished site.</li>
   </ul>
   <p>
-    Our pages load fonts from Google Fonts, and some of our example sites load
-    placeholder photos from third-party image services. Those providers can see
+    Some of our example sites load fonts from Google Fonts, and they and our demo
+    load placeholder photos from third-party image services. Those providers can see
     your IP address when your browser requests the file, the same as any website
     that uses them.
   </p>
+  <p>Everything this website stores or loads is listed on our <a href={url('/cookies')}>Cookies page</a>.</p>
 
   <h2>How we use it</h2>
   <ul>
@@ -112,7 +117,7 @@ import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
   <ul>
     <li><strong>Formspree</strong> — receives the contact form and forwards it to us.</li>
     <li><strong>Stripe</strong> — payments.</li>
-    <li><strong>Cloudflare</strong> — hosting for client sites and previews, file storage, DNS and domain registration.</li>
+    <li><strong>Cloudflare</strong> — serves this website and counts visits to it without cookies (Cloudflare Web Analytics); hosting for client sites and previews, file storage, DNS and domain registration.</li>
     <li><strong>Railway</strong> — hosts our website, client portal and database.</li>
     <li><strong>Resend</strong> — sends account emails.</li>
     <li><strong>OpenRouter and Anthropic</strong> — AI models used to generate sites.</li>
@@ -169,6 +174,6 @@ import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
   </p>
 
   <p>
-    See also our <a href={url('/terms')}>Terms of Service</a>.
+    See also our <a href={url('/terms')}>Terms of Service</a>, <a href={url('/cookies')}>Cookies page</a> and <a href={url('/beta-terms')}>Beta terms</a>.
   </p>
 </LegalLayout>

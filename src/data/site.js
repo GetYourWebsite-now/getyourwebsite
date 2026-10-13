@@ -16,12 +16,53 @@ export const CONTACT_EMAIL = 'hello@getyourwebsite.now';
  * (e.g. "xyzabcd" from https://formspree.io/f/xyzabcd). It is pointed at
  * CONTACT_EMAIL above. The free plan covers 50 submissions a month.
  *
- * Both forms post here: /contact sends source=contact and /free-mock sends
- * source=free-mock, so the two can be told apart in the inbox. If this is
- * ever emptied, the contact form shows a notice and falls back to the email
- * address rather than failing silently.
+ * Every form posts here: /contact sends source=contact, /beta sends
+ * source=beta and /free-mock sends source=free-mock, so they can be told
+ * apart in the inbox. If this is ever emptied, the contact form shows a
+ * notice and falls back to the email address rather than failing silently.
  */
 export const FORMSPREE_FORM_ID = 'xqpkrbez';
+
+/**
+ * Beta mode — one switch.
+ *
+ * While `on`, every primary call to action on the site reads `cta` and points
+ * at `path`, the hero says we're in beta, Startup prices show the discount,
+ * and nothing a visitor can read mentions the free mock: /free-mock and its
+ * thank-you page build as redirects to /beta. Set `on` to false and all of
+ * that reverses — /beta redirects to /free-mock and the free-mock wording
+ * comes back. `npm run verify:beta` builds the site both ways and proves the
+ * switch changes nothing else.
+ *
+ * `discount` applies to the Startup tiers only; Maintenance is list price
+ * either way. /beta-terms says so, and reads these same numbers.
+ */
+export const BETA = {
+  on: true,
+  discount: 0.30,
+  seats: 30,
+  cta: 'Join the beta',
+  path: '/beta',
+};
+
+// tools/beta-check.mjs builds once each way by setting GYW_BETA. Nothing else
+// should set it; the line above is the switch. `typeof process` so the file
+// still loads if a client-side script ever imports it.
+const forcedBeta = typeof process !== 'undefined' ? process.env.GYW_BETA : undefined;
+if (forcedBeta === 'on' || forcedBeta === 'off') BETA.on = forcedBeta === 'on';
+
+/** "30%", from BETA.discount, for the sentences that quote it. */
+export const BETA_PERCENT = `${Math.round(BETA.discount * 100)}%`;
+
+/** The primary call to action, everywhere one appears: nav, hero, footer, closing bands. */
+export const PRIMARY_CTA = BETA.on
+  ? { label: BETA.cta, href: BETA.path }
+  : { label: 'Get a free mock', href: '/free-mock' };
+
+/** The same action, as worded on a pricing card. */
+export const TIER_CTA = BETA.on
+  ? { label: BETA.cta, href: BETA.path }
+  : { label: 'Start with a free mock', href: '/free-mock' };
 
 /**
  * Social links. None yet; the footer renders no social list while this is
@@ -47,19 +88,27 @@ export const NAV_LINKS = [
 ];
 
 /**
- * Everything on /work, in two kinds.
+ * Everything on /work, in three kinds.
  *
- *   kind: 'client'   real work, for people who paid us. Leads the page.
- *   kind: 'concept'  fictional businesses we built to show range.
+ *   kind: 'client'    real work, for people who paid us.
+ *   kind: 'platform'  a real site on a real domain that our platform built
+ *                     and hosts, for a business that is not a paying client.
+ *                     The proof that the hosting works; never call it a client.
+ *   kind: 'concept'   fictional businesses we built to show range.
  *
- * The distinction is the honest part and it must stay visible in the UI: a
- * concept site dressed as a client site is the single most damaging thing
- * this page could do.
+ * The distinctions are the honest part and they must stay visible in the UI:
+ * a concept site dressed as a client site is the single most damaging thing
+ * this page could do, and a demo business dressed as a paying one is the
+ * second.
  *
- * Client entries carry `sector`, three `built` bullets and a one-line
- * `outcome`. Every bullet has to be true of the shipped site today — the
- * facts below were checked against the live sites and the project repos in
- * October 2026, and where a figure is approximate it says so.
+ * Client and platform entries carry `sector`, three `built` bullets and a
+ * one-line `outcome`. Every bullet has to be true of the shipped site today —
+ * the facts below were checked against the live sites and the project repos
+ * in October 2026, and where a figure is approximate it says so.
+ *
+ * `hidden: true` keeps an entry's facts but renders it nowhere. ChemEd is
+ * hidden: it is a one-off web app, not something we can build for a plumber,
+ * so it stopped being an example of what we sell.
  *
  * Adding a concept mock is still a one-object job: drop the HTML in public/,
  * screenshot into public/shots/, add an entry.
@@ -87,6 +136,7 @@ export const PROJECTS = [
   {
     slug: 'chemed',
     kind: 'client',
+    hidden: true,
     name: 'ChemEd 2027 Interest Map',
     type: 'Academic conference',
     sector: 'Academic conference',
@@ -107,6 +157,32 @@ export const PROJECTS = [
       'Three views of the same data: clustered dots, a heatmap and a state choropleth, plus an organiser admin with CSV import and export.',
     ],
     outcome: 'Live before registration opens, so the conference can see where interest is building.',
+  },
+  {
+    slug: 'andys-auto',
+    kind: 'platform',
+    name: "Andy's Auto Shop",
+    type: 'Auto repair',
+    sector: 'Auto repair',
+    href: 'https://andysauto.org',
+    linkLabel: 'Open andysauto.org',
+    shot: '/shots/andysauto-desktop.webp',
+    shotPhone: '/shots/andysauto-phone.webp',
+    // Checked against the live site, October 2026: generated by the platform
+    // (its image-slot markup is in the page), served through Cloudflare, four
+    // pages — Home, Services, About, Visit — and email as the only contact.
+    // No phone number or hours yet; see BACKLOG.md before using it in an ad.
+    shotNote: 'Demo business on a real domain, hosted on our platform.',
+    blurb:
+      "A real domain, built and hosted entirely on our platform: generated from the shop's information, custom domain connected, served from Cloudflare's network, every version kept.",
+    built: [
+      'Built by our software, not by hand.',
+      'Hosted on our platform — the same hosting a client gets.',
+      'Live at andysauto.org, on its own domain.',
+    ],
+    outcome: BETA.on
+      ? 'Everything a beta client gets, on a live domain.'
+      : 'Everything a client gets, on a live domain.',
   },
   {
     slug: 'bakery',
@@ -175,173 +251,114 @@ export const PROJECTS = [
  * candidate; see the Phase 2 fixes commit for what it would still need.
  */
 
-/** The real client work. This is what leads both /work and the home page. */
-export const CLIENT_PROJECTS = PROJECTS.filter((p) => p.kind === 'client');
+/**
+ * The live sites: real work on real domains, in the order every page shows
+ * them. Allergy Rescue Kit first (a client), then Andy's Auto Shop (our
+ * platform). /, /work, /why-us and /beta all read this, so the pair can only
+ * be wrong in one place.
+ */
+export const LIVE_SITES = PROJECTS.filter(
+  (p) => (p.kind === 'client' || p.kind === 'platform') && !p.hidden
+);
 
-/** The fictional mocks, shown after the client work and labelled as such. */
+/** The fictional mocks, shown after the live sites and labelled as such. */
 export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
 
-/** Kept as the home page's name for the client pair. */
-export const FEATURED_PROJECTS = CLIENT_PROJECTS;
-
 /**
- * Pricing.
+ * Pricing — what the product actually sells.
  *
- * Three one-time build tiers and one recurring Care plan. This is the only
- * place in the repo that holds a price — /pricing and the home teaser both
- * read it, so they cannot drift apart again.
+ * The backend (GetYourWebsiteAdmin, `billing_products`) sells two things: a
+ * one-time Startup plan with included revisions that expire after 90 days,
+ * and a monthly Maintenance plan with included revisions each month and a
+ * metered price per extra revision. No page limits, no Custom tier. The tiers
+ * below differ only in how many revisions are included, and the price per
+ * revision falls as you go up.
  *
- * Three rules that shaped what is NOT here:
+ * This is the only place in the repo that holds a price. Every price on the
+ * site is formatted from these integers (and from BETA.discount) by the
+ * helpers below — never typed into a page. `npm run verify` greps for
+ * stray price strings precisely to stop that coming back.
  *
- *   No delivery times. The only real data point we have is Allergy Rescue
- *   Kit at 24 build rounds, which supports no defensible build estimate. A
- *   timeline we invent is a timeline we miss. The only time promise on the
- *   site is the reply one: within one business day.
+ * As of October 2026 the backend has ONE Startup product (30 revisions) and
+ * ONE Maintenance product (6 revisions, $5 extras). The other tiers do not
+ * exist in Stripe yet. Beta is invite-only, so nothing can be bought from the
+ * site — but they have to exist before the first beta client checks out.
  *
- *   Examples point at real client work only, never at a concept site. A
- *   tier with no real example yet renders none — see Growth. Allergy Rescue
- *   Kit sits under Custom rather than Growth because it is 65 pages, 51 of
- *   them generated from a state-law dataset; "up to 10 pages" would be the
- *   first thing a sceptical reader checked and caught.
- *
- *   The Care plan's "switchable from the portal" is deliberate wording and
- *   it is true today: the client portal's HostingPanel has a "Host this
- *   version" button wired to POST /api/client/hosting/version. If that ever
- *   stops being client-facing, soften this to "we switch it for you on
- *   request" rather than leaving it.
+ * No delivery times, deliberately. The only data point we have is Allergy
+ * Rescue Kit at 24 build rounds, which supports no defensible estimate. The
+ * only time promise on the site is the reply one: within one business day.
  */
-export const TIERS = [
-  {
-    id: 'launch',
-    kind: 'build',
-    name: 'Launch',
-    price: '$900',
-    period: 'one-time',
-    tagline: 'A proper site for a business that mainly needs to be findable and contactable.',
-    features: [
-      'Up to 5 pages, built from your free mock',
-      '2 revision rounds',
-      'A contact form that reaches your inbox',
-      'Mobile-first, on every screen',
-      'Basic on-page SEO: titles, descriptions, sitemap',
-      'Launched on your own domain',
-    ],
-  },
-  {
-    id: 'growth',
-    kind: 'build',
-    name: 'Growth',
-    price: '$1,600',
-    period: 'one-time',
-    popular: true,
-    tagline: 'For a business that sells from the site — bookings, quotes, and copy that works.',
-    features: [
-      'Everything in Launch',
-      'Up to 10 pages',
-      'Booking, scheduling or quote-form integration',
-      'A copywriting pass on every page',
-      'Google Business Profile tune-up',
-      '4 revision rounds',
-      'We handle your photos and assets',
-    ],
-  },
-  {
-    id: 'custom',
-    kind: 'build',
-    name: 'Custom',
-    price: 'from $3,000',
-    period: 'one-time',
-    tagline: 'When the site is really an application.',
-    features: [
-      'Web apps and data-driven sites: interactive maps, state-by-state content, calculators, client portals',
-      'Integrations with the tools you already use',
-      'Scoped and quoted per project',
-    ],
-    examples: [
-      { name: 'Allergy Rescue Kit', href: 'https://allergyrescuekit.com' },
-      {
-        name: 'ChemEd 2027 Interest Map',
-        href: 'https://chemed-interest-map-production.up.railway.app/',
-      },
-    ],
-  },
-  {
-    id: 'care',
-    kind: 'care',
-    name: 'Care plan',
-    price: '$49',
-    period: '/mo',
-    priceYearly: '$490',
-    periodYearly: '/yr',
-    yearlyNote: 'two months free',
-    tagline: 'Required to host with us.',
-    features: [
-      "Hosting on Cloudflare's network",
-      'Domain and SSL managed for you',
-      'Every version of your site kept, and switchable from the portal',
-      'One revision credit a month, rolling over up to three',
-      'Uptime monitoring',
-      'Email support, reply within one business day',
-    ],
-    footnote: 'Required to host with us. Cancel any time; we hand over the files.',
-  },
+export const STARTUP_TIERS = [
+  { id: 'startup-10', name: 'Startup 10', price: 600, revisions: 10 },
+  { id: 'startup-30', name: 'Startup 30', price: 900, revisions: 30, popular: true },
+  { id: 'startup-60', name: 'Startup 60', price: 1200, revisions: 60 },
+];
+export const STARTUP_REVISIONS_EXPIRE_DAYS = 90;
+
+export const MAINTENANCE_TIERS = [
+  { id: 'care-6', name: 'Maintenance 6', monthly: 49, revisions: 6 },
+  { id: 'care-15', name: 'Maintenance 15', monthly: 89, revisions: 15 },
+  { id: 'care-40', name: 'Maintenance 40', monthly: 179, revisions: 40 },
 ];
 
-/** The three one-time tiers, for the cards and the comparison table. */
-export const BUILD_TIERS = TIERS.filter((t) => t.kind === 'build');
+/** Per extra revision on Maintenance, metered onto the monthly invoice. */
+export const EXTRA_REVISION = 5;
 
-/** The Care plan, which is a different shape and gets its own card. */
-export const CARE_PLAN = TIERS.find((t) => t.kind === 'care');
+/** "$1,200", "$8.17". Whole dollars print without cents. */
+export function money(n) {
+  const whole = Number.isInteger(n);
+  return '$' + n.toLocaleString('en-US', {
+    minimumFractionDigits: whole ? 0 : 2,
+    maximumFractionDigits: whole ? 0 : 2,
+  });
+}
 
-/** The four things that are true whichever tier someone picks. */
+/** A Startup price after the beta discount, in whole dollars. */
+export const betaPrice = (price) => Math.round(price * (1 - BETA.discount));
+
+/** What a Startup tier costs today: the beta price while beta is on. */
+export const startupPrice = (tier) => (BETA.on ? betaPrice(tier.price) : tier.price);
+
+/**
+ * Price per included revision, to the cent. Worked in cents so 179 / 40
+ * rounds to 4.48 rather than floating-point's 4.47.
+ */
+export const perRevision = (price, revisions) => Math.round((price * 100) / revisions) / 100;
+
+/** The things that are true whichever tiers someone picks. */
 export const EVERY_PLAN_INCLUDES = [
+  'Unlimited pages',
   'Your own domain',
+  "Hosted on Cloudflare's network",
   'Every version kept',
   'A person reviews every change',
-  'No templates, no page builders',
 ];
-
-/**
- * The comparison table. Rows are rendered in order; each row's `cells` are
- * in BUILD_TIERS order. `true` renders a check, `false` renders a dash,
- * a string renders as-is.
- */
-export const PRICING_COMPARISON = [
-  { label: 'Pages', cells: ['Up to 5', 'Up to 10', 'Scoped per project'] },
-  { label: 'Revision rounds', cells: ['2', '4', 'Scoped per project'] },
-  { label: 'Contact form', cells: [true, true, true] },
-  { label: 'Booking / quote integration', cells: [false, true, true] },
-  { label: 'Copywriting pass', cells: [false, true, true] },
-  { label: 'Google Business Profile', cells: [false, true, true] },
-  { label: 'Custom features & integrations', cells: [false, false, true] },
-  { label: 'Hosting & domain', cells: ['via Care plan', 'via Care plan', 'via Care plan'] },
-  { label: 'Who builds it', cells: ['Us, by hand', 'Us, by hand', 'Us, by hand'] },
-];
-
-export const PRICING_DISCLAIMER =
-  "Final quote after we've seen your free mock. Most businesses land in Launch " +
-  "or Growth; we'll tell you which before you pay anything.";
 
 /**
  * The pricing FAQ. Plain answers to the things people actually ask before
  * they pay, including the ones it would be more comfortable to leave out.
+ *
+ * Checked against the portal and backend, October 2026: Startup is a single
+ * full-price Stripe Checkout bought in the portal before the site is built;
+ * a client on Startup alone cannot buy extra revisions — the backend
+ * requires a Maintenance subscription for those.
  */
 export const PRICING_FAQ = [
   {
     q: 'What do I pay, and when?',
-    a: "50% deposit when you approve the mock and pick a tier; the balance when the site goes live on your domain. Paid by card through a Stripe checkout link we send you.",
+    a: "Startup is paid in full at checkout in your portal, before we build. If you change your mind before the build starts, we refund it in full. Maintenance is billed monthly by card. Payments go through Stripe.",
   },
   {
-    q: 'Do I have to take the Care plan?',
-    a: "Only if you want us to host it. Custom domains are tied to the Care plan because that's what pays for hosting, SSL and keeping every version. If you'd rather host it yourself, we hand over the files and you're done.",
+    q: 'Do I need Maintenance?',
+    a: "Yes, to host with us: it's what pays for hosting, your domain and SSL, and keeping every version. If you'd rather host it yourself, we hand over the files and you're done.",
   },
   {
-    q: 'What counts as a revision round?',
-    a: 'One batch of changes, sent together, that we apply as a new version. Three small tweaks in one message is one round; three messages on three days is three.',
+    q: 'What happens when my revisions run out?',
+    a: `On Startup alone, start Maintenance — its monthly revisions, and extras at ${money(EXTRA_REVISION)} each, pick up from there. On Maintenance, extras are ${money(EXTRA_REVISION)} each, or you can move up a tier.`,
   },
   {
-    q: 'Can I change tiers later?',
-    a: "Yes. Going up is the price difference; going down isn't a thing, because the work is already done.",
+    q: 'Can I change tier?',
+    a: 'Yes. Up, any time, and you pay the difference.',
   },
   {
     q: 'What if I already have a website?',
@@ -394,16 +411,18 @@ export const GOATCOUNTER_ID = '';
 
 /**
  * Meta (Facebook) Pixel ID, for the ad campaigns that will point at
- * /free-mock.
+ * /beta (or /free-mock, while beta is off).
  *
- * Leave empty until the privacy page's "Cookies and tracking" section has
- * been updated to disclose the Meta Pixel. Setting this without that edit
- * makes the privacy page false.
+ * Leave empty until /cookies has been updated to say the Pixel is in use —
+ * its "If we turn on advertising measurement" section is written and marked
+ * "not currently in use" — and /privacy's "Cookies and tracking" section
+ * agrees. Setting this without those edits makes both pages false.
  *
  * While it is empty BaseLayout emits nothing at all — no script tag, no
  * comment, no connection to facebook.net. When it is set it loads the pixel
- * on every page, fires PageView, and fires a Lead event on
- * /free-mock/thanks.
+ * on every page, fires PageView, and fires a Lead event on the ad landing
+ * page's thank-you: /beta/thanks while beta is on, /free-mock/thanks while
+ * it is off.
  */
 export const META_PIXEL_ID = '';
 
@@ -458,4 +477,4 @@ export const TEAM_NAMES = '';
 
 export const LEGAL_NAME = 'GetYourWebsite LLC';
 export const LEGAL_STATE = 'Michigan';
-export const LEGAL_UPDATED = 'October 3, 2026';
+export const LEGAL_UPDATED = 'October 13, 2026';

@@ -39,9 +39,9 @@ interface Props {
   compact?: boolean;
   /**
    * Landing-page version: shot, sector, name and blurb, and nothing that
-   * leaves the page. /free-mock exists to collect one email address, and a
-   * link out to a client's site is an exit dressed as proof. The shot and
-   * the name do the proving there.
+   * leaves the page. The landing pages (/beta, /free-mock) exist to collect
+   * one email address, and a link out to a live site is an exit dressed as
+   * proof. The shot and the name do the proving there.
    */
   thumb?: boolean;
   /** /work puts these under the page h1, so they are h2 there and h3 on home. */
@@ -60,8 +60,8 @@ const {
 } = Astro.props;
 const Heading = `h${level}`;
 // A raw hostname in monospace reads as a dev artefact rather than a case
-// study — and ChemEd's Railway URL is 48 characters of it. Projects carry
-// their own phrasing; the hostname is only the fallback.
+// study — and a hosting provider's app URL can run to 48 characters of it.
+// Projects carry their own phrasing; the hostname is only the fallback.
 const linkLabel = p.linkLabel ?? `Open ${p.href.replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
 ---
 

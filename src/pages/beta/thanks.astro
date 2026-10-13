@@ -1,0 +1,66 @@
+---
+/**
+ * Where Formspree sends people after the /beta form posts. Its own page for
+ * the same reason as /free-mock/thanks: a static build has no query string
+ * to branch on. Bare chrome, noindex, no JavaScript.
+ *
+ * With beta off, this builds as a redirect to /free-mock/thanks. The Meta
+ * Pixel's Lead event, if the Pixel is ever turned on, fires here — the one
+ * page you cannot reach without having applied (see BaseLayout).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { BETA, CONTACT_EMAIL } from '../../data/site.js';
+import { url } from '../../data/url.js';
+
+if (!BETA.on) return Astro.redirect(url('/free-mock/thanks'));
+---
+
+<BaseLayout
+  title="Thanks — you're on the list"
+  description="We've got your application. We reply within one business day."
+  bare
+  noindex
+>
+  <section class="section">
+    <div class="shell-narrow thanks">
+      <p class="thanks__mark" aria-hidden="true">✓</p>
+      <h1>You're on the list.</h1>
+      <p class="lead">We reply within one business day.</p>
+      <p class="thanks__aside">
+        If something is urgent in the meantime, write to
+        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+      </p>
+      <p class="thanks__back">
+        <a class="link-arrow" href={url('/beta-terms')}>How the beta works</a>
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks { text-align: center; }
+
+  .thanks__mark {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto var(--s-5);
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .thanks .lead { margin-inline: auto; }
+
+  .thanks__aside {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    margin-inline: auto;
+  }
+
+  .thanks__back { margin-top: var(--s-6); }
+</style>

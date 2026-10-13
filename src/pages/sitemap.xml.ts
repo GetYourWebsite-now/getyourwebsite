@@ -1,18 +1,19 @@
 /**
  * sitemap.xml.
  *
- * Lists the seven real pages plus the mock client sites, which are worth
- * indexing — they're the portfolio. 404 is deliberately left out.
+ * Lists the real pages plus the concept sites, which are worth indexing —
+ * they're the portfolio. 404 is deliberately left out, and so are the live
+ * sites: they are other domains, and a sitemap may only list its own.
  *
  * If you add a page, add it to PAGES below.
  *
- * /free-mock is deliberately absent and must stay that way: it is the ad
- * landing page, it carries <meta name="robots" content="noindex">, and
- * listing it here would ask search engines to index a page we have told
- * them not to.
+ * /beta and /free-mock are deliberately absent and must stay that way: they
+ * are the ad landing pages (one live, one a redirect, depending on BETA),
+ * both carry <meta name="robots" content="noindex">, and listing them here
+ * would ask search engines to index pages we have told them not to.
  */
 import type { APIRoute } from 'astro';
-import { PROJECTS } from '../data/site.js';
+import { CONCEPT_PROJECTS } from '../data/site.js';
 
 const PAGES = [
   { path: '/', priority: '1.0' },
@@ -24,6 +25,8 @@ const PAGES = [
   { path: '/contact', priority: '0.9' },
   { path: '/privacy', priority: '0.3' },
   { path: '/terms', priority: '0.3' },
+  { path: '/cookies', priority: '0.3' },
+  { path: '/beta-terms', priority: '0.3' },
 ];
 
 export const GET: APIRoute = ({ site }) => {
@@ -32,7 +35,7 @@ export const GET: APIRoute = ({ site }) => {
 
   const entries = [
     ...PAGES.map((p) => ({ loc: new URL(p.path, base).href, priority: p.priority })),
-    ...PROJECTS.map((p) => ({ loc: new URL(p.href, base).href, priority: '0.5' })),
+    ...CONCEPT_PROJECTS.map((p) => ({ loc: new URL(p.href, base).href, priority: '0.5' })),
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

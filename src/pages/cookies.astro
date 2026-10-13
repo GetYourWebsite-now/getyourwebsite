@@ -1,0 +1,93 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { url } from '../data/url.js';
+import { BETA, CONTACT_EMAIL } from '../data/site.js';
+
+/**
+ * Cookies.
+ *
+ * Written from an inventory, not from memory. On 2026-10-12 every page of the
+ * built site was loaded headless (including clicking through /demo), and so
+ * was the live getyourwebsite.now. Result: no cookies, no local or session
+ * storage, on either. The only third-party hosts contacted were Cloudflare's
+ * (static.cloudflareinsights.com — Web Analytics, which the Cloudflare zone
+ * injects at the edge, not this repo) and loremflickr.com (photos in the
+ * /demo sandbox and the concept sites).
+ *
+ * Re-run that check whenever something is added that could store anything —
+ * analytics, a chat widget, the Meta Pixel — and change this page in the
+ * same commit. META_PIXEL_ID in particular: setting it makes the "not
+ * currently in use" line below false.
+ */
+const landing = BETA.on ? '/beta' : '/free-mock';
+const forms = BETA.on ? 'contact and beta forms' : 'contact and free-mock forms';
+---
+
+<LegalLayout
+  title="Cookies"
+  description="What getyourwebsite.now stores in your browser, and what it loads from other companies. The short version: no cookies of our own."
+  heading="Cookies"
+  lead="What this website stores in your browser, and what it loads from other companies. The short version: it sets no cookies of its own."
+>
+  <h2>What this website sets</h2>
+  <p>
+    <strong>Nothing.</strong> We checked every page: getyourwebsite.now sets no
+    cookies of its own and stores nothing in your browser's local or session
+    storage. That includes the <a href={url('/demo')}>demo</a>, which keeps
+    everything in memory and forgets it when you leave the page.
+  </p>
+
+  <h2>Cloudflare</h2>
+  <p>
+    This website is served through Cloudflare's network. Cloudflare may set a
+    cookie called <code>__cf_bm</code> if it needs to check whether traffic is
+    coming from a bot. It's used only for that, and it expires after 30 minutes
+    without activity. Cloudflare describes it in
+    <a href="https://developers.cloudflare.com/fundamentals/reference/policies-compliances/cloudflare-cookies/" target="_blank" rel="noopener noreferrer">its own cookie list</a>.
+  </p>
+  <p>
+    Cloudflare also adds two small scripts to our pages: one that counts visits
+    and measures how quickly pages load (Cloudflare Web Analytics), and one that
+    hides our email address from spam bots. Neither sets a cookie or stores
+    anything in your browser.
+  </p>
+
+  <h2>Forms</h2>
+  <p>
+    Our {forms} send what you type to Formspree, which forwards it to us. Formspree sets nothing on this website.
+  </p>
+
+  <h2>Things our pages load from elsewhere</h2>
+  <p>
+    Our fonts are hosted on our own server. Some of our example sites load fonts
+    from Google Fonts, and they and our demo load placeholder photos from
+    loremflickr.com. Those providers can see your IP address when your browser
+    requests the file, the same as any website that uses them.
+  </p>
+
+  <h2>The client portal</h2>
+  <p>
+    This page covers getyourwebsite.now. The client portal and private site
+    previews use a little storage to work — to keep you signed in, and to show an
+    unpublished site only to you. Our <a href={url('/privacy')}>Privacy Policy</a> describes both.
+  </p>
+
+  <h2>If we turn on advertising measurement</h2>
+  <p><strong>Not currently in use.</strong></p>
+  <p>
+    If we turn it on, we'll use the Meta Pixel on this website to measure how
+    well our ads work — including counting a sign-up when someone reaches the
+    page after our <a href={url(landing)}>sign-up form</a> — and to show ads to
+    people who visited but did not get in touch. It sets cookies in your browser
+    and sends Meta your IP address and the pages you viewed. You can opt out of
+    this kind of advertising at
+    <a href="https://www.facebook.com/adpreferences/ad_settings" target="_blank" rel="noopener noreferrer">facebook.com/adpreferences</a>
+    and through your browser's cookie controls. We'll update this page and our
+    Privacy Policy before it goes on.
+  </p>
+
+  <h2>Questions</h2>
+  <p>
+    Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+  </p>
+</LegalLayout>

@@ -7,13 +7,26 @@ import MergeAnim from '../components/anim/MergeAnim.astro';
 import ClickToChange from '../components/anim/ClickToChange.astro';
 import PhotoDrop from '../components/anim/PhotoDrop.astro';
 import DomainConnect from '../components/anim/DomainConnect.astro';
-import { CLIENT_PROJECTS, BUILD_TIERS, CARE_PLAN } from '../data/site.js';
+import {
+  BETA,
+  BETA_PERCENT,
+  PRIMARY_CTA,
+  LIVE_SITES,
+  STARTUP_TIERS,
+  MAINTENANCE_TIERS,
+  money,
+} from '../data/site.js';
 import { url } from '../data/url.js';
+
+const host = (p) => p.href.replace(/^https?:\/\//, '').replace(/\/$/, '');
+const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANCE_TIERS[0].monthly)}/mo.`;
 ---
 
 <BaseLayout
   title="GetYourWebsite"
-  description="Websites for local businesses, done for you. A free mock first, then we build the site, host it and keep it current — every version kept, one button to choose what's live."
+  description={BETA.on
+    ? "Websites for local businesses, done for you. We build the site, host it and keep it current — every version kept, and a person checks every change before it goes live."
+    : "Websites for local businesses, done for you. A free mock first, then we build the site, host it and keep it current — every version kept, one button to choose what's live."}
 >
   <!-- 1. Hero ------------------------------------------------------------
        Left: the offer, and that we do the work. Right: the version tree,
@@ -34,7 +47,7 @@ import { url } from '../data/url.js';
           build it, host it and keep it current.
         </p>
         <div class="btn-row hero__cta">
-          <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+          <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
           <a
             class="btn btn--secondary btn--lg"
             href="https://allergyrescuekit.com"
@@ -45,12 +58,17 @@ import { url } from '../data/url.js';
             <span class="sr-only">— Allergy Rescue Kit (opens in a new tab)</span>
           </a>
         </div>
+        {
+          BETA.on && (
+            <p class="hero__beta">
+              In beta. We're taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
+            </p>
+          )
+        }
+        {/* One line, so the separator does not pick up a text node from a
+            newline (CLAUDE.md, trap 3). */}
         <p class="hero__live">
-          Live for <a href="https://allergyrescuekit.com" target="_blank" rel="noopener noreferrer">Allergy
-          Rescue Kit</a> and the <a
-            href="https://chemed-interest-map-production.up.railway.app/"
-            target="_blank"
-            rel="noopener noreferrer">ChemEd 2027 Interest Map</a>.
+          Live now at <a href={LIVE_SITES[0].href} target="_blank" rel="noopener noreferrer">{host(LIVE_SITES[0])}</a> and <a href={LIVE_SITES[1].href} target="_blank" rel="noopener noreferrer">{host(LIVE_SITES[1])}</a>.
         </p>
       </div>
 
@@ -79,17 +97,20 @@ import { url } from '../data/url.js';
     </div>
   </section>
 
-  <!-- 3. Our work — the two real client projects --------------------- -->
+  <!-- 3. The two live sites ---------------------------------------------- -->
   <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <h2>Two clients, both live.</h2>
-        <p class="lead">Real sites, open to anyone. No wall of logos.</p>
+        <h2>Two live sites.</h2>
+        <p class="lead">
+          One we built by hand for a client. One our platform built and hosts.
+          Both open to anyone.
+        </p>
       </div>
 
       <div class="cases-2up" data-reveal-group>
         {
-          CLIENT_PROJECTS.map((project) => (
+          LIVE_SITES.map((project) => (
             <div data-reveal>
               <CaseStudy project={project} compact level={3} />
             </div>
@@ -104,30 +125,49 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 4. How it works — three steps, typography only ---------------------
-       The deposit split and the balance-at-launch detail moved to the
-       pricing FAQ, where someone deciding to pay is looking for them.
+       When and how you pay is in the pricing FAQ, where someone deciding
+       to pay is looking for it.
   -->
   <section class="section section--alt">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <h2>Three steps, and the first is free.</h2>
+        <h2>{BETA.on ? 'Three steps to a live site.' : 'Three steps, and the first is free.'}</h2>
       </div>
 
       <ol class="steps" data-reveal-group>
-        <li class="step" data-reveal>
-          <span class="step__num">01</span>
-          <h3>A free mock</h3>
-          <p>Tell us about your business. We send back a homepage concept, free.</p>
-        </li>
-        <li class="step" data-reveal>
-          <span class="step__num">02</span>
-          <h3>Approve and start</h3>
-          <p>Like it? We confirm the price, then build the full site.</p>
-        </li>
+        {
+          BETA.on ? (
+            <>
+              <li class="step" data-reveal>
+                <span class="step__num">01</span>
+                <h3>You tell us about the business</h3>
+                <p>A few details through the form. We reply within one business day.</p>
+              </li>
+              <li class="step" data-reveal>
+                <span class="step__num">02</span>
+                <h3>Pick a plan, and we build</h3>
+                <p>Buy your Startup plan in the portal, then we build the full site.</p>
+              </li>
+            </>
+          ) : (
+            <>
+              <li class="step" data-reveal>
+                <span class="step__num">01</span>
+                <h3>A free mock</h3>
+                <p>Tell us about your business. We send back a homepage concept, free.</p>
+              </li>
+              <li class="step" data-reveal>
+                <span class="step__num">02</span>
+                <h3>Approve and start</h3>
+                <p>Like it? We confirm the price, then build the full site.</p>
+              </li>
+            </>
+          )
+        }
         <li class="step" data-reveal>
           <span class="step__num">03</span>
           <h3>We run it for you</h3>
-          <p>On the Care plan we host it and keep every change.</p>
+          <p>On Maintenance we host it and keep every change.</p>
         </li>
       </ol>
     </div>
@@ -194,26 +234,22 @@ import { url } from '../data/url.js';
   </section>
 
   <!-- 6. Pricing teaser ---------------------------------------------------
-       Reads BUILD_TIERS, the same array /pricing renders, so the two can
-       never drift apart again. Teaser cards: name, price and tagline; the
-       feature lists are one click away.
+       Reads STARTUP_TIERS, the same array /pricing renders, so the two can
+       never drift apart again. Teaser cards: name, price and revisions; the
+       rest is one click away.
   -->
   <section class="section section--alt">
     <div class="shell">
       <div class="section-head section-head--center" data-reveal>
-        <h2>Three ways to get off the ground.</h2>
-        {/* The first sentence of PRICING_DISCLAIMER. The rest — which tier most
-            businesses land in — is on /pricing, next to the tiers. */}
-        <p class="lead">Final quote after we've seen your free mock.</p>
+        <h2>Pay for changes, not pages.</h2>
+        <p class="lead">Priced by how many changes you'll want.</p>
       </div>
 
       <div class="grid grid-3" data-reveal-group>
-        {BUILD_TIERS.map((tier) => <TierCard tier={tier} teaser reveal />)}
+        {STARTUP_TIERS.map((tier) => <TierCard tier={tier} teaser reveal />)}
       </div>
 
-      <p class="care-line" data-reveal>
-        Hosting and upkeep: {CARE_PLAN.name}, {CARE_PLAN.price}{CARE_PLAN.period}.
-      </p>
+      <p class="care-line" data-reveal>{maintenanceLine}</p>
 
       <p class="section-more section-more--center" data-reveal>
         <a class="link-arrow" href={url('/pricing')}>Full pricing and FAQ</a>
@@ -228,10 +264,10 @@ import { url } from '../data/url.js';
   <section class="section">
     <div class="shell">
       <div class="why-teaser__copy" data-reveal>
-        <h2>You talk to the people who build it.</h2>
+        <h2>Built by our software. Checked by a person.</h2>
         <p class="lead">
-          A small team. You email the person writing your site, and we reply
-          within one business day.
+          Nothing goes live until one of us has looked at it. Questions go to
+          email; we reply within one business day.
         </p>
         <p class="section-more">
           <a class="link-arrow" href={url('/why-us')}>What makes us different</a>
@@ -243,12 +279,25 @@ import { url } from '../data/url.js';
   <!-- 8. Final CTA --------------------------------------------------------- -->
   <section class="section section--alt cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2 class="cta-band__title">See your business online before you pay anything.</h2>
-      <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send a free mock of your homepage.
-      </p>
+      {
+        BETA.on ? (
+          <>
+            <h2 class="cta-band__title">We're in beta. Want in?</h2>
+            <p class="lead" style="margin-inline:auto">
+              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup. Tell us about yours.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 class="cta-band__title">See your business online before you pay anything.</h2>
+            <p class="lead" style="margin-inline:auto">
+              Tell us about it and we'll send a free mock of your homepage.
+            </p>
+          </>
+        )
+      }
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+        <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       </div>
     </div>
   </section>
@@ -289,6 +338,17 @@ import { url } from '../data/url.js';
   }
 
   .hero__cta { margin-top: var(--s-5); }
+
+  /* The beta note: one line under the buttons, the same quiet weight as
+     the live-sites line below it. */
+  .hero__beta {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+    max-width: 30rem;
+  }
+
+  .hero__beta + .hero__live { margin-top: var(--s-2); }
 
   /* Quiet, and deliberately below the buttons: it is corroboration for
      someone already interested, not a competing call to action. */

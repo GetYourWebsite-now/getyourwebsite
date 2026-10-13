@@ -1,0 +1,64 @@
+---
+import LegalLayout from '../layouts/LegalLayout.astro';
+import { url } from '../data/url.js';
+import { BETA, BETA_PERCENT, CONTACT_EMAIL } from '../data/site.js';
+
+/**
+ * How the beta works. Linked from /beta, the footer and /terms.
+ *
+ * It keeps building when beta mode is off: a business that joined during the
+ * beta is still covered by it, so the page can't disappear with the switch.
+ * The numbers are read from BETA in src/data/site.js, the same ones /beta
+ * and /pricing quote.
+ */
+---
+
+<LegalLayout
+  title="Beta terms"
+  description={`How the GetYourWebsite beta works: limited places, ${BETA_PERCENT} off Startup plans for the first ${BETA.seats} businesses, and what happens if the beta ends.`}
+  heading="Beta terms"
+  lead="How the beta works, in plain terms. These sit alongside our Terms of Service."
+>
+  <h2>Limited places</h2>
+  <p>
+    We're taking on a small number of businesses while we finish the product.
+    Applying costs nothing and doesn't guarantee a place.
+  </p>
+
+  <h2>The discount</h2>
+  <p>
+    The first {BETA.seats} businesses we take on get {BETA_PERCENT} off any
+    Startup plan. Maintenance plans are at the list price shown on our
+    <a href={url('/pricing')}>pricing page</a>.
+  </p>
+
+  <h2>The product is still changing</h2>
+  <p>
+    GetYourWebsite is still being built. Some features may be added, changed or
+    removed during the beta.
+  </p>
+
+  <h2>Revisions and replies</h2>
+  <p>
+    Revisions work as described on our <a href={url('/pricing')}>pricing page</a>,
+    and we reply within one business day, the same as for every client.
+  </p>
+
+  <h2>If we decline an application or end the beta</h2>
+  <p>
+    We may decline an application, and we may end the beta. If we end it, work
+    you've already paid for is either completed or refunded pro-rata.
+  </p>
+
+  <h2>Your data</h2>
+  <p>
+    Handled as our <a href={url('/privacy')}>Privacy Policy</a> describes.
+  </p>
+
+  <h2>Everything else</h2>
+  <p>
+    Our <a href={url('/terms')}>Terms of Service</a> apply wherever this page
+    doesn't say otherwise. Questions go to
+    <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+  </p>
+</LegalLayout>

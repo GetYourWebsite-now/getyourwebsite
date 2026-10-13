@@ -1,5 +1,5 @@
 ---
-import { NAV_LINKS, CONTACT_EMAIL, SOCIALS, PORTAL_URL } from '../data/site.js';
+import { NAV_LINKS, CONTACT_EMAIL, SOCIALS, PORTAL_URL, PRIMARY_CTA, BETA } from '../data/site.js';
 import { url } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -12,7 +12,7 @@ const year = new Date().getFullYear();
       <a href={url('/')} aria-label="GetYourWebsite — home">
         <Wordmark />
       </a>
-      <p class="foot__line">Websites for local businesses, built and maintained by the people you talk to.</p>
+      <p class="foot__line">Websites for local businesses, built by our software and checked by a person.</p>
     </div>
 
     <nav class="foot__nav" aria-label="Footer">
@@ -42,7 +42,7 @@ const year = new Date().getFullYear();
           </li>
         ))}
       </ul>
-      <a class="btn btn--primary btn--sm foot__cta" href={url('/free-mock')}>Get a free mock</a>
+      <a class="btn btn--primary btn--sm foot__cta" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
     </div>
   </div>
 
@@ -51,6 +51,8 @@ const year = new Date().getFullYear();
     <p class="foot__legal">
       <a href={url('/privacy')}>Privacy</a>
       <a href={url('/terms')}>Terms</a>
+      <a href={url('/cookies')}>Cookies</a>
+      {BETA.on && <a href={url('/beta-terms')}>Beta terms</a>}
     </p>
   </div>
 </footer>

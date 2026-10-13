@@ -29,7 +29,7 @@ quarantining a foreign theme.
 
 **1. Every capability claim must be true of the shipped product today.** Check
 it in `client/` first. If a capability has a condition on it — a custom domain
-needs the Care plan, only approved versions can be hosted — the condition
+needs Maintenance, only approved versions can be hosted — the condition
 belongs on the page. A capability with its limits stated reads as more credible
 than one without, and this site's whole argument is credibility.
 
@@ -37,10 +37,12 @@ No superlatives we cannot prove, no invented statistics, no third-party logos
 implying endorsement. Cloudflare is described as a network we host on, quoting
 only their published figures, with a link so a visitor can check.
 
-Two live consequences of this rule, both the result of actually checking:
+Live consequences of this rule, each the result of actually checking:
 Allergy Rescue Kit is hosted on **Railway**, not on our Cloudflare setup, so its
-case study says nothing about hosting; and the ChemEd map's visible figures are
-seeded sample data, so its screenshot is captioned saying so.
+case study says nothing about hosting; Andy's Auto Shop is built and hosted by
+our platform but is **not a paying client**, and is never called one; and
+Startup is paid in full at checkout in the portal, so the site promises no
+deposit.
 
 **2. The /demo sandbox must match the real portal.** It has drifted three times.
 `src/data/portal-sync.json` records the `client/` commit it was built against,
@@ -70,7 +72,7 @@ is not real about it goes in the "What's different from the real thing" list on
   rounds and it supports nothing.
 - **Eyebrows are rare.** Default to none — the headline carries the section.
   Keep one only where it says something the headline doesn't (who the page is
-  for, what a pronoun in the headline refers to, what "Care plan" is). Where
+  for, what a pronoun in the headline refers to, what "Maintenance" is). Where
   kept, `.eyebrow` in `global.css` is the only style: Inter 500, 14px,
   sentence case, `--accent`, 12px above the heading. No per-page overrides.
   Case-study sector labels are the same size in `--ink-muted`; "Most popular"
@@ -107,9 +109,14 @@ self-closing with `set:html` will not either.
 
 ```bash
 npm run verify && npm run verify:contrast && npm run verify:wraps \
-  && npm run verify:voids && npm run verify:portal
+  && npm run verify:voids && npm run verify:portal && npm run verify:beta
 ```
 
 The README explains what each one measures. `verify:contrast` is the one to
 respect: the light palette has pairings with under half a point of AA
 headroom, so it is load-bearing rather than a formality.
+
+**Beta mode** is one switch, `BETA` in `src/data/site.js`. Calls to action
+read `PRIMARY_CTA` / `TIER_CTA` rather than naming a page, and any wording that
+differs with the switch has to be a declared switch point in
+`tools/beta-check.mjs` — the check fails on any other difference.

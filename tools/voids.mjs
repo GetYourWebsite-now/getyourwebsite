@@ -19,7 +19,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PATHS = process.argv.slice(2).length ? process.argv.slice(2) : ['/contact'];
+const PATHS = process.argv.slice(2).length ? process.argv.slice(2) : ['/contact', '/beta'];
 // px advanced per frame. This is the flick speed, and it matters: at a gentle
 // 120px a frame the observer keeps up and the page looks fine. Roughly 700px a
 // frame is an ordinary hard flick on a trackpad.
