@@ -12,14 +12,15 @@
  * heading — the comparison is about who does the work, not about whose
  * product is better.
  *
- * The price is read from BUILD_TIERS, the one place prices live.
+ * The price is read from STARTUP_TIERS, the one place prices live — the
+ * beta price while beta is on, said as such.
  *
  * 7s loop. The base styles are the final frame (see anim.css).
  */
 import './anim.css';
-import { BUILD_TIERS } from '../../data/site.js';
+import { BETA, STARTUP_TIERS, money, startupPrice } from '../../data/site.js';
 
-const from = BUILD_TIERS[0].price;
+const from = money(startupPrice(STARTUP_TIERS[0]));
 
 // Where the lines start, on the centre drawing's left and right edges, and
 // where they meet the mark.
@@ -52,7 +53,7 @@ const right = RIGHT.map((y) => `M320 ${y} C256 ${y} 248 100 196 100`);
       </svg>
     </figure>
     <h2>Done for you. Without the agency bill.</h2>
-    <p>Built, hosted and kept current by people you can email. From {from}.</p>
+    <p>Built by our software, checked by a person, hosted and kept current. From {from}{BETA.on ? ' in the beta' : ''}.</p>
   </div>
 
   <div class="merge__side merge__side--agency">

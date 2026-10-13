@@ -2,37 +2,37 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
 import ProjectCard from '../components/ProjectCard.astro';
-import { CLIENT_PROJECTS, CONCEPT_PROJECTS } from '../data/site.js';
+import { BETA, BETA_PERCENT, PRIMARY_CTA, LIVE_SITES, CONCEPT_PROJECTS } from '../data/site.js';
 import { url } from '../data/url.js';
 ---
 
 <BaseLayout
   title="Work"
-  description="Real client work — Allergy Rescue Kit and the ChemEd 2027 Interest Map — plus six concept sites we built for fictional businesses to show range."
+  description="Two live sites — Allergy Rescue Kit, built for a client, and Andy's Auto Shop, built and hosted by our platform — plus six concept sites we built for fictional businesses to show range."
 >
   <section class="section section--alt section--tight page-head">
     <div class="shell">
       <div class="section-head" data-reveal>
         <h1>Work</h1>
         <p class="lead">
-          Two live client projects, and six concept sites we built for
-          fictional businesses to show range. Every one of them is a complete,
+          Two live sites, and six concept sites we built for fictional
+          businesses to show range. Every one of them is a complete,
           working build — open any of them and click around.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Section 1 — real client work, leading the page -------------------- -->
+  <!-- Section 1 — the live sites, leading the page --------------------- -->
   <section class="section">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <h2>Built for people who paid us to build it.</h2>
+        <h2>Live sites</h2>
       </div>
 
       <div class="cases">
         {
-          CLIENT_PROJECTS.map((project, i) => (
+          LIVE_SITES.map((project, i) => (
             <div class="cases__item" data-reveal>
               <CaseStudy project={project} flip={i % 2 === 1} level={3} priority={i === 0} />
             </div>
@@ -63,14 +63,27 @@ import { url } from '../data/url.js';
 
   <section class="section">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2>Want one of these with your name on it?</h2>
-      <p class="lead" style="margin-inline:auto">
-        Tell us about your business and we'll build you a free mock of your
-        homepage — the same quality as everything above, with your brand, your
-        words and your photos.
-      </p>
+      {
+        BETA.on ? (
+          <>
+            <h2>Want one of these with your name on it?</h2>
+            <p class="lead" style="margin-inline:auto">
+              We're in beta, taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2>Want one of these with your name on it?</h2>
+            <p class="lead" style="margin-inline:auto">
+              Tell us about your business and we'll build you a free mock of your
+              homepage — the same quality as everything above, with your brand, your
+              words and your photos.
+            </p>
+          </>
+        )
+      }
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+        <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
         <a class="btn btn--secondary btn--lg" href={url('/pricing')}>See pricing</a>
       </div>
     </div>

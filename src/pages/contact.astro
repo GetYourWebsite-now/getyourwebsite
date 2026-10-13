@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL, FORMSPREE_FORM_ID } from '../data/site.js';
+import { CONTACT_EMAIL, FORMSPREE_FORM_ID, BETA } from '../data/site.js';
 import { url } from '../data/url.js';
 
 /**
@@ -24,8 +24,13 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
       <div class="section-head" data-reveal>
         <h1>Get in touch.</h1>
         <p class="lead">
-          For a free mock, the fastest route is <a href={url('/free-mock')}>our
-          free-mock form</a>. For anything else — an existing site, a quote for
+          {BETA.on ? (
+            <>To join the beta, the fastest route is <a href={url(BETA.path)}>the beta form</a>.</>
+          ) : (
+            <>For a free mock, the fastest route is <a href={url('/free-mock')}>our
+            free-mock form</a>.</>
+          )}
+          For anything else — an existing site, a quote for
           something unusual, a question — use the form below or email
           <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
         </p>
@@ -150,16 +155,29 @@ const formIsSet = FORMSPREE_FORM_ID && !FORMSPREE_FORM_ID.startsWith('REPLACE_WI
           <fieldset class="want">
             <legend class="fieldset-legend">What are you after? <span class="req">*</span></legend>
             <div class="want__opts">
-              <label class="radio-card">
-                <input type="radio" name="looking_for" value="Free mock" required />
-                <span>
-                  <strong>A free mock</strong>
-                  <small>
-                    Quicker through <a href={url('/free-mock')}>the free-mock form</a> —
-                    it asks for less.
-                  </small>
-                </span>
-              </label>
+              {BETA.on ? (
+                <label class="radio-card">
+                  <input type="radio" name="looking_for" value="Beta" required />
+                  <span>
+                    <strong>A place in the beta</strong>
+                    <small>
+                      Quicker through <a href={url(BETA.path)}>the beta form</a> —
+                      it asks for less.
+                    </small>
+                  </span>
+                </label>
+              ) : (
+                <label class="radio-card">
+                  <input type="radio" name="looking_for" value="Free mock" required />
+                  <span>
+                    <strong>A free mock</strong>
+                    <small>
+                      Quicker through <a href={url('/free-mock')}>the free-mock form</a> —
+                      it asks for less.
+                    </small>
+                  </span>
+                </label>
+              )}
               <label class="radio-card">
                 <input type="radio" name="looking_for" value="Full website" />
                 <span>

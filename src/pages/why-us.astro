@@ -4,14 +4,19 @@
  *
  * The old version led with "We're high school students. That's the point."
  * That was the right opening when the pitch was sympathy and a low price.
- * It isn't now: there is a product, two live clients and a four-figure
+ * It isn't now: there is a product, two live sites and a four-figure
  * entry price, and
  * leading with the founders' age invites someone to price us as a favour.
  * The fact is still here, in full, in "Who we are" — it just argues for the
  * care rather than for the discount.
  *
+ * The header used to say "You talk to the people who build it". That
+ * stopped being true: clients work through the portal, our software
+ * generates the site, and a person reviews each change. The header now says
+ * exactly that.
+ *
  * Nothing on this page claims a number we cannot show. No client count
- * beyond the two that are live and linked, no testimonial (Jay's written
+ * beyond the live sites that are linked, no testimonial (Jay's written
  * permission does not exist in the repo), no invented statistic — which is
  * the point the closing line of "Why a website at all" makes explicitly.
  */
@@ -19,7 +24,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
 import WebsiteCompare from '../components/WebsiteCompare.astro';
 import {
-  CLIENT_PROJECTS,
+  BETA,
+  BETA_PERCENT,
+  PRIMARY_CTA,
+  LIVE_SITES,
   LEGAL_NAME,
   LEGAL_STATE,
   TEAM_NAMES,
@@ -27,11 +35,9 @@ import {
 import { url } from '../data/url.js';
 
 /**
- * Four promises, each one a thing we can be held to. The old set included
- * "prices that make sense for a small business", which stopped being a
- * promise the day the entry price moved into four figures, and "six
- * concept builds", which is
- * no longer the proof we lead with.
+ * Four promises, each one a thing we can be held to. "No templates" went in
+ * the beta rewrite — true, but saying what we build is the hero's job — and
+ * the one-business-day reply moved into the header's lead.
  */
 const PROMISES = [
   {
@@ -43,12 +49,12 @@ const PROMISES = [
     body: 'Once it is paid for, the code, the content and the domain are yours. If you ever want to leave, we hand over the files and that is the end of it.',
   },
   {
-    title: 'No templates, no page builders',
-    body: 'Your site is built for your business, not poured into a theme somebody else is also using down the road. A person reviews every page before you see it.',
+    title: 'Unlimited pages',
+    body: 'No page limit on any plan. You pay for how many changes you want, not for how big the site is.',
   },
   {
-    title: 'We reply within one business day',
-    body: 'We are a small team and we keep it that way so this stays true. The person who replies is the person who built your site.',
+    title: 'A person reviews every change',
+    body: 'Our software builds the site and applies your changes. One of us checks each version before it goes live — the first build and every one-line change after it.',
   },
 ];
 
@@ -75,17 +81,18 @@ const OUTCOMES = [
 
 <BaseLayout
   title="Why Us"
-  description="A small team building real websites for local businesses. You talk to the people who build it, every version of your site is kept, and you own what you pay for."
+  description="Websites for local businesses, built by our software and checked by a person before anything goes live. Every version of your site is kept, and you own what you pay for."
 >
   <!-- 1. Header ---------------------------------------------------------- -->
   <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <h1>You talk to the people who build it.</h1>
+        <h1>Built by our software. Checked by a person.</h1>
         <p class="lead">
-          We're a small team. Your project is not one of forty. When you
-          email, the person who replies is the person who built your site,
-          and they reply within one business day.
+          Your site is generated from your real business information, and
+          nothing goes live — not the first build, not a one-line change —
+          until one of us has looked at it. Questions go to email; we reply
+          within one business day.
         </p>
       </div>
     </div>
@@ -115,7 +122,7 @@ const OUTCOMES = [
   <section class="section section--alt">
     <div class="shell-narrow">
       <div class="section-head" data-reveal>
-        <h2>Two students, one company, two live clients.</h2>
+        <h2>Two students, one company, two live sites.</h2>
       </div>
 
       <div class="story" data-reveal>
@@ -183,12 +190,15 @@ const OUTCOMES = [
       <div class="section-head" data-reveal>
         <p class="eyebrow">The work</p>
         <h2>Judge us on these.</h2>
-        <p class="lead">Both are live. Click through and look around.</p>
+        <p class="lead">
+          One we built by hand for a client. One our platform built and hosts.
+          Both are live — click through and look around.
+        </p>
       </div>
 
       <div class="work-2up" data-reveal-group>
         {
-          CLIENT_PROJECTS.map((project) => (
+          LIVE_SITES.map((project) => (
             <div data-reveal>
               <CaseStudy project={project} compact level={3} />
             </div>
@@ -201,12 +211,25 @@ const OUTCOMES = [
   <!-- 6. CTA ---------------------------------------------------------------- -->
   <section class="section cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2 class="cta-band__title">See your business online before you pay anything.</h2>
-      <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send a free mock of your homepage.
-      </p>
+      {
+        BETA.on ? (
+          <>
+            <h2 class="cta-band__title">We're in beta. Want in?</h2>
+            <p class="lead" style="margin-inline:auto">
+              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup. Tell us about yours.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 class="cta-band__title">See your business online before you pay anything.</h2>
+            <p class="lead" style="margin-inline:auto">
+              Tell us about it and we'll send a free mock of your homepage.
+            </p>
+          </>
+        )
+      }
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+        <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       </div>
     </div>
   </section>

@@ -5,7 +5,7 @@
  * Solid on every page including the home page: there is no longer a dark
  * hero for it to float over.
  */
-import { NAV_LINKS, PORTAL_URL } from '../data/site.js';
+import { NAV_LINKS, PORTAL_URL, PRIMARY_CTA } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -42,7 +42,7 @@ const here = Astro.url.pathname;
       )
     }
 
-    <a class="btn btn--primary btn--sm nav__cta" href={url('/free-mock')}>Get a free mock</a>
+    <a class="btn btn--primary btn--sm nav__cta" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
 
     <button
       class="nav__burger"
@@ -75,7 +75,7 @@ const here = Astro.url.pathname;
       <a href={url('/demo')} aria-current={isActive(here, '/demo') ? 'page' : undefined}>
         Demo
       </a>
-      <a class="btn btn--primary nav__drawer-cta" href={url('/free-mock')}>Get a free mock</a>
+      <a class="btn btn--primary nav__drawer-cta" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
       {PORTAL_URL && (

@@ -17,11 +17,17 @@
  * compiles, deploys, and silently shows the form again to everyone who just
  * submitted it. A second page is the only version of this that actually
  * works without JavaScript on a static host.
+ *
+ * While beta mode is on (BETA in src/data/site.js) this page builds as a
+ * redirect to /beta, which replaced it as the ad landing page. The file
+ * stays and keeps building so turning beta off is the whole switch back.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
-import { CLIENT_PROJECTS, FORMSPREE_FORM_ID } from '../data/site.js';
+import { BETA, LIVE_SITES, FORMSPREE_FORM_ID } from '../data/site.js';
 import { url } from '../data/url.js';
+
+if (BETA.on) return Astro.redirect(url(BETA.path));
 
 // Formspree wants an absolute URL to send people on to.
 const nextUrl = new URL(
@@ -53,7 +59,7 @@ const action = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
         <p class="fm__proof-label">Two we have already built:</p>
         <div class="fm__proof">
           {
-            CLIENT_PROJECTS.map((project) => (
+            LIVE_SITES.map((project) => (
               <CaseStudy project={project} thumb level={2} />
             ))
           }

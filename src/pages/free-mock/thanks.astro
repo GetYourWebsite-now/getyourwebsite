@@ -8,10 +8,14 @@
  * had just submitted it. See the note at the top of ../free-mock.astro.
  *
  * Same bare chrome, same noindex, and no JavaScript involved anywhere.
+ *
+ * A redirect to /beta/thanks while beta mode is on, like the page before it.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { CONTACT_EMAIL } from '../../data/site.js';
+import { BETA, CONTACT_EMAIL } from '../../data/site.js';
 import { url } from '../../data/url.js';
+
+if (BETA.on) return Astro.redirect(url(`${BETA.path}/thanks`));
 ---
 
 <BaseLayout

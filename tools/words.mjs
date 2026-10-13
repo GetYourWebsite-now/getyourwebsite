@@ -17,7 +17,8 @@
  *
  * Budgets: the Phase 7 targets for the three pages that were cut, and the
  * pre-Phase-7 counts for pricing and work, which were already fine and only
- * need to not grow.
+ * need to not grow. Home went from 550 to 570 in STEP 9, for the beta line
+ * under the hero buttons.
  *
  * Needs a dev server on :4321.
  */
@@ -26,7 +27,7 @@ import { chromium } from 'playwright';
 const BASE = process.env.BASE ?? 'http://localhost:4321';
 
 const BUDGET = {
-  '/': 550,
+  '/': 570,
   '/how-it-works': 550,
   '/why-us': 600,
   '/pricing': 774,

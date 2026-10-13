@@ -280,7 +280,7 @@ npm run verify           # links resolve · the demo sandbox flow end to end ·
                          # system · light surfaces · the portal captures ·
                          # then the word budget (verify:words)
 npm run verify:words     # visible words in <main> per page, against a budget:
-                         # home and how-it-works 550, why-us 600
+                         # home 570, how-it-works 550, why-us 600
 npm run verify:contrast  # every text node on every page against the surface
                          # it is actually painted on, plus button and
                          # form-control edges (WCAG 1.4.3 and 1.4.11)
@@ -288,6 +288,9 @@ npm run verify:wraps     # how every heading wraps at 1440 and 390
 npm run verify:voids     # scroll-reveal never leaves a fast scroller a blank
                          # screen
 npm run verify:portal    # fails if /demo has fallen behind the real portal
+npm run verify:beta      # builds with beta on and off; fails if the switch
+                         # misses a CTA, leaves "free mock" readable, or
+                         # changes anything that isn't a declared switch point
 ```
 
 What each one has actually caught, so you know what you lose by skipping it:
@@ -303,7 +306,8 @@ Regenerating things:
 npm run shots:portal     # the client-portal screenshots on the home page.
                          # Needs the portal running — see the header of
                          # tools/portal-shots.mjs
-npm run shots:clients    # the ARK and ChemEd screenshots, from the live sites
+npm run shots:clients    # the ARK, Andy's Auto and ChemEd screenshots, from the
+                         # live sites (pass a slug, e.g. andysauto, for one)
 npm run shots:og         # public/og.png, the social card, plus favicon.svg
                          # and apple-touch-icon.png — all from
                          # public/brand/mark.svg

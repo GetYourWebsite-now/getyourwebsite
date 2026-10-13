@@ -1,45 +1,60 @@
 ---
 /**
- * One build tier. Used twice — as a teaser on the home page, in full on
- * /pricing — and both read the same entry in TIERS, so a price can only be
- * wrong in one place.
+ * One pricing tier, Startup or Maintenance. Used on /pricing in full and as a
+ * teaser on the home page, and both read the same entry in site.js, so a
+ * price can only be wrong in one place.
  *
- * There is no `delivery` row any more, on purpose: see the note above TIERS
- * in src/data/site.js. And `examples` only ever points at real client work,
- * so a tier with nothing shipped under it yet shows nothing rather than
- * borrowing a concept site.
+ * Nothing on the card is typed: the price, the struck-through list price
+ * while beta is on, and the per-revision line are all formatted from the
+ * integers in STARTUP_TIERS / MAINTENANCE_TIERS.
+ *
+ * The per-revision line divides by what the card is actually asking for —
+ * the beta price while beta is on — so the two numbers on a card agree.
  */
 import { url } from '../data/url.js';
+import {
+  BETA,
+  TIER_CTA,
+  EXTRA_REVISION,
+  STARTUP_REVISIONS_EXPIRE_DAYS,
+  money,
+  startupPrice,
+  perRevision,
+} from '../data/site.js';
 
 interface Props {
   tier: {
     id: string;
     name: string;
-    price: string;
-    period?: string;
-    tagline: string;
+    revisions: number;
+    price?: number;
+    monthly?: number;
     popular?: boolean;
-    features: string[];
-    examples?: { name: string; href: string }[];
   };
-  /** A short feature list, no examples. */
-  condensed?: boolean;
-  /** Home page version: name, price and tagline only. The features live on
-      /pricing; the home page's word budget (tools/words.mjs) has no room for
-      three lists, and one click away is where someone comparing tiers is. */
+  /** Home page version: name, price and the revision count only. */
   teaser?: boolean;
   reveal?: boolean;
 }
 
-const { tier, condensed = false, teaser = false, reveal = false } = Astro.props;
+const { tier, teaser = false, reveal = false } = Astro.props;
 
-// Custom is scoped per project, so "Start with a free mock" is the wrong
-// first step for it — that conversation starts with the project.
-const isCustom = tier.id === 'custom';
-const ctaLabel = isCustom ? 'Tell us about the project' : 'Start with a free mock';
-const ctaHref = isCustom ? '/contact' : '/free-mock';
+const isStartup = tier.price !== undefined;
+const listPrice = isStartup ? tier.price! : tier.monthly!;
+const charged = isStartup ? startupPrice(tier) : listPrice;
+const discounted = isStartup && BETA.on && charged !== listPrice;
 
-const features = condensed ? tier.features.slice(0, 4) : tier.features;
+const lines = isStartup
+  ? [
+      `${tier.revisions} revisions included`,
+      `Use them within ${STARTUP_REVISIONS_EXPIRE_DAYS} days`,
+      'Unlimited pages',
+    ]
+  : [
+      `${tier.revisions} revisions a month`,
+      `Extras ${money(EXTRA_REVISION)} each`,
+      'Hosting, domain and SSL included',
+      'Every version kept',
+    ];
 ---
 
 <article
@@ -51,39 +66,30 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
   <header class="tier__head">
     <h3 class="tier__name">{tier.name}</h3>
     <p class="tier__price">
-      {tier.price}
-      {tier.period && <span class="tier__period">{tier.period}</span>}
+      {discounted && <s class="tier__was"><span class="sr-only">List price </span>{money(listPrice)}</s>}
+      {discounted && <span class="sr-only">, beta price </span>}
+      {money(charged)}
+      {!isStartup && <span class="tier__period">/mo</span>}
     </p>
-    <p class="tier__tagline">{tier.tagline}</p>
+    {isStartup && <p class="tier__period tier__period--below">one-time</p>}
   </header>
 
-  {!teaser && (
+  {teaser ? (
+    <p class="tier__teaser-line">{lines[0]}</p>
+  ) : (
     <ul class="tier__features">
-      {features.map((f) => <li>{f}</li>)}
+      {lines.map((f) => <li>{f}</li>)}
     </ul>
   )}
 
-  {
-    !condensed && !teaser && tier.examples && tier.examples.length > 0 && (
-      <p class="tier__example">
-        <span class="tier__example-label">Built this way:</span>
-        {/* The anchor is on one line because a newline inside it becomes a
-            text node and the underline runs under the resulting space. The
-            comment lives out here: inside the map's return position it would
-            be a second expression, which is a compile error. */}
-        {tier.examples.map((ex) => (
-          <a class="tier__example-link" href={ex.href} target="_blank" rel="noopener noreferrer">{ex.name}<span class="sr-only"> (opens in a new tab)</span></a>
-        ))}
-      </p>
-    )
-  }
+  {!teaser && <p class="tier__per">{money(perRevision(charged, tier.revisions))} per revision</p>}
 
   {!teaser && (
     <a
       class:list={['btn', tier.popular ? 'btn--primary' : 'btn--secondary', 'tier__cta']}
-      href={url(ctaHref)}
+      href={url(TIER_CTA.href)}
     >
-      {ctaLabel}
+      {TIER_CTA.label}
     </a>
   )}
 </article>
@@ -122,7 +128,7 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
   }
 
   .tier__head { margin-bottom: var(--s-4); }
-  .tier--teaser .tier__head { margin-bottom: 0; }
+  .tier--teaser .tier__head { margin-bottom: var(--s-3); }
 
   .tier__name {
     font-size: 1.125rem;
@@ -158,10 +164,21 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     color: var(--ink-muted);
   }
 
-  .tier__tagline {
+  .tier__period--below { margin-top: calc(var(--s-3) * -0.5); }
+
+  /* The list price, struck through while beta is on. Muted and smaller, so
+     the eye lands on the price being asked for; the strike is what says the
+     two are related. */
+  .tier__was {
+    font-size: 0.55em;
+    font-weight: 500;
+    color: var(--ink-muted);
+    text-decoration-thickness: 2px;
+  }
+
+  .tier__teaser-line {
     color: var(--ink-soft);
     font-size: var(--t-small);
-    line-height: 1.5;
   }
 
   .tier__features {
@@ -186,29 +203,14 @@ const features = condensed ? tier.features.slice(0, 4) : tier.features;
     color: var(--accent);
   }
 
-  .tier__example {
+  /* Pushed to the bottom with the button, so a row of cards lines up on
+     both. */
+  .tier__per {
     margin-top: auto;
-    padding-top: var(--s-3);
     font-size: var(--t-small);
-    color: var(--ink-muted);
-  }
-
-  /* The separator is a middle dot rather than a comma, and that is a
-     whitespace decision as much as a typographic one: the newline between
-     two sibling <a>s in the template collapses to a space, so a comma
-     renders as " , ". A dot wants a space on either side anyway. */
-  .tier__example-link + .tier__example-link::before {
-    content: '·';
-    /* inline-block so the separator sits outside the link's underline —
-       text-decoration does not propagate into an atomic inline box. */
-    display: inline-block;
-    margin-inline: 0.3em;
+    font-variant-numeric: tabular-nums;
     color: var(--ink-muted);
   }
 
   .tier__cta { margin-top: var(--s-4); width: 100%; }
-
-  /* With no example, the button still has to sit at the bottom of the card
-     so a row of tiers lines up. */
-  .tier:not(:has(.tier__example)) .tier__cta { margin-top: auto; }
 </style>

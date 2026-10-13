@@ -21,7 +21,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/why-us', '/contact', '/free-mock', '/free-mock/thanks', '/privacy', '/terms'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/why-us', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/privacy', '/terms', '/cookies', '/beta-terms'];
 
 
 
@@ -524,7 +524,7 @@ ripples === 0
 // section reads as harmless in a diff — so each is a test.
 console.log('\n[6] Light surfaces');
 
-const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/why-us', '/contact', '/free-mock', '/free-mock/thanks'];
+const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/why-us', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/cookies', '/beta-terms'];
 
 let atmosphere = [];
 let darkSurfaces = [];

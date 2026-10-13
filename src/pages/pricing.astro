@@ -1,15 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TierCard from '../components/TierCard.astro';
-import CarePlan from '../components/CarePlan.astro';
-import ComparisonTable from '../components/ComparisonTable.astro';
 import Faq from '../components/Faq.astro';
 import {
-  BUILD_TIERS,
-  CARE_PLAN,
+  BETA,
+  BETA_PERCENT,
+  PRIMARY_CTA,
+  STARTUP_TIERS,
+  MAINTENANCE_TIERS,
   EVERY_PLAN_INCLUDES,
-  PRICING_DISCLAIMER,
   PRICING_FAQ,
+  money,
+  startupPrice,
 } from '../data/site.js';
 import { url } from '../data/url.js';
 
@@ -17,10 +19,11 @@ import { url } from '../data/url.js';
 // a second copy of every price, and the one place drift would not show up
 // on the page itself — `npm run verify` greps for stray price strings
 // precisely to stop this coming back.
-const priced = BUILD_TIERS.map((t) => `${t.name} ${t.price}`).join(', ');
+const startupFrom = money(startupPrice(STARTUP_TIERS[0]));
+const careFrom = money(MAINTENANCE_TIERS[0].monthly);
 const description =
-  `${priced} — one-time, plus a ${CARE_PLAN.price}${CARE_PLAN.period} Care plan to host ` +
-  'and maintain it. The mock that starts every project is free.';
+  `Startup plans from ${startupFrom}, one-time; Maintenance from ${careFrom}/mo. ` +
+  'Priced by how many changes you want, not by pages.';
 ---
 
 <BaseLayout
@@ -31,37 +34,67 @@ const description =
   <section class="section section--alt section--tight">
     <div class="shell">
       <div class="section-head" data-reveal>
-        <h1>Simple prices. One of them is free.</h1>
+        <h1>Pay for changes, not pages.</h1>
         <p class="lead">
-          Three ways to build, one plan to keep it running. The mock that
-          starts every project costs nothing.
+          Every site starts with a Startup plan. Keep it current with a
+          Maintenance plan. Both are priced by how many changes you'll want —
+          and the more you include, the less each one costs.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- 2. Build tiers ------------------------------------------------------ -->
+  <!-- 2. Startup ---------------------------------------------------------- -->
   <section class="section">
     <div class="shell">
-      <h2 class="sr-only">Build tiers</h2>
-
-      <div class="grid grid-3 tiers" data-reveal-group>
-        {BUILD_TIERS.map((tier) => <TierCard tier={tier} reveal />)}
+      <div class="section-head" data-reveal>
+        <h2>Startup</h2>
+        <p class="lead">Builds your site. Paid once.</p>
       </div>
 
-      <p class="disclaimer" data-reveal>{PRICING_DISCLAIMER}</p>
+      <div class="grid grid-3 tiers" data-reveal-group>
+        {STARTUP_TIERS.map((tier) => <TierCard tier={tier} reveal />)}
+      </div>
+
+      {
+        BETA.on && (
+          <p class="disclaimer" data-reveal>
+            Beta prices: {BETA_PERCENT} off Startup for the first {BETA.seats} businesses.
+            Maintenance is list price. <a href={url('/beta-terms')}>How the beta works</a>
+          </p>
+        )
+      }
     </div>
   </section>
 
-  <!-- 3. Care plan -------------------------------------------------------- -->
+  <!-- 3. Maintenance ------------------------------------------------------ -->
   <section class="section section--alt">
-    <div class="shell" data-reveal>
-      <CarePlan />
+    <div class="shell">
+      <div class="section-head" data-reveal>
+        <h2>Maintenance</h2>
+        <p class="lead">Hosts your site and keeps it current. Monthly.</p>
+      </div>
+
+      <div class="grid grid-3 tiers" data-reveal-group>
+        {MAINTENANCE_TIERS.map((tier) => <TierCard tier={tier} reveal />)}
+      </div>
     </div>
   </section>
 
-  <!-- 4. Every plan includes ---------------------------------------------- -->
+  <!-- 4. What a revision is ----------------------------------------------- -->
   <section class="section section--tight">
+    <div class="shell-narrow revision" data-reveal>
+      <h2>What a revision is</h2>
+      <p>
+        One change request, sent from your portal, applied as a new version.
+        "Make the hero warmer and swap the photo" is one revision. A person
+        reviews each one before it goes live.
+      </p>
+    </div>
+  </section>
+
+  <!-- 5. Every plan includes ---------------------------------------------- -->
+  <section class="section section--alt section--tight">
     <div class="shell">
       <h2 class="includes__title" data-reveal>Every plan includes</h2>
       <ul class="includes" data-reveal-group>
@@ -73,19 +106,12 @@ const description =
           ))
         }
       </ul>
-    </div>
-  </section>
-
-  <!-- 5. Comparison ------------------------------------------------------- -->
-  <section class="section section--alt">
-    <div class="shell">
-      <div class="section-head" data-reveal>
-        <h2>What each tier gets you</h2>
-      </div>
-
-      <div data-reveal>
-        <ComparisonTable />
-      </div>
+      {/* The condition on two of the five, stated next to them (CLAUDE.md,
+          rule 1), and Cloudflare's own figures one click away. */}
+      <p class="includes__note" data-reveal>
+        Hosting and your domain come with Maintenance.
+        <a href="https://www.cloudflare.com/network/" target="_blank" rel="noopener noreferrer">Cloudflare's network, by their own figures<span class="sr-only"> (opens in a new tab)</span></a>
+      </p>
     </div>
   </section>
 
@@ -105,13 +131,26 @@ const description =
   <!-- 7. CTA -------------------------------------------------------------- -->
   <section class="section section--alt cta-band">
     <div class="shell-narrow" style="text-align:center" data-reveal>
-      <h2 class="cta-band__title">See your business online before you pay anything.</h2>
-      <p class="lead" style="margin-inline:auto">
-        Tell us about it and we'll send back a free mock of your homepage. No
-        commitment, no cost, no catch.
-      </p>
+      {
+        BETA.on ? (
+          <>
+            <h2 class="cta-band__title">We're in beta. Want in?</h2>
+            <p class="lead" style="margin-inline:auto">
+              We're taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
+            </p>
+          </>
+        ) : (
+          <>
+            <h2 class="cta-band__title">See your business online before you pay anything.</h2>
+            <p class="lead" style="margin-inline:auto">
+              Tell us about it and we'll send back a free mock of your homepage. No
+              commitment, no cost, no catch.
+            </p>
+          </>
+        )
+      }
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
-        <a class="btn btn--primary btn--lg" href={url('/free-mock')}>Get a free mock</a>
+        <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       </div>
     </div>
   </section>
@@ -128,6 +167,15 @@ const description =
     font-size: var(--t-small);
     color: var(--ink-muted);
   }
+
+  /* What a revision is --------------------------------------------------- */
+
+  .revision h2 {
+    font-size: var(--t-h3);
+    margin-bottom: var(--s-3);
+  }
+
+  .revision p { color: var(--ink-soft); }
 
   /* Every plan includes --------------------------------------------------- */
 
@@ -161,7 +209,17 @@ const description =
     margin-bottom: var(--s-4);
   }
 
+  .includes__note {
+    margin-top: var(--s-4);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+  }
+
   @media (min-width: 760px) {
-    .includes { grid-template-columns: repeat(4, 1fr); }
+    .includes { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 1100px) {
+    .includes { grid-template-columns: repeat(5, 1fr); }
   }
 </style>

@@ -1,0 +1,213 @@
+---
+/**
+ * The ad landing page while beta mode is on (BETA in src/data/site.js).
+ *
+ * Same bones as /free-mock, which it replaces: logo only, no nav, two
+ * columns, the live sites on the left and the form on the right. One job —
+ * get a business name and an email address — and noindex, because this is
+ * where paid traffic lands, not something to rank.
+ *
+ * Works with JavaScript switched off, start to finish: a plain POST to
+ * Formspree, and `_next` sends people on to /beta/thanks, which is its own
+ * page for the reason given at the top of free-mock.astro (static builds
+ * have no query string to branch on).
+ *
+ * With beta off, this builds as a redirect to /free-mock.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CaseStudy from '../components/CaseStudy.astro';
+import { BETA, BETA_PERCENT, LIVE_SITES, FORMSPREE_FORM_ID } from '../data/site.js';
+import { url } from '../data/url.js';
+
+if (!BETA.on) return Astro.redirect(url('/free-mock'));
+
+// Formspree wants an absolute URL to send people on to.
+const nextUrl = new URL(
+  url(`${BETA.path}/thanks`),
+  Astro.site ?? 'https://getyourwebsite.now'
+).href;
+
+const action = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
+---
+
+<BaseLayout
+  title="Join the beta"
+  description={`We build, host and keep your website current, and a person checks every change before it goes live. The first ${BETA.seats} businesses get ${BETA_PERCENT} off.`}
+  bare
+  noindex
+>
+  <section class="section section--tight">
+    <div class="shell fm">
+      <!-- Left: the pitch -->
+      <div class="fm__pitch">
+        <h1 class="fm__title">We're in beta. Want in?</h1>
+
+        <p class="lead fm__lead">
+          We build, host and keep your website current, and a person checks
+          every change before it goes live. We're taking on a small number of
+          businesses while we finish the product — the first {BETA.seats} at {BETA_PERCENT} off.
+          Tell us about yours.
+        </p>
+
+        <p class="fm__proof-label">Two live sites:</p>
+        <div class="fm__proof">
+          {
+            LIVE_SITES.map((project) => (
+              <CaseStudy project={project} thumb level={2} />
+            ))
+          }
+        </div>
+      </div>
+
+      <!-- Right: the form -->
+      <div class="fm__form-col">
+        <form class="fm__form" action={action} method="POST">
+            <h2 class="fm__form-title">Tell us about the business</h2>
+
+            {/* Tells the inbox where the enquiry came from, so beta
+                applications can be told apart from the contact page. */}
+            <input type="hidden" name="source" value="beta" />
+            <input type="hidden" name="_subject" value="Beta application (ad landing page)" />
+            <input type="hidden" name="_next" value={nextUrl} />
+
+            {/* Formspree's honeypot. Bots fill it; people never see it. */}
+            <div class="honeypot" aria-hidden="true">
+              <label for="gotcha">Leave this field empty</label>
+              <input id="gotcha" type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+            </div>
+
+            <div class="field">
+              <label for="business">Business name</label>
+              <input class="input" id="business" name="business" type="text" required autocomplete="organization" />
+            </div>
+
+            <div class="field">
+              <label for="name">Your name</label>
+              <input class="input" id="name" name="name" type="text" required autocomplete="name" />
+            </div>
+
+            <div class="field">
+              <label for="email">Email</label>
+              <input class="input" id="email" name="email" type="email" required autocomplete="email" />
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone <span class="opt">optional</span></label>
+              <input class="input" id="phone" name="phone" type="tel" autocomplete="tel" />
+            </div>
+
+            <div class="field">
+              <label for="website">Current website, if any <span class="opt">optional</span></label>
+              <input class="input" id="website" name="website" type="url" placeholder="https://" />
+            </div>
+
+            <div class="field">
+              <label for="about">One line about the business <span class="opt">optional</span></label>
+              <textarea
+                class="textarea fm__about"
+                id="about"
+                name="about"
+                placeholder="e.g. Plumbing, Livonia, 15 years"
+              />
+            </div>
+
+            <button class="btn btn--primary btn--lg fm__submit" type="submit">
+              {BETA.cta}
+            </button>
+
+          <p class="fm__smallprint">
+            No cost to apply, no card. We reply within one business day.
+          </p>
+          <p class="fm__terms">
+            <a href={url('/beta-terms')}>How the beta works</a>
+          </p>
+        </form>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .fm {
+    display: grid;
+    gap: var(--s-6);
+    align-items: start;
+  }
+
+  .fm__title {
+    font-size: clamp(1.9rem, 1.3rem + 2.4vw, 2.75rem);
+    max-width: 18ch;
+  }
+
+  .fm__lead {
+    margin-top: var(--s-4);
+    max-width: 34rem;
+  }
+
+  .fm__proof-label {
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ink-muted);
+  }
+
+  /* align-items:start so the two line up at the top — the two screenshots
+     are different shapes and centring them staggered the headings. */
+  .fm__proof {
+    display: grid;
+    gap: var(--s-5);
+    align-items: start;
+  }
+
+  /* Form ------------------------------------------------------------------ */
+
+  .fm__form {
+    padding: var(--s-5);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--bg);
+  }
+
+  .fm__form-title {
+    font-size: var(--t-h3);
+    margin-bottom: var(--s-4);
+  }
+
+  .fm__form .field + .field { margin-top: var(--s-4); }
+
+  .opt {
+    font-weight: 400;
+    color: var(--ink-muted);
+  }
+
+  .fm__about { min-height: 5.5rem; }
+
+  .fm__submit {
+    width: 100%;
+    margin-top: var(--s-5);
+  }
+
+  .fm__smallprint {
+    margin-top: var(--s-3);
+    font-size: var(--t-small);
+    color: var(--ink-muted);
+  }
+
+  .fm__terms {
+    margin-top: var(--s-2);
+    font-size: var(--t-small);
+  }
+
+  @media (min-width: 900px) {
+    .fm {
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: var(--s-8);
+    }
+
+    /* The pair of case studies stacks in this column rather than sitting
+       side by side — at this width each would be about 240px wide and the
+       screenshots would be unreadable. */
+    .fm__proof { grid-template-columns: 1fr 1fr; gap: var(--s-4); }
+  }
+</style>
