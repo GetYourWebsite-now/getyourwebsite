@@ -1,5 +1,7 @@
 [build]
-buildCommand = "npm ci && npm run build"
+# Railpack already installs from the lockfile. `npm ci` here tries to delete
+# node_modules and fails with EBUSY on node_modules/.astro.
+buildCommand = "npm run build"
 
 [deploy]
 startCommand = "npx serve dist -l tcp://0.0.0.0:$PORT"
