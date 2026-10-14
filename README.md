@@ -98,10 +98,10 @@ Everything visual is a token in `:root` at the top of `src/styles/global.css`.
 Change a token, not a page.
 
 **Surfaces.** Two light ones that alternate down a page (`--bg` white,
-`--bg-alt` grey) and one dark one (`--footer`), used by the footer and by
-the single dark band on the home page (`.section--dark`, the platform
-section). `npm run verify` fails on a third dark surface, a dark band off
-the home page, or two adjacent sections with the same surface.
+`--bg-alt` grey) and one dark one (`--footer`), used by the footer, by the
+home page's platform section, and by the closing band on Why us, How it
+works, Pricing and Our work (`.section--dark`). `npm run verify` fails on a
+dark band anywhere else, or two adjacent sections with the same surface.
 
 **Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
 case-study sector labels. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
@@ -120,9 +120,11 @@ the edge of an interactive control, and has to clear 3:1 on *both* light
 surfaces — WCAG 1.4.11. Using `--line` on an input is a real bug; the old
 site had exactly that at 1.4:1.
 
-**Depth, in listed places only.** Grain (`--grain`, a data-URI noise at 4%)
-and one radial light per section, on the home page's hero, merge stage,
-dark band and closing CTA band — `.depth` — and nowhere else. `--lift` on
+**Depth, on every page section.** Grain (`--grain`, a data-URI noise, 14%
+multiply, 28% screen on the dark band; the hero uses the accent-tinted
+noise at 36%, strongest at the top-left corner) and one radial light per
+section.
+The footer is left flat. `--lift` on
 tier cards, case-study frames, drawing wells and the hero browser frame,
 rising 2px on hover. A light edge on primary buttons, on hover only.
 `--shadow-shot` for product screenshots. No gradient on text, no glow, no
@@ -170,7 +172,7 @@ looked at.
 | `.card` | a bordered box; no shadow, no hover lift |
 | `.lift` | a card that lifts: border, `--lift`, 2px rise on hover |
 | `.shot` | a product screenshot, with `--shadow-shot` |
-| `.depth` | grain and radial light — the four home sections only |
+| `.section` | grain and radial light — every page section, not the footer |
 
 Sizes are `.btn--sm`, nothing (medium), `.btn--lg`. Hover is a colour change,
 plus a 1px light edge on primary buttons, inside the button's box — the old

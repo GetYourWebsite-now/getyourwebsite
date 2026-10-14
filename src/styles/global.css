@@ -14,16 +14,15 @@
 
    The house style, in five rules:
 
-     1. Light first. Sections alternate --bg and --bg-alt. Two surfaces are
-        dark: the footer, and the home page's platform band (.section--dark),
-        which makes the portal — the product — the thing that looks
-        different. No third.
+     1. Light first. Sections alternate --bg and --bg-alt. Dark surfaces are
+        the footer, the home page's platform band, and the closing band on
+        Why us, How it works, Pricing and Our work (.section--dark).
      2. One accent. --accent (deep indigo) carries links, primary buttons,
         focus rings and the highlighted pricing tier. --gold is the free-mock
         badge, nothing else, and never text.
-     3. Subtle depth, in exactly the places listed in "Depth" below: grain
-        and one soft radial light on four sections of the home page, a lift
-        on cards, a light edge on primary buttons. No gradient on text, no
+     3. Subtle depth on every page section: grain and one soft radial light,
+        stronger on the home page's one dark band. A lift on cards, a light
+        edge on primary buttons. No gradient on text, no
         gradient fill on the mark, no glow, no blur, no glass, no colour that
         is not a token. `npm run verify` fails on depth anywhere else.
      4. Small radii. 8px on cards, 6px on buttons and inputs, nothing larger.
@@ -102,7 +101,7 @@
      looking busy. */
   --bg: #ffffff;        /* page */
   --bg-alt: #f6f7f9;    /* alternating sections, screenshot wells */
-  --footer: #0a0a0c;    /* the footer, and the one dark band on the home page */
+  --footer: #0a0a0c;    /* the footer, and the dark bands */
 
   /* Ink ------------------------------------------------------------------
      Measured contrast, which is the only reason to pick these exact values:
@@ -218,9 +217,12 @@
   --lift: 0 1px 2px rgba(10, 10, 12, 0.04), 0 8px 24px rgba(10, 10, 12, 0.06);
   --lift-hover: 0 1px 2px rgba(10, 10, 12, 0.04), 0 8px 24px rgba(10, 10, 12, 0.1);
 
-  /* Grain: monochrome fractal noise, opaque, tiled at 160px. A data URI, so
-     no request. Used only by .depth, at 4% through a blend mode. */
-  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Grain: film noise, contrast-stretched so the specks read, tiled at 160px.
+     A data URI, so no request. Light sections at 14% multiply; a dark band
+     at 28% screen. --grain-tint is the same noise with the dark specks
+     shifted to the accent, for the hero and a few plain white bands. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  --grain-tint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='.269 .269 .269 0 .184 .251 .251 .251 0 .239 .053 .053 .053 0 .839 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── 2. Reset ──────────────────────────────────────────────────────────── */
@@ -385,22 +387,54 @@ a:hover { color: var(--accent-hover); }
   position: relative;
   padding-block: var(--section-y);
   background: var(--bg);
+  isolation: isolate;
+  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.06), transparent 70%);
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--grain);
+  background-size: 160px;
+  opacity: 0.14;
+  mix-blend-mode: multiply;
+  pointer-events: none;
 }
 
 .section--alt {
-  background: var(--bg-alt);
+  background-color: var(--bg-alt);
+}
+
+/* Same noise, dark specks in the accent, for the white bands that are
+   otherwise just a heading. The hero uses it stronger, and masked so the
+   specks are fullest at the top-left corner and gone by the far edge. */
+.section--hero::before,
+.section--tint::before {
+  background-image: var(--grain-tint);
+}
+
+.section--hero::before {
+  opacity: 0.36;
+  -webkit-mask-image: radial-gradient(115% 100% at 0% 0%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(115% 100% at 0% 0%, #000 0%, transparent 72%);
 }
 
 .section--tight { padding-block: clamp(2.75rem, 2rem + 3.4vw, 4.5rem); }
 
-/* The one dark band: the home page's platform section. --footer surface,
+/* A dark band: the home page's platform section, and the closing band on
+   Why us, How it works, Pricing and Our work. --footer surface,
    --footer-ink body, white headings. Links are white too: the accent
    measures 2.60:1 on this surface, and footer-ink is the body colour, so
    a link in it doesn't read as a link. */
 .section--dark {
   background: var(--footer);
   color: var(--footer-ink);
+  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.18), transparent 70%);
 }
+
+.section--dark::before { mix-blend-mode: screen; opacity: 0.28; }
 
 .section--dark :is(h1, h2, h3) { color: #fff; }
 .section--dark :is(p, .lead) { color: var(--footer-ink); }
@@ -411,40 +445,17 @@ a:hover { color: var(--accent-hover); }
 .section--dark :is(a, .link-arrow):hover { color: var(--footer-ink); }
 
 /* Depth ------------------------------------------------------------------
-   Grain and one radial light, on four sections of the home page and nowhere
-   else: the hero, the merge stage, the dark band and the closing CTA band.
-   `npm run verify` holds that list.
+   Every page section carries the grain and one radial light. The home
+   dark bands use the stronger light and the screen-blended grain.
+   `npm run verify` holds the light, the opacity and the blend.
 
-   The light is the section's background image, over its background colour.
-   One per section, at a top corner (--light-at, top left by default), never
+   The light sits at a top corner (--light-at, top left by default), never
    centred. The grain is a ::before over the background and under the
    content: multiply on light surfaces, screen on the dark band.
 
-   Contrast: the light and the grain both shift the backdrop. Text on these
-   sections is measured against the light at its own position plus the
+   Contrast: the light and the grain both shift the backdrop. Text on a
+   section is measured against the light at its own position plus the
    darkest grain pixel — see tools/contrast.mjs. */
-.depth {
-  isolation: isolate;
-  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.06), transparent 70%);
-}
-
-.section--dark.depth {
-  background-image: radial-gradient(60% 50% at var(--light-at, 30% 20%), rgba(47, 61, 214, 0.18), transparent 70%);
-}
-
-.depth::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background-image: var(--grain);
-  background-size: 160px;
-  opacity: 0.04;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-}
-
-.section--dark.depth::before { mix-blend-mode: screen; }
 
 /* The merge diagram's stage. Padding rather than a forced viewport: a
    100svh well left the diagram as a small cluster in a field of grey. */
@@ -598,24 +609,30 @@ a:hover { color: var(--accent-hover); }
   border-color: var(--line-input);
 }
 
+/* Grain darkens the page under this border. --line-input then falls under
+   3:1 on the darkest speck, so the edge is --ink-muted. */
+.section .btn--secondary { border-color: var(--ink-muted); }
+
 .btn--secondary:hover {
   color: var(--accent);
   border-color: var(--accent);
   background: var(--accent-soft);
 }
 
-/* The footer is the only dark surface, and the accent fill measures 2.60:1
-   against it — under the 3:1 WCAG 1.4.11 asks for to identify a control. So
-   the primary button inverts there: a white fill is 19.78:1 both at its edge
+/* The accent fill measures 2.60:1 against a dark surface — under the 3:1
+   WCAG 1.4.11 asks for to identify a control. So the primary button inverts
+   on the footer and on a dark band: a white fill is 19.78:1 both at its edge
    and under its label. `npm run verify:contrast` measures every button fill
    against whatever it is painted on, so this stays honest. */
-.foot .btn--primary {
+.foot .btn--primary,
+.section--dark .btn--primary {
   color: var(--ink);
   background: #fff;
   border-color: #fff;
 }
 
-.foot .btn--primary:hover {
+.foot .btn--primary:hover,
+.section--dark .btn--primary:hover {
   color: var(--ink);
   background: var(--footer-ink);
   border-color: var(--footer-ink);
@@ -623,7 +640,23 @@ a:hover { color: var(--accent-hover); }
 
 /* A white edge on a white fill is nothing; leave it off rather than ship
    an invisible layer. */
-.foot .btn--primary::before { content: none; }
+.foot .btn--primary::before,
+.section--dark .btn--primary::before { content: none; }
+
+/* A white fill would make the secondary button a twin of the primary. On a
+   dark band it is an outline instead: white edge and label, filling white
+   on hover. */
+.section--dark .btn--secondary {
+  color: #fff;
+  background: transparent;
+  border-color: #fff;
+}
+
+.section--dark .btn--secondary:hover {
+  color: var(--ink);
+  background: #fff;
+  border-color: #fff;
+}
 
 .btn:disabled,
 .btn[aria-disabled='true'] {
@@ -749,7 +782,7 @@ a:hover { color: var(--accent-hover); }
 
 .field .hint {
   font-size: var(--t-small);
-  color: var(--ink-muted);
+  color: var(--ink-soft);
 }
 
 .input,
@@ -761,8 +794,9 @@ a:hover { color: var(--accent-hover); }
   font-size: 1rem;
   color: var(--ink);
   background: var(--bg);
-  /* --line-input, not --line: a form control's boundary has to clear 3:1. */
-  border: 1px solid var(--line-input);
+  /* --ink-muted, not --line-input: grain on the section takes the lighter
+     edge under 3:1 on the darkest speck. */
+  border: 1px solid var(--ink-muted);
   border-radius: var(--radius-sm);
   transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
@@ -789,7 +823,7 @@ a:hover { color: var(--accent-hover); }
   align-items: flex-start;
   gap: 0.7rem;
   padding: 0.85rem 0.95rem;
-  border: 1px solid var(--line-input);
+  border: 1px solid var(--ink-muted);
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);

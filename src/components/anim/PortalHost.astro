@@ -1,0 +1,245 @@
+---
+/**
+ * Opening a version inside the portal, drawn as the dashboard itself.
+ *
+ * One 16:9 rounded rectangle: sidebar, top bar, and the approved-version
+ * list, the same arrangement as the client portal. The cursor opens
+ * Version 3 and a window lifts over that list, Rosa's in the everyday
+ * bakery colours. Close it, and the Christmas version opens in the same
+ * window. The list stays underneath, dimmed, so the window reads as a layer.
+ *
+ * It sits on the home page's dark band. A white shadow lifts the shell.
+ *
+ * 10s loop. The base styles are the final frame: the Christmas preview open.
+ */
+import './anim.css';
+
+interface Props {
+  label?: string;
+}
+const {
+  label = 'Open Version 3 and Rosa\'s Bakery fills the preview in its everyday colours. Close it, then open the Christmas version, and the same page comes back in a different palette.',
+} = Astro.props;
+---
+
+<figure class="anim anim--bare ph" data-anim>
+  <svg viewBox="0 0 640 360" role="presentation" aria-hidden="true" focusable="false">
+    <defs>
+      <clipPath id="ph-card">
+        <rect x="4" y="4" width="632" height="352" rx="14"></rect>
+      </clipPath>
+      <clipPath id="ph-sheet">
+        <rect x="200" y="70" width="400" height="250" rx="12"></rect>
+      </clipPath>
+    </defs>
+
+    <g class="ph__shell">
+      <g clip-path="url(#ph-card)">
+        <rect class="a-card" x="4" y="4" width="632" height="352"></rect>
+        <rect class="ph__main" x="136" y="4" width="500" height="352"></rect>
+        <rect class="ph__top" x="136" y="4" width="500" height="34"></rect>
+        <line x1="136" y1="38" x2="636" y2="38" stroke="var(--line)"></line>
+        <line x1="136" y1="16" x2="136" y2="344" stroke="var(--line)"></line>
+
+        <g class="ph__mark" transform="translate(18 16) scale(0.3)">
+          <path d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
+          <path class="ph__mark-hole" d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z"></path>
+        </g>
+        <line x1="16" y1="46" x2="120" y2="46" stroke="var(--line)"></line>
+
+        <text class="ph__nav" x="22" y="72">Explore</text>
+        <rect class="ph__nav-bg" x="14" y="84" width="110" height="28" rx="6"></rect>
+        <text class="ph__nav ph__nav--on" x="22" y="102">My website</text>
+        <text class="ph__nav" x="22" y="136">Version tree</text>
+        <text class="ph__nav" x="22" y="164">Assets</text>
+
+        <rect class="ph__avatar" x="16" y="312" width="22" height="22" rx="6"></rect>
+        <text class="ph__user" x="44" y="328">Rosa</text>
+
+        <text class="ph__crumb" x="152" y="26">My website</text>
+        <text class="ph__kicker" x="152" y="62">Approved versions</text>
+
+        <rect class="a-field" x="152" y="74" width="468" height="44" rx="6"></rect>
+        <rect class="ph__edge ph__edge3" x="152" y="74" width="468" height="44" rx="6"></rect>
+        <text class="ph__name" x="166" y="92">Version 3</text>
+        <rect class="ph__meta" x="166" y="100" width="72" height="5" rx="2.5"></rect>
+        <rect class="ph__soft" x="548" y="84" width="56" height="24" rx="5"></rect>
+        <text class="ph__soft-t" x="576" y="100">Open</text>
+
+        <rect class="a-field" x="152" y="126" width="468" height="44" rx="6"></rect>
+        <rect class="ph__edge ph__edge4" x="152" y="126" width="468" height="44" rx="6"></rect>
+        <text class="ph__name" x="166" y="144">Version 4 · Christmas</text>
+        <rect class="ph__meta" x="166" y="152" width="72" height="5" rx="2.5"></rect>
+        <rect class="ph__soft" x="548" y="136" width="56" height="24" rx="5"></rect>
+        <text class="ph__soft-t" x="576" y="152">Open</text>
+
+        <rect class="a-field" x="152" y="178" width="468" height="44" rx="6"></rect>
+        <text class="ph__name" x="166" y="196">Version 2</text>
+        <rect class="ph__meta" x="166" y="204" width="72" height="5" rx="2.5"></rect>
+        <rect class="ph__soft" x="548" y="188" width="56" height="24" rx="5"></rect>
+        <text class="ph__soft-t" x="576" y="204">Open</text>
+
+        <circle class="ph__swatch" cx="166" cy="252" r="7" fill="#c0633a"></circle>
+        <circle class="ph__swatch" cx="188" cy="252" r="7" fill="#d99a52"></circle>
+        <circle class="ph__swatch" cx="210" cy="252" r="7" fill="#fbf5ec" stroke="var(--line)"></circle>
+        <circle class="ph__swatch" cx="232" cy="252" r="7" fill="#8e2430"></circle>
+        <circle class="ph__swatch" cx="254" cy="252" r="7" fill="#1f6b45"></circle>
+        <rect class="a-field" x="152" y="274" width="468" height="40" rx="6"></rect>
+        <rect class="ph__meta" x="166" y="292" width="120" height="5" rx="2.5"></rect>
+
+        <g class="ph__win">
+          <rect class="ph__scrim" x="4" y="4" width="632" height="352"></rect>
+          <g class="ph__sheet">
+            <rect class="ph__sheet-bg" x="200" y="70" width="400" height="250" rx="12"></rect>
+            <g clip-path="url(#ph-sheet)">
+              <g class="ph__theme3">
+                <rect x="200" y="70" width="400" height="250" fill="#fbf5ec"></rect>
+                <rect x="200" y="70" width="400" height="78" fill="#c0633a"></rect>
+                <rect x="218" y="168" width="160" height="7" rx="3.5" fill="#e7dccb"></rect>
+                <rect x="218" y="184" width="108" height="7" rx="3.5" fill="#e7dccb"></rect>
+                <rect x="218" y="210" width="210" height="48" rx="6" fill="#fff" stroke="#e7dccb"></rect>
+                <rect x="230" y="224" width="64" height="18" rx="4" fill="#c0633a"></rect>
+              </g>
+              <g class="ph__theme4">
+                <rect x="200" y="70" width="400" height="250" fill="#f4f7f2"></rect>
+                <rect x="200" y="70" width="400" height="78" fill="#8e2430"></rect>
+                <path d="M520 86 L530 106 L510 106 Z M520 100 L532 124 L508 124 Z" fill="#1f6b45"></path>
+                <rect x="218" y="168" width="160" height="7" rx="3.5" fill="#d5e0d4"></rect>
+                <rect x="218" y="184" width="108" height="7" rx="3.5" fill="#d5e0d4"></rect>
+                <rect x="218" y="210" width="210" height="48" rx="6" fill="#fff" stroke="#d5e0d4"></rect>
+                <rect x="230" y="224" width="64" height="18" rx="4" fill="#8e2430"></rect>
+                <circle cx="390" cy="233" r="5" fill="#d99a52"></circle>
+              </g>
+              <text class="ph__site" x="218" y="118">Rosa's</text>
+            </g>
+            <g class="ph__x">
+              <rect class="ph__xbox" x="568" y="82" width="16" height="16" rx="3"></rect>
+              <path d="M572 86 L580 94 M580 86 L572 94" fill="none" stroke="var(--ink)" stroke-width="1.4" stroke-linecap="round"></path>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+
+    <circle class="a-ring ph__ring3" cx="576" cy="96" r="11"></circle>
+    <circle class="a-ring ph__ringx" cx="576" cy="90" r="11"></circle>
+    <circle class="a-ring ph__ring4" cx="576" cy="148" r="11"></circle>
+    <path class="a-cursor ph__cursor" d="M0 0 L0 17 L4.6 12.6 L7.6 19.4 L10.4 18.2 L7.4 11.6 L13.4 11.6 Z"></path>
+  </svg>
+  <figcaption class="sr-only">{label}</figcaption>
+</figure>
+
+<style>
+  .ph svg { max-width: none; }
+
+  .ph__shell {
+    filter: drop-shadow(0 12px 22px rgba(255, 255, 255, 0.16)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.4));
+  }
+
+  .ph__main { fill: var(--bg-alt); }
+  .ph__top { fill: var(--bg); }
+  .ph__mark { color: var(--accent); }
+  .ph__mark path { fill: currentColor; }
+  .ph__mark-hole { fill: var(--bg); }
+  .ph__nav { font-size: 13px; font-weight: 600; fill: var(--ink-soft); }
+  .ph__nav--on { fill: var(--accent); }
+  .ph__nav-bg { fill: var(--accent-soft); }
+  .ph__avatar { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+  .ph__user { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .ph__crumb { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .ph__kicker { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .ph__name { font-size: 13px; font-weight: 600; fill: var(--ink); }
+  .ph__meta { fill: var(--line); }
+  .ph__soft { fill: var(--bg); stroke: var(--line-input); stroke-width: 1; }
+  .ph__soft-t { font-size: 11px; font-weight: 600; fill: var(--ink); text-anchor: middle; }
+  .ph__edge { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+  .ph__scrim { fill: #0a0a0c; fill-opacity: 0.42; }
+  .ph__sheet-bg { fill: var(--bg); stroke: var(--line); stroke-width: 1; }
+  .ph__sheet {
+    filter: drop-shadow(0 16px 24px rgba(10, 10, 12, 0.28)) drop-shadow(0 2px 4px rgba(10, 10, 12, 0.14));
+  }
+  .ph__xbox { fill: #fff; }
+  .ph__site { font-size: 20px; font-weight: 600; fill: #fff; }
+
+  .ph__theme3, .ph__edge3 { opacity: 0; }
+  .ph__cursor, .ph__ring3, .ph__ringx, .ph__ring4 { opacity: 0; }
+  .ph__ring3, .ph__ringx, .ph__ring4 { transform-box: fill-box; transform-origin: center; }
+
+  .ph * { animation-duration: 10s; animation-iteration-count: infinite; animation-timing-function: var(--ease); animation-fill-mode: both; }
+
+  /* One curve for the whole loop. offset-distance eases only between clicks,
+     so the pointer glides and slows into a click instead of stopping at
+     every bend. The tip of the glyph is the path point. */
+  .ph__cursor {
+    animation-name: ph-cursor;
+    offset-path: path("M 150 300 C 260 210 450 150 576 96 C 420 240 240 150 576 90 C 430 70 400 180 576 148 C 440 240 260 280 150 300");
+    offset-rotate: 0deg;
+    offset-anchor: 0 0;
+  }
+  .ph__ring3  { animation-name: ph-ring3; }
+  .ph__ringx  { animation-name: ph-ringx; }
+  .ph__ring4  { animation-name: ph-ring4; }
+  .ph__scrim  { animation-name: ph-scrim; }
+  .ph__sheet  { animation-name: ph-sheet; transform-box: fill-box; transform-origin: center; }
+  .ph__theme3, .ph__edge3 { animation-name: ph-theme3; }
+  .ph__theme4, .ph__edge4 { animation-name: ph-theme4; }
+
+  /* In from the lower left, up to Open on Version 3, across the window to
+     its close box, then down to Open on the Christmas version. The distances
+     are the arc length of that curve, so a hold is the pointer sitting still
+     on a click. Ease only on the way between holds. */
+  @keyframes ph-cursor {
+    0%, 3%  { opacity: 0; offset-distance: 0%; animation-timing-function: linear; }
+    6%      { opacity: 1; offset-distance: 0%; animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+    16%     { opacity: 1; offset-distance: 29.18%; animation-timing-function: linear; }
+    22%     { opacity: 1; offset-distance: 29.18%; animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+    46%     { opacity: 1; offset-distance: 55.35%; animation-timing-function: linear; }
+    54%     { opacity: 1; offset-distance: 55.35%; animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+    69%     { opacity: 1; offset-distance: 71.96%; animation-timing-function: linear; }
+    76%     { opacity: 1; offset-distance: 71.96%; animation-timing-function: cubic-bezier(0.45, 0, 0.2, 1); }
+    92%, 100% { opacity: 0; offset-distance: 100%; animation-timing-function: linear; }
+  }
+  @keyframes ph-ring3 {
+    0%, 17%   { opacity: 0; transform: scale(0.4); }
+    18%       { opacity: 1; transform: scale(0.55); }
+    23%, 100% { opacity: 0; transform: scale(1.35); }
+  }
+  @keyframes ph-ringx {
+    0%, 49%   { opacity: 0; transform: scale(0.4); }
+    50%       { opacity: 1; transform: scale(0.55); }
+    55%, 100% { opacity: 0; transform: scale(1.35); }
+  }
+  @keyframes ph-ring4 {
+    0%, 69%   { opacity: 0; transform: scale(0.4); }
+    70%       { opacity: 1; transform: scale(0.55); }
+    75%, 100% { opacity: 0; transform: scale(1.35); }
+  }
+  @keyframes ph-scrim {
+    0%, 18%   { opacity: 0; }
+    24%, 50%  { opacity: 1; }
+    56%, 68%  { opacity: 0; }
+    74%, 92%  { opacity: 1; }
+    98%, 100% { opacity: 0; }
+  }
+  @keyframes ph-sheet {
+    0%, 18%   { opacity: 0; transform: translateY(14px) scale(0.96); }
+    24%, 50%  { opacity: 1; transform: none; }
+    56%, 68%  { opacity: 0; transform: translateY(10px) scale(0.98); }
+    74%, 92%  { opacity: 1; transform: none; }
+    98%, 100% { opacity: 0; transform: none; }
+  }
+  @keyframes ph-theme3 {
+    0%, 22%   { opacity: 0; }
+    24%, 50%  { opacity: 1; }
+    56%, 100% { opacity: 0; }
+  }
+  @keyframes ph-theme4 {
+    0%, 67%   { opacity: 0; }
+    68%, 92%  { opacity: 1; }
+    98%, 100% { opacity: 0; }
+  }
+</style>
+
+<script>
+  import '../../scripts/anim.js';
+</script>

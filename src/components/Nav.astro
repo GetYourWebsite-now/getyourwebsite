@@ -70,11 +70,6 @@ const here = Astro.url.pathname;
           </a>
         ))
       }
-      {/* Demo is out of the desktop bar but belongs in the drawer: on a
-          phone this list is the whole site. */}
-      <a href={url('/demo')} aria-current={isActive(here, '/demo') ? 'page' : undefined}>
-        Demo
-      </a>
       <a class="btn btn--primary nav__drawer-cta" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
@@ -239,10 +234,8 @@ const here = Astro.url.pathname;
 
   /* Desktop --------------------------------------------------------------- */
 
-  /* 1060, not 900. The desktop row carries five links, a Sign in link and the
-     CTA; at 900 it had 81px of slack before any of that was added, so the
-     burger keeps the job further up than it used to. Below this the drawer
-     holds everything comfortably. */
+  /* 1060, not 900. The desktop row carries the page links, Sign in and the
+     CTA. Below this the drawer holds everything comfortably. */
   @media (min-width: 1060px) {
     .nav__signin { display: inline-flex; }
 

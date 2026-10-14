@@ -73,18 +73,18 @@ export const TIER_CTA = BETA.on
 export const SOCIALS = [];
 
 /**
- * The four links in the middle of the nav bar.
+ * The links in the middle of the nav bar. The footer uses the same list.
  *
- * Demo is deliberately not one of them: it is linked from How it works and
- * from the home page's platform section, which is where someone is actually
- * curious about it, and a shorter bar gives the CTA more room. Benefits is
- * gone entirely — merged into /why-us, with a redirect in astro.config.mjs.
+ * Benefits is gone entirely — merged into /why-us, with a redirect in
+ * astro.config.mjs.
  */
 export const NAV_LINKS = [
   { label: 'Our Work', href: '/work' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'How it works', href: '/how-it-works' },
   { label: 'Why Us', href: '/why-us' },
+  { label: 'Demo', href: '/demo' },
+  { label: 'Roadmap', href: '/roadmap' },
 ];
 
 /**

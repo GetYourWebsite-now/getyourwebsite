@@ -31,7 +31,7 @@
  *
  * Depth surfaces (STEP 10)
  * ------------------------
- * Four sections of the home page carry a radial light and a grain (.depth in
+ * Every page section carries a radial light and a grain (.section in
  * global.css), and neither is a background-color, so the walk above would
  * not see them. When the surface a glyph sits on is a .depth section, the
  * backdrop is made worst-case for that glyph:
@@ -57,7 +57,7 @@ import { chromium } from 'playwright';
 const BASE = process.env.BASE ?? 'http://localhost:4321';
 const PAGES = [
   '/', '/work', '/pricing', '/how-it-works',
-  '/why-us', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks',
+  '/why-us', '/roadmap', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks',
   '/demo', '/privacy', '/terms', '/cookies', '/beta-terms', '/404',
 ];
 
@@ -149,7 +149,7 @@ for (const path of PAGES) {
       const stack = [];
       for (let n = el; n; n = n.parentElement) {
         let c = parse(getComputedStyle(n).backgroundColor);
-        if (c && c[3] >= 0.999 && n.classList.contains('depth')) {
+        if (c && c[3] >= 0.999 && n.classList.contains('section')) {
           c = [...depthWorst(n, c, el.getBoundingClientRect()), 1];
         }
         if (c && c[3] > 0) { stack.push(c); if (c[3] >= 0.999) break; }

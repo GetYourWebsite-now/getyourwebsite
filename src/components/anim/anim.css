@@ -22,18 +22,6 @@
 
 .anim:not(.anim--bare):hover { transform: translateY(-2px); box-shadow: var(--lift-hover); }
 
-/* On the home page's dark band the frames go dark: no well, white strokes at
-   24%. What is drawn INSIDE them stays light, because it is a picture of the
-   client's site and of the portal, and both are light. The Live pill and the
-   Approved chip are untouched. */
-.section--dark .anim:not(.anim--bare) {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.42);
-}
-
-.section--dark .anim .a-card { stroke: rgba(255, 255, 255, 0.24); }
-.section--dark .anim .a-edge { stroke: rgba(255, 255, 255, 0.24); }
-
 .anim svg {
   display: block;
   width: 100%;
