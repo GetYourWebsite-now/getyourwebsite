@@ -5,7 +5,7 @@
  * Solid on every page including the home page: there is no longer a dark
  * hero for it to float over.
  */
-import { BETA, NAV_LINKS, PORTAL_URL, PRIMARY_CTA } from '../data/site.js';
+import { BETA, NAV_LINKS, PORTAL_URL, PRIMARY_CTA, SIGNUP_COUNT_URL } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -17,9 +17,62 @@ const here = Astro.url.pathname;
 
   {
     BETA.on && (
-      <a class="seat-banner" href={url(BETA.path)}>
-        <span class="seat-banner__n">{BETA.taken}</span> / <span class="seat-banner__n">{BETA.seats}</span> have signed up for the beta
-      </a>
+      <>
+        <a class="seat-banner" href={url(BETA.path)}>
+          <span class="seat-banner__n" data-signup-count></span> / <span class="seat-banner__n">{BETA.seats}</span> have signed up for the beta
+        </a>
+        <script is:inline define:vars={{ signupUrl: SIGNUP_COUNT_URL }}>
+          (function () {
+            var KEY = 'gyw-signups';
+            var FAIL = 'gyw-signups-fail';
+            var HOUR = 60 * 60 * 1000;
+            var el = document.querySelector('[data-signup-count]');
+            var banner = el && el.closest('.seat-banner');
+            if (!el || !banner) return;
+
+            function valid(n) {
+              return typeof n === 'number' && Number.isInteger(n) && n >= 0;
+            }
+            function show(n) {
+              if (!valid(n)) return;
+              el.textContent = String(n);
+              banner.classList.add('is-ready');
+            }
+            function read() {
+              try {
+                var data = JSON.parse(localStorage.getItem(KEY) || '');
+                if (!data || !valid(data.count) || typeof data.at !== 'number') return null;
+                return data;
+              } catch (e) {
+                return null;
+              }
+            }
+
+            var cached = read();
+            if (cached) show(cached.count);
+            if (cached && Date.now() - cached.at < HOUR) return;
+            try {
+              if (sessionStorage.getItem(FAIL)) return;
+            } catch (e) {}
+
+            fetch(signupUrl)
+              .then(function (res) {
+                if (!res.ok) throw new Error('signup count');
+                return res.json();
+              })
+              .then(function (body) {
+                if (!body || !valid(body.count)) throw new Error('signup count');
+                try {
+                  localStorage.setItem(KEY, JSON.stringify({ count: body.count, at: Date.now() }));
+                } catch (e) {}
+                show(body.count);
+              })
+              .catch(function () {
+                try { sessionStorage.setItem(FAIL, '1'); } catch (e) {}
+              });
+          })();
+        </script>
+      </>
     )
   }
 
@@ -99,10 +152,11 @@ const here = Astro.url.pathname;
     border-bottom: 1px solid var(--line);
   }
 
-  /* Seat count. Sits in the sticky header so it stays at the top. The
-     figures alone take tabular nums — tnum on the whole line widens the
-     slash. Only while beta is on; the switch check treats this as a beta
-     difference because the sentence says so. */
+  /* Seat count. Hidden until the script has a number, so a failed
+     request never paints a made-up zero. Tabular nums on the figures
+     only — tnum on the whole line widens the slash. */
+  .seat-banner:not(.is-ready) { display: none; }
+
   .seat-banner {
     display: block;
     background: var(--bg-alt);

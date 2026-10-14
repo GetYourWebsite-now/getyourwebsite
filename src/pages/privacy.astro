@@ -1,7 +1,7 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
 import { url } from '../data/url.js';
-import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
+import { BETA, CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
 
 /**
  * Privacy Policy.
@@ -83,6 +83,11 @@ import { CONTACT_EMAIL, LEGAL_NAME, LEGAL_STATE } from '../data/site.js';
   <ul>
     <li>The client portal keeps your sign-in in your browser's local storage so you stay logged in. Signing out clears it.</li>
     <li>Private site previews set a short-lived cookie (a few hours at most) so only you can see your unpublished site.</li>
+    {
+      BETA.on && (
+        <li>This website keeps the beta seat count in your browser's local storage for an hour, so the banner can show how many people have signed up without asking on every page. What is stored is that number and the time it was fetched, not your name or email.</li>
+      )
+    }
   </ul>
   <p>
     Some of our example sites load fonts from Google Fonts, and they and our demo

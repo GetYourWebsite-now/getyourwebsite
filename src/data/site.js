@@ -37,19 +37,24 @@ export const FORMSPREE_FORM_ID = 'xqpkrbez';
  * `discount` applies to the Startup tiers only; Maintenance is list price
  * either way. /beta-terms says so, and reads these same numbers.
  *
- * `taken` is how many people have signed up: Formspree submissions whose
- * source is beta. Contact and free-mock hit the same form and do not count.
- * The seat banner reads `taken` / `seats`. No API key lives in this repo,
- * so this is updated by hand from that inbox.
+ * `seats` is the number on the seat banner. How many of those seats are
+ * taken is not stored here: the banner asks SIGNUP_COUNT_URL and keeps the
+ * answer in the browser for an hour.
  */
 export const BETA = {
   on: true,
   discount: 0.30,
   seats: 30,
-  taken: 0,
   cta: 'Join the beta',
   path: '/beta',
 };
+
+/**
+ * Public count of people who have signed up. `{ count: number }`.
+ * The seat banner reads it in the browser and caches it for an hour.
+ */
+export const SIGNUP_COUNT_URL =
+  'https://backend-production-f9d29.up.railway.app/api/public/signups';
 
 // tools/beta-check.mjs builds once each way by setting GYW_BETA. Nothing else
 // should set it; the line above is the switch. `typeof process` so the file
