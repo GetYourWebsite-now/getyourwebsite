@@ -205,6 +205,7 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
     {bare ? <BareHeader /> : <Nav />}
 
     <main id="main">
+      <div class="margin-guides" aria-hidden="true"></div>
       <slot />
     </main>
 
@@ -212,6 +213,7 @@ const ogImage = new URL(url('/og.png'), Astro.site ?? 'https://example.com');
 
     <script>
       import '../scripts/reveal.js';
+      import '../scripts/grain-press.js';
     </script>
   </body>
 </html>

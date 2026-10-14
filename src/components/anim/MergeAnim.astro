@@ -72,13 +72,16 @@
  *
  * Motion
  * ------
- * One 8s loop. Paths draw in from the outside over 1.2s, the pairs 120ms
- * apart, and hold the finished picture until the loop restarts; then they
- * fade out over 400ms and draw in again. The diagram is never empty: the
- * mark fades up once, as the first path lands, and stays. The prices count
- * up once, on the first play — a number ticking every 8s is noise — and
- * are static on every later loop. Reduced motion: the base styles are the
- * end state (see anim.css) and nothing counts.
+ * One 8s loop. The mark is already there, faint. Paths draw in from the
+ * outside over 1.2s, the pairs 120ms apart. The fill waits until those
+ * lines have reached the mark (0.64s), then comes in from each side on an
+ * exponential ease, and the mark flashes brighter for a moment once it is
+ * solid, the way the reference clip does. Lines and the fill hold, then
+ * leave together; the faint mark stays for the next pass. The price
+ * figures bounce in one after another on that first play, and stay put on
+ * every later loop. Nothing starts until the page has loaded and the whole
+ * diagram is in view. Reduced motion: the base styles are the end state
+ * (see anim.css) and nothing bounces.
  */
 import './anim.css';
 import { BETA, MARKET_RANGES, STARTUP_TIERS, MAINTENANCE_TIERS, money, startupPrice } from '../../data/site.js';
@@ -115,7 +118,7 @@ const down = FROM.flatMap(([l, r]) => [
     </ul>
     <p class="merge__price">
       <span class="merge__price-k">Typically</span>
-      <span class="merge__price-fig nw"><span class="merge__n">{money(diy.low)}</span>–<span class="merge__n">{money(diy.high)}</span><span class="merge__unit">/mo</span></span>
+      <span class="merge__price-fig nw"><span class="merge__n" style="--i:0">{money(diy.low)}</span>–<span class="merge__n" style="--i:1">{money(diy.high)}</span><span class="merge__unit">/mo</span></span>
       <span class="merge__price-note">+ your evenings</span>
     </p>
   </div>
@@ -130,7 +133,7 @@ const down = FROM.flatMap(([l, r]) => [
     </ul>
     <p class="merge__price">
       <span class="merge__price-k">Typically</span>
-      <span class="merge__price-fig nw"><span class="merge__n">{money(agency.low)}</span>–<span class="merge__n">{money(agency.high)}</span></span>
+      <span class="merge__price-fig nw"><span class="merge__n" style="--i:4">{money(agency.low)}</span>–<span class="merge__n" style="--i:5">{money(agency.high)}</span></span>
       <span class="merge__price-note">one-time</span>
     </p>
   </div>
@@ -146,9 +149,20 @@ const down = FROM.flatMap(([l, r]) => [
   </svg>
 
   <div class="merge__hub">
-    <svg class="merge__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <svg class="merge__ghost" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
       <path class="merge__hex" d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
       <path class="merge__page" d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z"></path>
+    </svg>
+    <svg class="merge__mark merge__half merge__half--l" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path class="merge__hex" d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
+      <path class="merge__page" d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z"></path>
+    </svg>
+    <svg class="merge__mark merge__half merge__half--r" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path class="merge__hex" d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
+      <path class="merge__page" d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z"></path>
+    </svg>
+    <svg class="merge__flash" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+      <path d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
     </svg>
   </div>
 
@@ -160,12 +174,12 @@ const down = FROM.flatMap(([l, r]) => [
     <p class="merge__price merge__price--ours">
       <span class="merge__part">
         <span class="merge__price-k">Startup from</span>
-        <span class="merge__price-fig"><span class="merge__n">{startup}</span></span>
+        <span class="merge__price-fig"><span class="merge__n" style="--i:2">{startup}</span></span>
         <span class="merge__price-note">{BETA.on ? 'in the beta' : 'one-time'}</span>
       </span>
       <span class="merge__part">
         <span class="merge__price-k">Maintenance from</span>
-        <span class="merge__price-fig"><span class="merge__n">{maintenance}</span><span class="merge__unit">/mo</span></span>
+        <span class="merge__price-fig"><span class="merge__n" style="--i:3">{maintenance}</span><span class="merge__unit">/mo</span></span>
       </span>
     </p>
   </div>
@@ -200,8 +214,18 @@ const down = FROM.flatMap(([l, r]) => [
     overflow: visible;
   }
 
-  .merge__hub { grid-column: 1 / -1; grid-row: 3; display: flex; justify-content: center; }
-  .merge__mark { width: auto; height: 88px; overflow: visible; }
+  .merge__hub { grid-column: 1 / -1; grid-row: 3; position: relative; display: flex; justify-content: center; }
+  .merge__mark,
+  .merge__ghost,
+  .merge__flash { width: auto; height: 88px; overflow: visible; }
+  .merge__ghost {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.08;
+    pointer-events: none;
+  }
 
   .merge__ours { grid-column: 1 / -1; grid-row: 4; margin-top: var(--s-5); }
 
@@ -250,7 +274,6 @@ const down = FROM.flatMap(([l, r]) => [
     gap: 0.15rem;
     margin: var(--s-3) auto 0;
     max-width: 16rem;
-    transition: opacity 300ms var(--ease);
   }
 
   .merge__price-k,
@@ -279,8 +302,21 @@ const down = FROM.flatMap(([l, r]) => [
   /* A range never breaks inside itself, and neither does its unit. */
   .nw { white-space: nowrap; }
 
-  /* The figures hold still while they count. */
-  .merge__n { font-variant-numeric: tabular-nums; }
+  /* Each figure bounces in on its own, left to right across the row, once
+     the drawing starts. The base style is the settled figure, which is what
+     reduced motion keeps. */
+  .merge__n {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    animation: merge-num 0.55s var(--ease) calc(var(--i) * 150ms) both;
+  }
+
+  @keyframes merge-num {
+    0%   { opacity: 0; transform: translateY(11px); }
+    58%  { opacity: 1; transform: translateY(-5px); }
+    78%  { transform: translateY(2px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
 
   /* Ours is two prices, stacked on a narrow screen. The figure is the
      larger of the three, which is the comparison. */
@@ -295,10 +331,6 @@ const down = FROM.flatMap(([l, r]) => [
     flex-direction: column;
     gap: 0.15rem;
   }
-
-  /* Waiting for the first count: hidden rather than showing a zero someone
-     could read as a price. merge.js below removes it as the count starts. */
-  .merge.is-pre-count .merge__price { opacity: 0; }
 
   /* Desktop: one shared grid. Rows: header block, names, price. The columns
      are subgrids with the parent's row gap, so all three rows line up. */
@@ -346,7 +378,9 @@ const down = FROM.flatMap(([l, r]) => [
     .merge__paths--down { display: none; }
 
     .merge__hub { grid-column: 3; grid-row: 2; align-self: center; }
-    .merge__mark { height: 112px; }
+    .merge__mark,
+    .merge__ghost,
+    .merge__flash { height: 112px; }
 
     /* Ours: header and verb on the headers' row, price on the prices' row,
        both across the middle three columns. */
@@ -379,53 +413,82 @@ const down = FROM.flatMap(([l, r]) => [
     100%      { stroke-dashoffset: 0; opacity: 0; }
   }
 
-  /* The mark fades up once, as the first path lands, and stays. */
-  .merge__mark {
-    animation: merge-mark 500ms var(--ease) 1.2s 1 both;
+  /* Soft masks, not a hard cut. Each is 3× the mark: a solid block, then a
+     wide ease that stays strong and then drops faster toward the middle, so
+     the two sides leave a pale seam before they meet. The ghost under it is
+     only a trace. The slide holds at the ghost until 8% (0.64s), which is
+     when the lines meet the mark, then fills on the same ease as the lines
+     over the next 0.64s. The base position is the filled mark, which reduced
+     motion holds. */
+  .merge__half--r {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .merge__half {
+    mask-size: 300% 100%;
+    -webkit-mask-size: 300% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-mode: alpha;
+    -webkit-mask-mode: alpha;
+  }
+  .merge__half--l {
+    --fade: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='8'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='0'%3E%3Cstop offset='0' stop-color='white'/%3E%3Cstop offset='.423' stop-color='white'/%3E%3Cstop offset='.441' stop-color='white' stop-opacity='.89'/%3E%3Cstop offset='.458' stop-color='white' stop-opacity='.67'/%3E%3Cstop offset='.476' stop-color='white' stop-opacity='.37'/%3E%3Cstop offset='.493' stop-color='white' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='white' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='8' fill='url(%23g)'/%3E%3C/svg%3E");
+    mask-image: var(--fade);
+    -webkit-mask-image: var(--fade);
+    mask-position: 0% 0;
+    -webkit-mask-position: 0% 0;
+    animation: merge-fill-l 8s var(--ease) infinite both;
+  }
+  .merge__half--r {
+    --fade: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='8'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1' y1='0' y2='0'%3E%3Cstop offset='0' stop-color='white' stop-opacity='0'/%3E%3Cstop offset='.507' stop-color='white' stop-opacity='0'/%3E%3Cstop offset='.524' stop-color='white' stop-opacity='.37'/%3E%3Cstop offset='.542' stop-color='white' stop-opacity='.67'/%3E%3Cstop offset='.559' stop-color='white' stop-opacity='.89'/%3E%3Cstop offset='.577' stop-color='white'/%3E%3Cstop offset='1' stop-color='white'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='300' height='8' fill='url(%23g)'/%3E%3C/svg%3E");
+    mask-image: var(--fade);
+    -webkit-mask-image: var(--fade);
+    mask-position: 100% 0;
+    -webkit-mask-position: 100% 0;
+    animation: merge-fill-r 8s var(--ease) infinite both;
   }
 
-  @keyframes merge-mark {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: none; }
+  @keyframes merge-fill-l {
+    0%, 8%   { mask-position: 100% 0; -webkit-mask-position: 100% 0; opacity: 1; }
+    16%, 95% { mask-position: 0% 0; -webkit-mask-position: 0% 0; opacity: 1; }
+    100%     { mask-position: 100% 0; -webkit-mask-position: 100% 0; opacity: 0; }
   }
+
+  @keyframes merge-fill-r {
+    0%, 8%   { mask-position: 0% 0; -webkit-mask-position: 0% 0; opacity: 1; }
+    16%, 95% { mask-position: 100% 0; -webkit-mask-position: 100% 0; opacity: 1; }
+    100%     { mask-position: 0% 0; -webkit-mask-position: 0% 0; opacity: 0; }
+  }
+
+  /* The clip's flash: the mark brightens as the seam closes, then settles.
+     Screen on the hex only, so it stays inside the logo. */
+  .merge__flash {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 1;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: screen;
+    opacity: 0;
+    pointer-events: none;
+    animation: merge-flash 8s linear infinite both;
+  }
+  .merge__flash path { fill: #fff; }
+
+  @keyframes merge-flash {
+    0%, 16% { opacity: 0; }
+    16.7%   { opacity: 0.62; }
+    17.6%   { opacity: 0.28; }
+    19%     { opacity: 0.1; }
+    21%     { opacity: 0; }
+    100%    { opacity: 0; }
+  }
+
 </style>
 
 <script>
   import '../../scripts/anim.js';
-
-  // The one-time count. Starts with the CSS loop's first play (same element,
-  // same 25% threshold as anim.js), as the mark finishes fading up: 1.7s
-  // in, 600ms long. Never runs under reduced motion; without JS, or before it
-  // runs, the final prices are simply there.
-  const stage = document.querySelector('[data-merge]');
-  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (stage && !still && 'IntersectionObserver' in window) {
-    const nums = [...stage.querySelectorAll('.merge__n')].map((el) => ({
-      el,
-      to: Number(el.textContent.replace(/[^0-9]/g, '')),
-    }));
-    const show = (n) => '$' + Math.round(n).toLocaleString('en-US');
-
-    const count = () => {
-      const start = performance.now();
-      const step = (now) => {
-        const t = Math.min(1, (now - start) / 600);
-        const eased = 1 - Math.pow(1 - t, 3);
-        nums.forEach(({ el, to }) => { el.textContent = show(to * eased); });
-        if (t < 1) requestAnimationFrame(step);
-      };
-      nums.forEach(({ el }) => { el.textContent = show(0); });
-      stage.classList.remove('is-pre-count');
-      requestAnimationFrame(step);
-    };
-
-    const io = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      io.disconnect();
-      stage.classList.add('is-pre-count');
-      setTimeout(count, 1700);
-    }, { threshold: 0.25 });
-    io.observe(stage);
-  }
 </script>

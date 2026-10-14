@@ -544,8 +544,9 @@ ripples === 0
 //            ::before at 14% through multiply (36% on the hero, 28% screen
 //            on the dark band).
 //            Nothing else has a background image or an animation.
-//   dark     the footer, plus one .section--dark on the home page and on the
-//            closing band of why-us, how-it-works, pricing and work.
+//   dark     the footer, plus one .section--dark: the home platform band,
+//            and a header or transition on why-us, how-it-works, pricing,
+//            work, roadmap and contact. One each, nowhere else.
 //   rhythm   no two adjacent sections share a surface.
 console.log('\n[6] Surfaces');
 
@@ -607,9 +608,12 @@ for (const path of SURFACE_PAGES) {
       }
     }
 
-    // Dark: the footer, the home platform band, and the closing band on
-    // why-us, how-it-works, pricing and work. One each, nowhere else.
-    const darkHere = { '/': 1, '/why-us': 1, '/how-it-works': 1, '/pricing': 1, '/work': 1 };
+    // Dark: the footer, the home platform band, and a header or transition
+    // on why-us, how-it-works, pricing, work, roadmap and contact.
+    const darkHere = {
+      '/': 1, '/why-us': 1, '/how-it-works': 1, '/pricing': 1, '/work': 1,
+      '/roadmap': 1, '/contact': 1,
+    };
     for (const el of document.querySelectorAll('.section')) {
       if (lum(getComputedStyle(el).backgroundColor) < 0.4) {
         out.dark.push({
@@ -645,11 +649,11 @@ atmosphere.length === 0
   : fail(`atmosphere outside the depth system: ${atmosphere.slice(0, 4).join('; ')}`);
 
 const strayDark = darkSurfaces.filter((d) => !d.ok);
-const wantDark = ['/', '/why-us', '/how-it-works', '/pricing', '/work'];
+const wantDark = ['/', '/why-us', '/how-it-works', '/pricing', '/work', '/roadmap', '/contact'];
 const darkCount = Object.fromEntries(wantDark.map((p) => [p, darkSurfaces.filter((d) => d.ok && d.page === p).length]));
 const darkOk = strayDark.length === 0 && wantDark.every((p) => darkCount[p] === 1);
 darkOk
-  ? pass('dark bands: the home platform section, and the close of why-us, how-it-works, pricing and work')
+  ? pass('dark bands: the home platform section, the why-us and how-it-works and work headers, the pricing revision band, and the roadmap and contact transitions')
   : fail(`dark sections: ${wantDark.map((p) => `${p} ${darkCount[p]}`).join(', ')} (want 1 each), strays: ${strayDark.map((d) => d.where).slice(0, 4).join('; ') || 'none'}`);
 
 repeats.length === 0

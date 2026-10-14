@@ -65,9 +65,10 @@ is not real about it goes in the "What's different from the real thing" list on
 only.** "Still Stripe, not ClickUp": a plumber has to trust it. The specifics:
 
 - Sections alternate `--bg` and `--bg-alt`. **Dark surfaces: the footer,
-  the home page's platform band, and the closing band on Why us, How it
-  works, Pricing and Our work** (`.section--dark`). `npm run verify` fails
-  on a dark band anywhere else, or on a second one on those pages.
+  the home page's platform band, and one header or transition on Why us,
+  How it works, Pricing, Our work, the roadmap and Contact**
+  (`.section--dark`). `npm run verify` fails on a dark band anywhere else,
+  or on a second one on those pages.
 - **Depth is on every page section** (`global.css`, "Depth"): grain and one
   radial light, and nowhere on the footer. `--lift` on tier cards,
   case-study frames, drawing wells and the hero browser frame; a hover-only

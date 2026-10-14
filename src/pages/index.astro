@@ -30,8 +30,8 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
     : "Websites for local businesses, done for you. A free mock first, then we build the site, host it and keep it current — every version kept, one button to choose what's live."}
 >
   <!-- 1. Hero ------------------------------------------------------------
-       Left: the offer, and that we do the work. Right: the version tree,
-       drawn rather than screenshotted — see VersionTree.astro.
+       The offer, then the version tree directly under it, drawn rather
+       than screenshotted — see VersionTree.astro.
   -->
   <section class="section section--hero depth">
     <div class="shell hero">
@@ -331,17 +331,16 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
 
   .hero {
     display: grid;
-    gap: var(--s-6);
-    align-items: center;
+    gap: var(--s-5);
+    align-items: start;
   }
 
-  /* Well below --t-display's 72px, for two reasons. The headline shares the
-     row with the version tree, so it never gets the full measure a
-     full-width hero would; and it is now a sentence that says what we do
-     rather than a three-word slogan, so it wants to be read rather than
-     declaimed. At 48px it runs to three comfortable lines in this column. */
+  /* The tree sits under the headline, so the sentence can take the full
+     shell. Still a sentence, not a slogan: large enough to lead the page,
+     short of --t-display so it stays two or three lines. */
   .hero__title {
-    font-size: clamp(2rem, 1.3rem + 2.4vw, 3rem);
+    font-size: clamp(2.6rem, 1.5rem + 3.2vw, 4.25rem);
+    max-width: 16em;
     text-wrap: balance;
   }
 
@@ -374,10 +373,14 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
 
   .hero__live a { color: var(--accent); }
 
-  /* Capped so the stacked hero does not render the tree at 1100px wide with
-     24px labels. Has no effect in the two-column layout, where the column is
-     already narrower than this. */
-  .hero__shot { min-width: 0; max-width: 700px; }
+  /* A step in from the full shell, so the tree is large under the headline
+     without the labels running edge to edge. */
+  .hero__shot {
+    width: 100%;
+    min-width: 0;
+    max-width: 1000px;
+    margin-inline: auto;
+  }
 
   .hero__caption {
     margin-top: var(--s-3);
@@ -576,20 +579,4 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
 
   }
 
-  /* The hero goes two-up at 1240, much later than the 860 everything else
-     uses. Below that the image column is under ~520px, and because the tree
-     is an SVG its labels scale with the box — at 1100 they rendered at
-     10.6px, which is the illegibility the drawn tree exists to fix. Stacked,
-     the tree gets the full shell (capped above) and reads at ~14px.
-     Measured across eleven widths, not guessed. */
-  @media (min-width: 1240px) {
-    .hero {
-      /* The tree needs the wider half. Its text scales with the SVG viewBox,
-         so a narrow column shrinks the labels — which is the one thing this
-         hero cannot afford. The headline is a sentence at 48px and reads
-         fine in the smaller half. */
-      grid-template-columns: 1fr 1.25fr;
-      gap: var(--s-7);
-    }
-  }
 </style>

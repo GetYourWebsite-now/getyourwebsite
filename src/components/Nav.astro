@@ -5,7 +5,7 @@
  * Solid on every page including the home page: there is no longer a dark
  * hero for it to float over.
  */
-import { NAV_LINKS, PORTAL_URL, PRIMARY_CTA } from '../data/site.js';
+import { BETA, NAV_LINKS, PORTAL_URL, PRIMARY_CTA } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -14,6 +14,14 @@ const here = Astro.url.pathname;
 
 <header class="nav" data-nav>
   <a class="skip-link" href="#main">Skip to content</a>
+
+  {
+    BETA.on && (
+      <a class="seat-banner" href={url(BETA.path)}>
+        <span class="seat-banner__n">{BETA.taken}</span> / <span class="seat-banner__n">{BETA.seats}</span> have signed up for the beta
+      </a>
+    )
+  }
 
   <div class="nav__inner shell">
     <a class="nav__brand" href={url('/')} aria-label="GetYourWebsite — home">
@@ -89,6 +97,34 @@ const here = Astro.url.pathname;
     z-index: 100;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
+  }
+
+  /* Seat count. Sits in the sticky header so it stays at the top. The
+     figures alone take tabular nums — tnum on the whole line widens the
+     slash. Only while beta is on; the switch check treats this as a beta
+     difference because the sentence says so. */
+  .seat-banner {
+    display: block;
+    background: var(--bg-alt);
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .seat-banner:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .seat-banner__n {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
   }
 
   .nav__inner {

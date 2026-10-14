@@ -15,8 +15,9 @@
    The house style, in five rules:
 
      1. Light first. Sections alternate --bg and --bg-alt. Dark surfaces are
-        the footer, the home page's platform band, and the closing band on
-        Why us, How it works, Pricing and Our work (.section--dark).
+        the footer, the home page's platform band, a header or a transition
+        on Why us, How it works, Pricing, Our work, the roadmap and contact
+        (.section--dark).
      2. One accent. --accent (deep indigo) carries links, primary buttons,
         focus rings and the highlighted pricing tier. --gold is the free-mock
         badge, nothing else, and never text.
@@ -223,6 +224,9 @@
      shifted to the accent, for the hero and a few plain white bands. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='.33 .33 .33 0 0 .33 .33 .33 0 0 .33 .33 .33 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
   --grain-tint: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='.269 .269 .269 0 .184 .251 .251 .251 0 .239 .053 .053 .053 0 .839 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Same noise, but only the specks are painted — indigo, on transparent —
+     so a layer of it can sit across a section without veiling the type. */
+  --grain-specks: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncG type='linear' slope='2.4' intercept='-0.7'/%3E%3CfeFuncB type='linear' slope='2.4' intercept='-0.7'/%3E%3C/feComponentTransfer%3E%3CfeColorMatrix values='0 0 0 0 .184 0 0 0 0 .239 0 0 0 0 .839 -.333 -.333 -.333 0 1'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='8' intercept='-6'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* ── 2. Reset ──────────────────────────────────────────────────────────── */
@@ -381,6 +385,26 @@ a:hover { color: var(--accent-hover); }
   margin-inline: auto;
 }
 
+/* Vertical guides at the content margin. They live in <main>, so they
+   run through the page and stop at the nav and the footer. */
+main { position: relative; }
+
+.margin-guides {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: min(100% - 1rem, calc(var(--shell) + 1.5rem));
+  transform: translateX(-50%);
+  border-inline: 1px solid var(--line);
+  pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .margin-guides { width: min(100% - 2rem, calc(var(--shell) + 3rem)); }
+}
+
 /* A page section. Add .section--alt for the grey surface. They alternate;
    two of the same surface in a row is a missing boundary, not a style. */
 .section {
@@ -423,11 +447,11 @@ a:hover { color: var(--accent-hover); }
 
 .section--tight { padding-block: clamp(2.75rem, 2rem + 3.4vw, 4.5rem); }
 
-/* A dark band: the home page's platform section, and the closing band on
-   Why us, How it works, Pricing and Our work. --footer surface,
-   --footer-ink body, white headings. Links are white too: the accent
-   measures 2.60:1 on this surface, and footer-ink is the body colour, so
-   a link in it doesn't read as a link. */
+/* A dark band: the home page's platform section, and a header or a
+   transition on Why us, How it works, Pricing, Our work, the roadmap
+   and Contact. --footer surface, --footer-ink body, white headings.
+   Links are white too: the accent measures 2.60:1 on this surface, and
+   footer-ink is the body colour, so a link in it doesn't read as a link. */
 .section--dark {
   background: var(--footer);
   color: var(--footer-ink);
@@ -602,6 +626,39 @@ a:hover { color: var(--accent-hover); }
 }
 
 .btn--primary:hover::before { opacity: 1; }
+
+/* Join the beta: purple grain behind the section's content. Hover opens a
+   small clear circle at the pointer. The press sends the grain out in one
+   radial wave. A real element, so the hover light stays the only button layer. */
+.section-grain {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.section-grain__fill,
+.section-grain__ring {
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain-specks);
+  background-size: 160px 160px;
+  pointer-events: none;
+  mask-mode: alpha;
+  -webkit-mask-mode: alpha;
+}
+
+.section-grain__fill { opacity: 1; }
+
+.section-grain.is-gone .section-grain__fill { opacity: 0; }
+
+.section-grain__ring {
+  opacity: 0;
+  background-image: var(--grain-specks), var(--grain-specks), var(--grain-specks), var(--grain-specks);
+  background-size: 160px 160px, 160px 160px, 160px 160px, 160px 160px;
+  background-position: 0 0, 19px 47px, 53px 11px, 8px 28px;
+}
 
 .btn--secondary {
   color: var(--ink);

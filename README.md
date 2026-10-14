@@ -99,9 +99,10 @@ Change a token, not a page.
 
 **Surfaces.** Two light ones that alternate down a page (`--bg` white,
 `--bg-alt` grey) and one dark one (`--footer`), used by the footer, by the
-home page's platform section, and by the closing band on Why us, How it
-works, Pricing and Our work (`.section--dark`). `npm run verify` fails on a
-dark band anywhere else, or two adjacent sections with the same surface.
+home page's platform section, and by one header or transition on Why us,
+How it works, Pricing, Our work, the roadmap and Contact
+(`.section--dark`). `npm run verify` fails on a dark band anywhere else,
+or two adjacent sections with the same surface.
 
 **Ink.** `--ink` headings, `--ink-soft` body, `--ink-muted` captions and
 case-study sector labels. The margins are thin on purpose — `--ink-muted` on `--bg-alt` is
