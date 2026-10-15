@@ -1,0 +1,25 @@
+{
+  "name": "gyw-launch-video",
+  "private": true,
+  "type": "module",
+  "description": "The beta launch film and three 15s ads, as code. See docs/ads/LAUNCH-VIDEO.md and README.md here.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "table": "node table.mjs",
+    "capture": "node capture.mjs",
+    "stills": "node render.mjs stills",
+    "render": "node render.mjs all"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.528",
+    "@remotion/cli": "4.0.528",
+    "@remotion/renderer": "4.0.528",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "remotion": "4.0.528"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.18",
+    "typescript": "6.0.3"
+  }
+}

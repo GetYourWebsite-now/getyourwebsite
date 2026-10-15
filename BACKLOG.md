@@ -20,3 +20,12 @@ When the light portal ships and the revision/host/domain flows are final,
 record the real portal (same Rosa's Bakery fixture) and replace the drawings
 on `/` and `/how-it-works` with screen recordings. The drawings are
 placeholders for the real thing. (Added in STEP 9, October 2026.)
+
+## The site's domain drawing shows a real domain
+
+DomainConnect on `/` and `/how-it-works` types `rosasbakery.com` and shows it
+"Registered to Rosa's Bakery" and live. rosasbakery.com is a registered,
+resolving domain that belongs to someone else, so the drawing depicts a real
+business's address as one of our sites. Change it to `rosasbakery.example`
+(the launch video already uses `cedarandstone.example` for the same reason).
+(Added October 2026, found while building the launch video.)
