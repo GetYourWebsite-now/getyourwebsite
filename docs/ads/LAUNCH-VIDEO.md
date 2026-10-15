@@ -16,9 +16,9 @@ customer counts, logos of other companies, or timelines we can't defend.
    promise a free mock. The call to action is an **interest form**: "We're in
    beta. Tell us about your business and we'll invite you." Beta pricing:
    **30% off Startup for the first 30 businesses.** Startup is one-time and
-   priced by revisions: Startup 10 $600 → $420, Startup 30 $900 → $630,
-   Startup 60 $1,200 → $840. Maintenance is unchanged by the beta: $49, $89
-   and $179 a month for 6, 15 and 40 revisions a month, extras $5 each.
+   priced by revisions: Startup 10 $800 → $560, Startup 30 $1,200 → $840,
+   Startup 60 $1,600 → $1,120. Maintenance is unchanged by the beta: $59, $109
+   and $199 a month for 6, 15 and 40 revisions a month, extras $7 each.
    (Figures as of 2026-10-13; `src/data/site.js` is the source, and the
    video imports from it rather than typing them.) The free-mock promise
    returns when beta ends. The site is already on the same footing — see

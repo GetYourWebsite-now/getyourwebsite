@@ -290,30 +290,31 @@ export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
  * helpers below — never typed into a page. `npm run verify` greps for
  * stray price strings precisely to stop that coming back.
  *
- * As of October 2026 the backend has ONE Startup product (30 revisions) and
- * ONE Maintenance product (6 revisions, $5 extras). The other tiers do not
- * exist in Stripe yet. Beta is invite-only, so nothing can be bought from the
- * site — but they have to exist before the first beta client checks out.
+ * As of 2026-10-15 the backend has ONE Startup product (30 revisions, at the
+ * old $900) and ONE Maintenance product (6 revisions at the old $49, $5
+ * extras). Every figure below differs from Stripe: the tiers, the prices and
+ * the $7 extra. Beta is invite-only, so nothing can be bought from the site —
+ * but Stripe has to match this file before the first beta client checks out.
  *
  * No delivery times, deliberately. The only data point we have is Allergy
  * Rescue Kit at 24 build rounds, which supports no defensible estimate. The
  * only time promise on the site is the reply one: within one business day.
  */
 export const STARTUP_TIERS = [
-  { id: 'startup-10', name: 'Startup 10', price: 600, revisions: 10 },
-  { id: 'startup-30', name: 'Startup 30', price: 900, revisions: 30, popular: true },
-  { id: 'startup-60', name: 'Startup 60', price: 1200, revisions: 60 },
+  { id: 'startup-10', name: 'Startup 10', price: 800, revisions: 10 },
+  { id: 'startup-30', name: 'Startup 30', price: 1200, revisions: 30, popular: true },
+  { id: 'startup-60', name: 'Startup 60', price: 1600, revisions: 60 },
 ];
 export const STARTUP_REVISIONS_EXPIRE_DAYS = 90;
 
 export const MAINTENANCE_TIERS = [
-  { id: 'care-6', name: 'Maintenance 6', monthly: 49, revisions: 6 },
-  { id: 'care-15', name: 'Maintenance 15', monthly: 89, revisions: 15 },
-  { id: 'care-40', name: 'Maintenance 40', monthly: 179, revisions: 40 },
+  { id: 'care-6', name: 'Maintenance 6', monthly: 59, revisions: 6 },
+  { id: 'care-15', name: 'Maintenance 15', monthly: 109, revisions: 15 },
+  { id: 'care-40', name: 'Maintenance 40', monthly: 199, revisions: 40 },
 ];
 
 /** Per extra revision on Maintenance, metered onto the monthly invoice. */
-export const EXTRA_REVISION = 5;
+export const EXTRA_REVISION = 7;
 
 /** "$1,200", "$8.17". Whole dollars print without cents. */
 export function money(n) {
