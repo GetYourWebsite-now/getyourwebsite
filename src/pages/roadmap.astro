@@ -1,0 +1,203 @@
+---
+/**
+ * Roadmap — the dates the founders actually hit, then what comes after.
+ *
+ * The past entries are their record, not a capability claim. The October 15
+ * line is the one that says "beta", and only while the switch is on; with it
+ * off the same date reads as the first clients, so the page does not mention
+ * a beta that the rest of the site has stopped advertising.
+ *
+ * "After that" is still ahead. The packages line is a hint at the direction,
+ * not a feature the product has today: no prices, no promise it is built.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BETA, PRIMARY_CTA } from '../data/site.js';
+import { url } from '../data/url.js';
+
+const milestones = [
+  {
+    date: 'June 12',
+    iso: '2026-06-12',
+    title: 'The idea',
+    body: 'Websites for local businesses, taken on as freelance work, one at a time.',
+  },
+  {
+    date: 'June 29',
+    iso: '2026-06-29',
+    title: 'From freelance work to software',
+    body: 'The plan shifted from building each site by hand to software that builds them, with a person still checking the result.',
+  },
+  {
+    date: 'August 28',
+    iso: '2026-08-28',
+    title: 'First version finished',
+    body: 'The first complete version of the product was done.',
+  },
+  {
+    date: 'October 10',
+    iso: '2026-10-10',
+    title: 'The last gaps closed',
+    body: 'Security fixes were finished, and the remaining holes in that version were closed.',
+  },
+  {
+    date: 'October 15',
+    iso: '2026-10-15',
+    title: BETA.on ? 'Ready for beta testing' : 'Ready for the first clients',
+    body: 'The first businesses can try the product.',
+    next: true,
+  },
+];
+
+const ahead = [
+  {
+    n: '01',
+    title: 'Test the portal',
+    body: 'Real businesses use the dashboard, and we learn what still breaks.',
+  },
+  {
+    n: '02',
+    title: 'Launch',
+    body: 'Open it to anyone who wants a site.',
+  },
+  {
+    n: '03',
+    title: 'Packages',
+    body: 'Add-ons on top of the site: a call button that counts every tap, a form that keeps the leads, and a review a customer can leave after a job. You see those in your portal. A person still checks every change before it goes live.',
+  },
+];
+---
+
+<BaseLayout
+  title="Roadmap"
+  description="From a freelance idea in June 2026 to a finished first version, and the three things that come after."
+>
+  <section class="section section--alt section--tight">
+    <div class="shell-narrow">
+      <div class="section-head" data-reveal>
+        <h1>The road so far.</h1>
+        <p class="lead">
+          From a freelance idea in June to a product the first businesses can try.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell-narrow">
+      <ol class="road">
+        {
+          milestones.map((m) => (
+            <li class:list={['road__item', { 'road__item--next': m.next }]} data-reveal>
+              <time class="road__when" datetime={m.iso}>{m.date}</time>
+              <div>
+                <h2>{m.title}</h2>
+                <p>{m.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--dark">
+    <div class="shell-narrow">
+      <div class="section-head" data-reveal>
+        <h2>After that.</h2>
+        <p class="lead">Three things, in order. None of them are built yet.</p>
+      </div>
+
+      <ol class="ahead">
+        {
+          ahead.map((item) => (
+            <li class="ahead__item" data-reveal>
+              <span class="ahead__num">{item.n}</span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tint">
+    <div class="shell-narrow" style="text-align:center" data-reveal>
+      <h2>Want in on the next step?</h2>
+      <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
+        <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .road {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .road__item {
+    display: grid;
+    gap: 0.35rem;
+    padding: var(--s-5) 0 var(--s-5) var(--s-4);
+    border-left: 1px solid var(--line);
+  }
+
+  .road__item:first-child { padding-top: 0; }
+  .road__item:last-child { padding-bottom: 0; }
+
+  .road__when {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .road__item h2 {
+    font-size: var(--t-h3);
+    margin-bottom: 0.35rem;
+  }
+
+  .road__item p {
+    margin: 0;
+    color: var(--ink-soft);
+    max-width: 40rem;
+  }
+
+  /* The next date, not a completed one. Accent on the rule and the date. */
+  .road__item--next { border-left-color: var(--accent); }
+  .road__item--next .road__when { color: var(--accent); }
+
+  .ahead {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-6);
+  }
+
+  .ahead__num {
+    font-family: var(--font-mono);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--ink-soft);
+  }
+
+  .section--dark .ahead__num { color: var(--footer-ink); }
+
+  .ahead__item h3 { margin: 0.35rem 0; }
+
+  .ahead__item p {
+    margin: 0;
+    max-width: 40rem;
+  }
+
+  @media (min-width: 720px) {
+    .road__item {
+      grid-template-columns: 8.5rem 1fr;
+      gap: var(--s-6);
+      align-items: start;
+    }
+  }
+</style>

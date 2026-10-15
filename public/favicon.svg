@@ -1,10 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" aria-hidden="true">
-  <!-- GetYourWebsite mark: a pointy-top hexagon holding two overlapping pages.
-       One flat fill. Inlined on the site (Wordmark.astro) the hexagon takes
-       currentColor and the pages take the mark-page custom property; this
-       standalone file is the indigo-on-white default. No double hyphens in
-       this comment: they are illegal in XML and break the file as a favicon. -->
-  <path d="M32 2 L58 17 L58 47 L32 62 L6 47 L6 17 Z" fill="#2f3dd6"/>
-  <rect x="18" y="18" width="18" height="18" fill="#ffffff"/>
-  <rect x="28" y="28" width="18" height="18" fill="#ffffff"/>
+  <!-- GetYourWebsite mark: a rounded pointy-top hexagon with one stepped cutout.
+       Traced from the brand lockup. Inlined on the site (Wordmark.astro) the
+       hexagon takes currentColor and the cutout takes the mark-page custom
+       property. This file is the indigo-on-white default. No double hyphens
+       in this comment: they are illegal in XML and break the file as a favicon. -->
+  <path d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z" fill="#2f3dd6"/>
+  <path d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z" fill="#ffffff"/>
 </svg>

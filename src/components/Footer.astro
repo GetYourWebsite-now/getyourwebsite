@@ -20,9 +20,6 @@ const year = new Date().getFullYear();
       <ul>
         <li><a href={url('/')}>Home</a></li>
         {NAV_LINKS.map((link) => <li><a href={url(link.href)}>{link.label}</a></li>)}
-        {/* Not in the nav bar, but worth a footer slot: someone who has read
-            the platform section may well want to click through to it. */}
-        <li><a href={url('/demo')}>Demo</a></li>
         {PORTAL_URL && (
           <li>
             <a href={PORTAL_URL} rel="noopener">Sign in</a>

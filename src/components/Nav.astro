@@ -5,7 +5,7 @@
  * Solid on every page including the home page: there is no longer a dark
  * hero for it to float over.
  */
-import { NAV_LINKS, PORTAL_URL, PRIMARY_CTA } from '../data/site.js';
+import { BETA, NAV_LINKS, PORTAL_URL, PRIMARY_CTA, SIGNUP_COUNT_URL } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
 import Wordmark from './Wordmark.astro';
 
@@ -14,6 +14,67 @@ const here = Astro.url.pathname;
 
 <header class="nav" data-nav>
   <a class="skip-link" href="#main">Skip to content</a>
+
+  {
+    BETA.on && (
+      <>
+        <a class="seat-banner" href={url(BETA.path)}>
+          <span class="seat-banner__n" data-signup-count></span> / <span class="seat-banner__n">{BETA.seats}</span> have signed up for the beta
+        </a>
+        <script is:inline define:vars={{ signupUrl: SIGNUP_COUNT_URL }}>
+          (function () {
+            var KEY = 'gyw-signups';
+            var FAIL = 'gyw-signups-fail';
+            var HOUR = 60 * 60 * 1000;
+            var el = document.querySelector('[data-signup-count]');
+            var banner = el && el.closest('.seat-banner');
+            if (!el || !banner) return;
+
+            function valid(n) {
+              return typeof n === 'number' && Number.isInteger(n) && n >= 0;
+            }
+            function show(n) {
+              if (!valid(n)) return;
+              el.textContent = String(n);
+              banner.classList.add('is-ready');
+            }
+            function read() {
+              try {
+                var data = JSON.parse(localStorage.getItem(KEY) || '');
+                if (!data || !valid(data.count) || typeof data.at !== 'number') return null;
+                return data;
+              } catch (e) {
+                return null;
+              }
+            }
+
+            var cached = read();
+            if (cached) show(cached.count);
+            if (cached && Date.now() - cached.at < HOUR) return;
+            try {
+              if (sessionStorage.getItem(FAIL)) return;
+            } catch (e) {}
+
+            fetch(signupUrl)
+              .then(function (res) {
+                if (!res.ok) throw new Error('signup count');
+                return res.json();
+              })
+              .then(function (body) {
+                if (!body || !valid(body.count)) throw new Error('signup count');
+                try {
+                  localStorage.setItem(KEY, JSON.stringify({ count: body.count, at: Date.now() }));
+                } catch (e) {}
+                show(body.count);
+              })
+              .catch(function () {
+                try { sessionStorage.setItem(FAIL, '1'); } catch (e) {}
+              });
+          })();
+        </script>
+      </>
+    )
+  }
 
   <div class="nav__inner shell">
     <a class="nav__brand" href={url('/')} aria-label="GetYourWebsite — home">
@@ -70,11 +131,6 @@ const here = Astro.url.pathname;
           </a>
         ))
       }
-      {/* Demo is out of the desktop bar but belongs in the drawer: on a
-          phone this list is the whole site. */}
-      <a href={url('/demo')} aria-current={isActive(here, '/demo') ? 'page' : undefined}>
-        Demo
-      </a>
       <a class="btn btn--primary nav__drawer-cta" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
@@ -94,6 +150,35 @@ const here = Astro.url.pathname;
     z-index: 100;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
+  }
+
+  /* Seat count. Hidden until the script has a number, so a failed
+     request never paints a made-up zero. Tabular nums on the figures
+     only — tnum on the whole line widens the slash. */
+  .seat-banner:not(.is-ready) { display: none; }
+
+  .seat-banner {
+    display: block;
+    background: var(--bg-alt);
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    padding: 0.55rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .seat-banner:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .seat-banner__n {
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
   }
 
   .nav__inner {
@@ -239,10 +324,8 @@ const here = Astro.url.pathname;
 
   /* Desktop --------------------------------------------------------------- */
 
-  /* 1060, not 900. The desktop row carries five links, a Sign in link and the
-     CTA; at 900 it had 81px of slack before any of that was added, so the
-     burger keeps the job further up than it used to. Below this the drawer
-     holds everything comfortably. */
+  /* 1060, not 900. The desktop row carries the page links, Sign in and the
+     CTA. Below this the drawer holds everything comfortably. */
   @media (min-width: 1060px) {
     .nav__signin { display: inline-flex; }
 

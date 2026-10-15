@@ -65,10 +65,16 @@ const lines = isStartup
 
   <header class="tier__head">
     <h3 class="tier__name">{tier.name}</h3>
+    {
+      discounted && (
+        <p class="tier__was-line">
+          <s class="tier__was"><span class="sr-only">List price </span>{money(listPrice)}</s>
+        </p>
+      )
+    }
     <p class="tier__price">
-      {discounted && <s class="tier__was"><span class="sr-only">List price </span>{money(listPrice)}</s>}
-      {discounted && <span class="sr-only">, beta price </span>}
-      {money(charged)}
+      {discounted && <span class="sr-only">Beta price </span>}
+      <span class="tier__fig">{money(charged)}</span>
       {!isStartup && <span class="tier__period">/mo</span>}
     </p>
     {isStartup && <p class="tier__period tier__period--below">one-time</p>}
@@ -141,23 +147,20 @@ const lines = isStartup
   .tier__price {
     display: flex;
     align-items: baseline;
-    gap: 0.45rem;
-    flex-wrap: wrap;
+    gap: 0.12rem;
     /* Inter, not the mono. A price is the largest thing on the card and
        mono figures read as a terminal readout rather than a number someone
-       is being asked to pay. tabular-nums keeps the three cards' digits on
-       the same rhythm, which is the only thing mono was buying here.
-       Tracking is looser than the mono's -0.045em because that value was
-       tuned for a monospaced face and is cramped on Inter. */
+       is being asked to pay. tabular-nums is on the figure only: on the
+       whole line it would also widen the slash in "/mo". */
     font-family: var(--font-body);
-    font-variant-numeric: tabular-nums;
     font-size: clamp(2.5rem, 2.1rem + 1.4vw, 3rem);
     font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1;
     color: var(--ink);
-    margin-bottom: var(--s-3);
   }
+
+  .tier__fig { font-variant-numeric: tabular-nums; }
 
   .tier__period {
     font-family: var(--font-body);
@@ -167,16 +170,21 @@ const lines = isStartup
     color: var(--ink-muted);
   }
 
-  .tier__period--below { margin-top: calc(var(--s-3) * -0.5); }
+  .tier__period--below { margin-top: 0.35rem; }
 
-  /* The list price, struck through while beta is on. Muted and smaller, so
-     the eye lands on the price being asked for; the strike is what says the
-     two are related. */
+  /* The list price sits on its own line above the figure, struck through.
+     Inline, the grey number collided with the black one and the strike was
+     hard to see at that size. --ink-soft, not --ink-muted: this is a price
+     someone might compare, and muted is the caption grey. */
+  .tier__was-line { margin-bottom: 0.4rem; }
+
   .tier__was {
-    font-size: 0.55em;
+    font-size: 1.0625rem;
     font-weight: 500;
-    color: var(--ink-muted);
-    text-decoration-thickness: 2px;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+    text-decoration-thickness: 1.5px;
+    font-variant-numeric: tabular-nums;
   }
 
   .tier__teaser-line {
@@ -208,11 +216,14 @@ const lines = isStartup
 
   /* Pushed to the bottom with the button, so a row of cards lines up on
      both. */
+  /* The deal: this is the line that says a larger plan costs less per
+     change, so it is body ink, not the caption grey. Tabular figures on
+     the whole line would widen the spaces in "per revision". */
   .tier__per {
     margin-top: auto;
     font-size: var(--t-small);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink-muted);
+    font-weight: 550;
+    color: var(--ink);
   }
 
   .tier__cta { margin-top: var(--s-4); width: 100%; }

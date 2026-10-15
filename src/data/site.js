@@ -36,6 +36,10 @@ export const FORMSPREE_FORM_ID = 'xqpkrbez';
  *
  * `discount` applies to the Startup tiers only; Maintenance is list price
  * either way. /beta-terms says so, and reads these same numbers.
+ *
+ * `seats` is the number on the seat banner. How many of those seats are
+ * taken is not stored here: the banner asks SIGNUP_COUNT_URL and keeps the
+ * answer in the browser for an hour.
  */
 export const BETA = {
   on: true,
@@ -44,6 +48,13 @@ export const BETA = {
   cta: 'Join the beta',
   path: '/beta',
 };
+
+/**
+ * Public count of people who have signed up. `{ count: number }`.
+ * The seat banner reads it in the browser and caches it for an hour.
+ */
+export const SIGNUP_COUNT_URL =
+  'https://backend-production-f9d29.up.railway.app/api/public/signups';
 
 // tools/beta-check.mjs builds once each way by setting GYW_BETA. Nothing else
 // should set it; the line above is the switch. `typeof process` so the file
@@ -73,18 +84,18 @@ export const TIER_CTA = BETA.on
 export const SOCIALS = [];
 
 /**
- * The four links in the middle of the nav bar.
+ * The links in the middle of the nav bar. The footer uses the same list.
  *
- * Demo is deliberately not one of them: it is linked from How it works and
- * from the home page's platform section, which is where someone is actually
- * curious about it, and a shorter bar gives the CTA more room. Benefits is
- * gone entirely — merged into /why-us, with a redirect in astro.config.mjs.
+ * Benefits is gone entirely — merged into /why-us, with a redirect in
+ * astro.config.mjs.
  */
 export const NAV_LINKS = [
   { label: 'Our Work', href: '/work' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'How it works', href: '/how-it-works' },
   { label: 'Why Us', href: '/why-us' },
+  { label: 'Demo', href: '/demo' },
+  { label: 'Roadmap', href: '/roadmap' },
 ];
 
 /**

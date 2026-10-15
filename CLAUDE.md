@@ -64,14 +64,18 @@ is not real about it goes in the "What's different from the real thing" list on
 **3. The design is light, one accent, and subtle depth in listed places
 only.** "Still Stripe, not ClickUp": a plumber has to trust it. The specifics:
 
-- Sections alternate `--bg` and `--bg-alt`. **Two dark surfaces: the footer,
-  and the home page's platform band** (`.section--dark`, STEP 10).
-  `npm run verify` fails on a third, or on a dark band anywhere but `/`.
-- **Depth is a fixed list** (`global.css`, "Depth"): grain and one radial
-  light on four home sections — hero, merge stage, dark band, closing CTA —
-  and nowhere else; `--lift` on tier cards, case-study frames, drawing wells
-  and the hero browser frame; a hover-only light edge on primary buttons.
-  `verify` checks the list, the exact light, the grain's opacity and blend.
+- Sections alternate `--bg` and `--bg-alt`. **Dark surfaces: the footer,
+  the home page's platform band, and one header or transition on Why us,
+  How it works, Pricing, Our work, the roadmap and Contact**
+  (`.section--dark`). `npm run verify` fails on a dark band anywhere else,
+  or on a second one on those pages.
+- **Depth is on every page section** (`global.css`, "Depth"): grain and one
+  radial light, and nowhere on the footer. `--lift` on tier cards,
+  case-study frames, drawing wells and the hero browser frame; a hover-only
+  light edge on primary buttons. Grain is 14% multiply on light surfaces and
+  28% screen on the dark band. The hero's grain is the accent-tinted noise
+  at 36%, masked so it is strongest at the top-left corner. `verify` checks
+  the exact light, the grain's opacity and blend.
   `grep -rn "linear-gradient\|radial-gradient" src` returns those lines and
   no others.
 - **No gradient on text, no gradient fill on the mark, no glow, blur, glass,

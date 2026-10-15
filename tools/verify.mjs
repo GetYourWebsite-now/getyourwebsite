@@ -9,8 +9,8 @@
  *   3  reduced motion leaves a still, fully readable page
  *   4  the contact form validates and fails loudly when it can't send
  *   5  every button comes from the shared system
- *   6  surfaces: depth only where STEP 10 put it, one dark band, and
- *      sections alternate
+ *   6  surfaces: grain and light on every page section, dark bands only
+ *      where they are allowed, and sections alternate
  *   7  the static captures of the portal aren't from a previous design
  *
  * `npm run verify` also runs tools/words.mjs, the per-page word budget.
@@ -21,7 +21,7 @@ import { chromium } from 'playwright';
 import sharp from 'sharp';
 
 const BASE = process.env.BASE ?? 'http://localhost:4321';
-const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/why-us', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/privacy', '/terms', '/cookies', '/beta-terms'];
+const PAGES = ['/', '/work', '/demo', '/pricing', '/how-it-works', '/why-us', '/roadmap', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/privacy', '/terms', '/cookies', '/beta-terms'];
 
 
 
@@ -534,34 +534,34 @@ ripples === 0
 
 // ── 6. Surfaces ────────────────────────────────────────────────────────────
 // The old design gave every dark section a drifting star field and a sheen.
-// This one is light, with a little depth in exactly four places (STEP 10),
+// This one is light, with grain and one indigo light on every page section,
 // one dark band, and sections that alternate. Each of those is easy to undo
 // or spread by accident — a `background: radial-gradient` on a section reads
 // as harmless in a diff — so each is a test:
 //
-//   depth    only on the home page's hero, merge stage, dark band and CTA
-//            band; on each, one radial light at a top corner in the
-//            indigo the brief allows, and a grain ::before at 3–4% through
-//            multiply (screen on the dark band). Nothing else on any section
-//            or the footer has a background image or an animation.
-//   dark     the footer, plus exactly one .section--dark, on the home page.
+//   depth    every page section, and nowhere on the footer: one radial light
+//            at a top corner in the indigo the brief allows, and a grain
+//            ::before at 14% through multiply (36% on the hero, 28% screen
+//            on the dark band).
+//            Nothing else has a background image or an animation.
+//   dark     the footer, plus one .section--dark: the home platform band,
+//            and a header or transition on why-us, how-it-works, pricing,
+//            work, roadmap and contact. One each, nowhere else.
 //   rhythm   no two adjacent sections share a surface.
 console.log('\n[6] Surfaces');
 
-const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/why-us', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/cookies', '/beta-terms'];
-const DEPTH_HOME = ['section--hero', 'section--stage', 'section--dark', 'cta-band'];
+const SURFACE_PAGES = ['/', '/pricing', '/work', '/how-it-works', '/why-us', '/roadmap', '/contact', '/beta', '/beta/thanks', '/free-mock', '/free-mock/thanks', '/cookies', '/beta-terms'];
 
 let atmosphere = [];
 let darkSurfaces = [];
 let repeats = [];
-let depthFound = [];
 
 for (const path of SURFACE_PAGES) {
   await page.goto(`${BASE}${path}`, { waitUntil: 'networkidle' });
   await page.waitForTimeout(400);
 
-  const found = await page.evaluate(({ p, DEPTH_HOME }) => {
-    const out = { atmos: [], dark: [], repeat: [], depth: [] };
+  const found = await page.evaluate(({ p }) => {
+    const out = { atmos: [], dark: [], repeat: [] };
     const lum = (c) => {
       const m = c.match(/\d+(\.\d+)?/g);
       if (!m) return 1;
@@ -569,14 +569,12 @@ for (const path of SURFACE_PAGES) {
       const f = (v) => { v /= 255; return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); };
       return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b);
     };
-    const name = (el) => DEPTH_HOME.find((c) => el.classList.contains(c))
-      || el.className.split(' ').find((c) => c.startsWith('section--') || c === 'foot') || 'section';
+    const name = (el) => el.className.split(' ').find((c) => c.startsWith('section--') || c === 'foot') || 'section';
     const LIGHT = /^radial-gradient\(60% 50% at (30|70)% 20%, rgba\(47, 61, 214, (0\.06|0\.18)\), rgba\(0, 0, 0, 0\) 70%\)$/;
 
     for (const el of document.querySelectorAll('.section, .foot')) {
-      const allowed = p === '/' && el.classList.contains('depth') && DEPTH_HOME.some((c) => el.classList.contains(c));
+      const allowed = el.classList.contains('section');
       const dark = el.classList.contains('section--dark');
-      if (el.classList.contains('depth')) out.depth.push(`${p} ${name(el)}`);
 
       for (const pseudo of [null, '::before', '::after']) {
         const cs = getComputedStyle(el, pseudo);
@@ -594,18 +592,35 @@ for (const path of SURFACE_PAGES) {
           const o = +cs.opacity;
           const blend = dark ? 'screen' : 'multiply';
           if (!/^url\("data:image\/svg\+xml/.test(img) || !img.includes('feTurbulence')) out.atmos.push(`${where} grain is not the --grain noise`);
-          if (o < 0.03 || o > 0.04) out.atmos.push(`${where} grain at ${o}, outside 3–4%`);
+          const hero = el.classList.contains('section--hero');
+          const want = dark ? 0.28 : hero ? 0.36 : 0.14;
+          if (Math.abs(o - want) > 0.005) out.atmos.push(`${where} grain at ${o}, expected ${want}`);
           if (cs.mixBlendMode !== blend) out.atmos.push(`${where} grain blends ${cs.mixBlendMode}, should be ${blend}`);
         } else {
           out.atmos.push(`${where} background-image`);
         }
       }
+      if (allowed) {
+        const light = getComputedStyle(el).backgroundImage;
+        const grain = getComputedStyle(el, '::before').backgroundImage;
+        if (!light || light === 'none') out.atmos.push(`${p} ${name(el)} is missing the light`);
+        if (!grain || grain === 'none') out.atmos.push(`${p} ${name(el)} is missing the grain`);
+      }
     }
 
-    // Dark: the footer, and the home page's one band.
+    // Dark: the footer, the home platform band, and a header or transition
+    // on why-us, how-it-works, pricing, work, roadmap and contact.
+    const darkHere = {
+      '/': 1, '/why-us': 1, '/how-it-works': 1, '/pricing': 1, '/work': 1,
+      '/roadmap': 1, '/contact': 1,
+    };
     for (const el of document.querySelectorAll('.section')) {
       if (lum(getComputedStyle(el).backgroundColor) < 0.4) {
-        out.dark.push({ ok: p === '/' && el.classList.contains('section--dark'), where: `${p} ${el.className}` });
+        out.dark.push({
+          ok: el.classList.contains('section--dark') && darkHere[p] === 1,
+          page: p,
+          where: `${p} ${el.className}`,
+        });
       }
     }
 
@@ -622,28 +637,24 @@ for (const path of SURFACE_PAGES) {
       }
     }
     return out;
-  }, { p: path, DEPTH_HOME });
+  }, { p: path });
 
   atmosphere.push(...found.atmos);
   darkSurfaces.push(...found.dark);
   repeats.push(...found.repeat);
-  depthFound.push(...found.depth);
 }
 
 atmosphere.length === 0
-  ? pass(`depth only where allowed, and only the allowed light and grain (${SURFACE_PAGES.length} pages)`)
+  ? pass(`every page section has the light and the grain, and the footer has neither (${SURFACE_PAGES.length} pages)`)
   : fail(`atmosphere outside the depth system: ${atmosphere.slice(0, 4).join('; ')}`);
 
-const homeDepth = depthFound.filter((d) => d.startsWith('/ '));
-homeDepth.length === DEPTH_HOME.length && depthFound.length === DEPTH_HOME.length
-  ? pass(`depth on exactly the ${DEPTH_HOME.length} home sections the brief names: ${homeDepth.map((d) => d.slice(2)).join(', ')}`)
-  : fail(`depth on ${depthFound.length} section(s), expected the ${DEPTH_HOME.length} on /: ${depthFound.join('; ')}`);
-
 const strayDark = darkSurfaces.filter((d) => !d.ok);
-const bands = darkSurfaces.filter((d) => d.ok);
-strayDark.length === 0 && bands.length === 1
-  ? pass('two dark surfaces: the footer, and the one band on the home page')
-  : fail(`dark sections: ${bands.length} band(s) on / (want 1), strays: ${strayDark.map((d) => d.where).slice(0, 4).join('; ') || 'none'}`);
+const wantDark = ['/', '/why-us', '/how-it-works', '/pricing', '/work', '/roadmap', '/contact'];
+const darkCount = Object.fromEntries(wantDark.map((p) => [p, darkSurfaces.filter((d) => d.ok && d.page === p).length]));
+const darkOk = strayDark.length === 0 && wantDark.every((p) => darkCount[p] === 1);
+darkOk
+  ? pass('dark bands: the home platform section, the why-us and how-it-works and work headers, the pricing revision band, and the roadmap and contact transitions')
+  : fail(`dark sections: ${wantDark.map((p) => `${p} ${darkCount[p]}`).join(', ')} (want 1 each), strays: ${strayDark.map((d) => d.where).slice(0, 4).join('; ') || 'none'}`);
 
 repeats.length === 0
   ? pass('no two adjacent sections share a surface on any page')

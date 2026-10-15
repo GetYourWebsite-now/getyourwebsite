@@ -18,6 +18,10 @@ import { BETA, CONTACT_EMAIL } from '../data/site.js';
  * analytics, a chat widget, the Meta Pixel — and change this page in the
  * same commit. META_PIXEL_ID in particular: setting it makes the "not
  * currently in use" line below false.
+ *
+ * While beta is on, the seat banner stores the public signup count in
+ * local storage for an hour (gyw-signups) and, if that request fails, a
+ * flag in session storage for the rest of the visit (gyw-signups-fail).
  */
 const landing = BETA.on ? '/beta' : '/free-mock';
 const forms = BETA.on ? 'contact and beta forms' : 'contact and free-mock forms';
@@ -31,11 +35,21 @@ const forms = BETA.on ? 'contact and beta forms' : 'contact and free-mock forms'
 >
   <h2>What this website sets</h2>
   <p>
-    <strong>Nothing.</strong> We checked every page: getyourwebsite.now sets no
-    cookies of its own and stores nothing in your browser's local or session
-    storage. That includes the <a href={url('/demo')}>demo</a>, which keeps
-    everything in memory and forgets it when you leave the page.
+    {
+      BETA.on ? (
+        <>
+          <strong>The beta count.</strong> The banner at the top of the site shows how many people have signed up for the beta. Your browser asks backend-production-f9d29.up.railway.app for that count, then keeps the number in local storage for an hour so the next page does not ask again. If the request fails, it remembers that for the rest of the visit and does not ask again. The number is the same for every visitor. It is not tied to you.
+        </>
+      ) : (
+        <>
+          <strong>Nothing.</strong> We checked every page: getyourwebsite.now sets no
+          cookies of its own and stores nothing in your browser's local or session
+          storage.
+        </>
+      )
+    }
   </p>
+  <p>The <a href={url('/demo')}>demo</a> keeps everything in memory and forgets it when you leave the page.</p>
 
   <h2>Cloudflare</h2>
   <p>

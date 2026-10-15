@@ -82,7 +82,7 @@ const description =
   </section>
 
   <!-- 4. What a revision is ----------------------------------------------- -->
-  <section class="section section--tight">
+  <section class="section section--dark section--tight">
     <div class="shell-narrow revision" data-reveal>
       <h2>What a revision is</h2>
       <p>
@@ -165,8 +165,10 @@ const description =
     padding-left: var(--s-3);
     border-left: 2px solid var(--line-input);
     font-size: var(--t-small);
-    color: var(--ink-muted);
+    color: var(--ink-soft);
   }
+
+  .disclaimer a { white-space: nowrap; }
 
   /* What a revision is --------------------------------------------------- */
 
@@ -175,7 +177,7 @@ const description =
     margin-bottom: var(--s-3);
   }
 
-  .revision p { color: var(--ink-soft); }
+  .revision p { margin: 0; }
 
   /* Every plan includes --------------------------------------------------- */
 
@@ -212,7 +214,7 @@ const description =
   .includes__note {
     margin-top: var(--s-4);
     font-size: var(--t-small);
-    color: var(--ink-muted);
+    color: var(--ink-soft);
   }
 
   @media (min-width: 760px) {
