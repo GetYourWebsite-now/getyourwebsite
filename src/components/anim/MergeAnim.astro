@@ -75,8 +75,7 @@
  * One 8s loop. The mark is already there, faint. Paths draw in from the
  * outside over 1.2s, the pairs 120ms apart. The fill waits until those
  * lines have reached the mark (0.64s), then comes in from each side on an
- * exponential ease, and the mark flashes brighter for a moment once it is
- * solid, the way the reference clip does. Lines and the fill hold, then
+ * exponential ease. Lines and the fill hold, then
  * leave together; the faint mark stays for the next pass. The price
  * figures bounce in one after another on that first play, and stay put on
  * every later loop. Nothing starts until the page has loaded and the whole
@@ -161,9 +160,6 @@ const down = FROM.flatMap(([l, r]) => [
       <path class="merge__hex" d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
       <path class="merge__page" d="M27.25 36.69L27.37 36.81L27.37 44.22L27.25 44.35L27.49 45.21L28.48 46.07L44.78 46.07L45.27 45.83L46.01 44.84L46.01 28.67L45.89 28.30L44.90 27.43L36.75 27.43L36.63 27.31L36.63 19.90L36.75 19.78L36.51 18.91L35.52 18.05L19.22 18.05L18.73 18.30L17.99 19.28L17.99 35.46L18.11 35.83L19.10 36.69L27.12 36.69Z"></path>
     </svg>
-    <svg class="merge__flash" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <path d="M31.32 2.37L32.68 2.37L33.42 2.62L56.63 15.95L57.74 16.94L58.23 18.05L58.23 45.95L57.74 47.06L57.00 47.80L55.77 48.54L33.42 61.38L32.68 61.63L31.32 61.63L29.72 60.89L7.62 48.17L6.26 47.06L5.77 45.95L5.77 18.05L6.14 17.19L7.00 16.20L8.23 15.46L29.72 3.11L30.83 2.49L31.20 2.49Z"></path>
-    </svg>
   </div>
 
   <div class="merge__ours">
@@ -216,8 +212,7 @@ const down = FROM.flatMap(([l, r]) => [
 
   .merge__hub { grid-column: 1 / -1; grid-row: 3; position: relative; display: flex; justify-content: center; }
   .merge__mark,
-  .merge__ghost,
-  .merge__flash { width: auto; height: 88px; overflow: visible; }
+  .merge__ghost { width: auto; height: 88px; overflow: visible; }
   .merge__ghost {
     position: absolute;
     left: 50%;
@@ -379,8 +374,7 @@ const down = FROM.flatMap(([l, r]) => [
 
     .merge__hub { grid-column: 3; grid-row: 2; align-self: center; }
     .merge__mark,
-    .merge__ghost,
-    .merge__flash { height: 112px; }
+    .merge__ghost { height: 112px; }
 
     /* Ours: header and verb on the headers' row, price on the prices' row,
        both across the middle three columns. */
@@ -461,30 +455,6 @@ const down = FROM.flatMap(([l, r]) => [
     0%, 8%   { mask-position: 0% 0; -webkit-mask-position: 0% 0; opacity: 1; }
     16%, 95% { mask-position: 100% 0; -webkit-mask-position: 100% 0; opacity: 1; }
     100%     { mask-position: 0% 0; -webkit-mask-position: 0% 0; opacity: 0; }
-  }
-
-  /* The clip's flash: the mark brightens as the seam closes, then settles.
-     Screen on the hex only, so it stays inside the logo. */
-  .merge__flash {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
-    transform: translate(-50%, -50%);
-    mix-blend-mode: screen;
-    opacity: 0;
-    pointer-events: none;
-    animation: merge-flash 8s linear infinite both;
-  }
-  .merge__flash path { fill: #fff; }
-
-  @keyframes merge-flash {
-    0%, 16% { opacity: 0; }
-    16.7%   { opacity: 0.62; }
-    17.6%   { opacity: 0.28; }
-    19%     { opacity: 0.1; }
-    21%     { opacity: 0; }
-    100%    { opacity: 0; }
   }
 
 </style>
