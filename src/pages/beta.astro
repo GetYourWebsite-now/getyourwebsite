@@ -16,6 +16,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
+import PromoCode from '../components/PromoCode.astro';
 import { BETA, BETA_PERCENT, LIVE_SITES, FORMSPREE_FORM_ID } from '../data/site.js';
 import { url } from '../data/url.js';
 
@@ -32,7 +33,7 @@ const action = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
 
 <BaseLayout
   title="Join the beta"
-  description={`We build, host and keep your website current, and a person checks every change before it goes live. The first ${BETA.seats} businesses get ${BETA_PERCENT} off.`}
+  description={`We build, host and keep your website current, and a person checks every change before it goes live. The first ${BETA.seats} businesses get ${BETA_PERCENT} off Startup with code ${BETA.code}.`}
   bare
   noindex
 >
@@ -45,7 +46,7 @@ const action = `https://formspree.io/f/${FORMSPREE_FORM_ID}`;
         <p class="lead fm__lead">
           We build, host and keep your website current, and a person checks
           every change before it goes live. We're taking on a small number of
-          businesses while we finish the product — the first {BETA.seats} at {BETA_PERCENT} off.
+          businesses while we finish the product — the first {BETA.seats} at {BETA_PERCENT} off Startup with code <PromoCode />.
           Tell us about yours.
         </p>
 

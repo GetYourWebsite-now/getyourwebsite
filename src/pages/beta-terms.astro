@@ -1,5 +1,6 @@
 ---
 import LegalLayout from '../layouts/LegalLayout.astro';
+import PromoCode from '../components/PromoCode.astro';
 import { url } from '../data/url.js';
 import { BETA, BETA_PERCENT, CONTACT_EMAIL } from '../data/site.js';
 
@@ -15,7 +16,7 @@ import { BETA, BETA_PERCENT, CONTACT_EMAIL } from '../data/site.js';
 
 <LegalLayout
   title="Beta terms"
-  description={`How the GetYourWebsite beta works: limited places, ${BETA_PERCENT} off Startup plans for the first ${BETA.seats} businesses, and what happens if the beta ends.`}
+  description={`How the GetYourWebsite beta works: limited places, ${BETA_PERCENT} off Startup plans for the first ${BETA.seats} businesses with code ${BETA.code}, and what happens if the beta ends.`}
   heading="Beta terms"
   lead="How the beta works, in plain terms. These sit alongside our Terms of Service."
 >
@@ -28,7 +29,8 @@ import { BETA, BETA_PERCENT, CONTACT_EMAIL } from '../data/site.js';
   <h2>The discount</h2>
   <p>
     The first {BETA.seats} businesses we take on get {BETA_PERCENT} off any
-    Startup plan. Maintenance plans are at the list price shown on our
+    Startup plan, under promotion code <PromoCode />. The prices on our pricing
+    page are already that rate. Maintenance plans are at the list price shown on our
     <a href={url('/pricing')}>pricing page</a>.
   </p>
 

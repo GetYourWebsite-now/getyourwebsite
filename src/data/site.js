@@ -37,13 +37,17 @@ export const FORMSPREE_FORM_ID = 'xqpkrbez';
  * `discount` applies to the Startup tiers only; Maintenance is list price
  * either way. /beta-terms says so, and reads these same numbers.
  *
+ * `code` is the promotion code for that rate. The prices on the site are
+ * already the discounted ones — the portal checkout does not ask for a code.
+ *
  * `seats` is the number on the seat banner. How many of those seats are
  * taken is not stored here: the banner asks SIGNUP_COUNT_URL and keeps the
  * answer in the browser for an hour.
  */
 export const BETA = {
   on: true,
-  discount: 0.30,
+  discount: 0.75,
+  code: 'BETA75',
   seats: 30,
   cta: 'Join the beta',
   path: '/beta',
@@ -62,7 +66,7 @@ export const SIGNUP_COUNT_URL =
 const forcedBeta = typeof process !== 'undefined' ? process.env.GYW_BETA : undefined;
 if (forcedBeta === 'on' || forcedBeta === 'off') BETA.on = forcedBeta === 'on';
 
-/** "30%", from BETA.discount, for the sentences that quote it. */
+/** "75%", from BETA.discount, for the sentences that quote it. */
 export const BETA_PERCENT = `${Math.round(BETA.discount * 100)}%`;
 
 /** The primary call to action, everywhere one appears: nav, hero, footer, closing bands. */
@@ -283,7 +287,8 @@ export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
  * and a monthly Maintenance plan with included revisions each month and a
  * metered price per extra revision. No page limits, no Custom tier. The tiers
  * below differ only in how many revisions are included, and the price per
- * revision falls as you go up.
+ * revision falls as you go up. `fit` is who the tier is for — guidance, not
+ * a different product.
  *
  * This is the only place in the repo that holds a price. Every price on the
  * site is formatted from these integers (and from BETA.discount) by the
@@ -292,29 +297,29 @@ export const CONCEPT_PROJECTS = PROJECTS.filter((p) => p.kind === 'concept');
  *
  * As of 2026-10-15 the backend has ONE Startup product (30 revisions, at the
  * old $900) and ONE Maintenance product (6 revisions at the old $49, $5
- * extras). Every figure below differs from Stripe: the tiers, the prices and
- * the $7 extra. Beta is invite-only, so nothing can be bought from the site —
- * but Stripe has to match this file before the first beta client checks out.
+ * extras). Every figure below differs from Stripe. Beta is invite-only, so
+ * nothing can be bought from the site — but Stripe has to match this file
+ * before the first beta client checks out.
  *
  * No delivery times, deliberately. The only data point we have is Allergy
  * Rescue Kit at 24 build rounds, which supports no defensible estimate. The
  * only time promise on the site is the reply one: within one business day.
  */
 export const STARTUP_TIERS = [
-  { id: 'startup-10', name: 'Startup 10', price: 800, revisions: 10 },
-  { id: 'startup-30', name: 'Startup 30', price: 1200, revisions: 30, popular: true },
-  { id: 'startup-60', name: 'Startup 60', price: 1600, revisions: 60 },
+  { id: 'startup', name: 'Startup', price: 799, revisions: 8, fit: 'For a smaller site.' },
+  { id: 'established', name: 'Established', price: 999, revisions: 20, fit: 'For a more established business.', popular: true },
+  { id: 'complete', name: 'Complete', price: 1199, revisions: 35, fit: 'For a site with more to say.' },
 ];
 export const STARTUP_REVISIONS_EXPIRE_DAYS = 90;
 
 export const MAINTENANCE_TIERS = [
-  { id: 'care-6', name: 'Maintenance 6', monthly: 59, revisions: 6 },
-  { id: 'care-15', name: 'Maintenance 15', monthly: 109, revisions: 15 },
-  { id: 'care-40', name: 'Maintenance 40', monthly: 199, revisions: 40 },
+  { id: 'light', name: 'Light', monthly: 30, revisions: 1, fit: 'For a site that rarely changes.' },
+  { id: 'regular', name: 'Regular', monthly: 65, revisions: 3, fit: 'For steady changes through the month.' },
+  { id: 'active', name: 'Active', monthly: 125, revisions: 8, fit: 'For a site that changes often.' },
 ];
 
 /** Per extra revision on Maintenance, metered onto the monthly invoice. */
-export const EXTRA_REVISION = 7;
+export const EXTRA_REVISION = 25;
 
 /** "$1,200", "$8.17". Whole dollars print without cents. */
 export function money(n) {

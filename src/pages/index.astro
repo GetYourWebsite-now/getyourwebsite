@@ -8,6 +8,7 @@ import ClickToChange from '../components/anim/ClickToChange.astro';
 import PhotoDrop from '../components/anim/PhotoDrop.astro';
 import DomainConnect from '../components/anim/DomainConnect.astro';
 import PortalHost from '../components/anim/PortalHost.astro';
+import PromoCode from '../components/PromoCode.astro';
 import {
   BETA,
   BETA_PERCENT,
@@ -59,13 +60,6 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
             <span class="sr-only">— Allergy Rescue Kit (opens in a new tab)</span>
           </a>
         </div>
-        {
-          BETA.on && (
-            <p class="hero__beta">
-              In beta. We're taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
-            </p>
-          )
-        }
         {/* One line, so the separator does not pick up a text node from a
             newline (CLAUDE.md, trap 3). */}
         <p class="hero__live">
@@ -294,7 +288,7 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
           <>
             <h2 class="cta-band__title">We're in beta. Want in?</h2>
             <p class="lead" style="margin-inline:auto">
-              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup. Tell us about yours.
+              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup with code <PromoCode />. Tell us about yours.
             </p>
           </>
         ) : (
@@ -350,17 +344,6 @@ const maintenanceLine = `Hosting and upkeep: Maintenance from ${money(MAINTENANC
   }
 
   .hero__cta { margin-top: var(--s-5); }
-
-  /* The beta note and the live-sites line. --ink-soft, not --ink-muted:
-     this section carries grain, and muted text under it drops under AA. */
-  .hero__beta {
-    margin-top: var(--s-4);
-    font-size: var(--t-small);
-    color: var(--ink-soft);
-    max-width: 30rem;
-  }
-
-  .hero__beta + .hero__live { margin-top: var(--s-2); }
 
   /* Quiet, and deliberately below the buttons: it is corroboration for
      someone already interested, not a competing call to action. */

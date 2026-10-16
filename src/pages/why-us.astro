@@ -22,6 +22,7 @@
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
+import PromoCode from '../components/PromoCode.astro';
 import WebsiteCompare from '../components/WebsiteCompare.astro';
 import {
   BETA,
@@ -216,7 +217,7 @@ const OUTCOMES = [
           <>
             <h2 class="cta-band__title">We're in beta. Want in?</h2>
             <p class="lead" style="margin-inline:auto">
-              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup. Tell us about yours.
+              The first {BETA.seats} businesses get {BETA_PERCENT} off Startup with code <PromoCode />. Tell us about yours.
             </p>
           </>
         ) : (

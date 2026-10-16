@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import TierCard from '../components/TierCard.astro';
 import Faq from '../components/Faq.astro';
+import PromoCode from '../components/PromoCode.astro';
 import {
   BETA,
   BETA_PERCENT,
@@ -37,8 +38,8 @@ const description =
         <h1>Pay for changes, not pages.</h1>
         <p class="lead">
           Every site starts with a Startup plan. Keep it current with a
-          Maintenance plan. Both are priced by how many changes you'll want —
-          and the more you include, the less each one costs.
+          Maintenance plan. You pay for revisions, and one revision can
+          include as many changes as you want.
         </p>
       </div>
     </div>
@@ -59,7 +60,7 @@ const description =
       {
         BETA.on && (
           <p class="disclaimer" data-reveal>
-            Beta prices: {BETA_PERCENT} off Startup for the first {BETA.seats} businesses.
+            Beta prices: {BETA_PERCENT} off Startup for the first {BETA.seats} businesses, promotion code <PromoCode />.
             Maintenance is list price. <a href={url('/beta-terms')}>How the beta works</a>
           </p>
         )
@@ -84,11 +85,11 @@ const description =
   <!-- 4. What a revision is ----------------------------------------------- -->
   <section class="section section--dark section--tight">
     <div class="shell-narrow revision" data-reveal>
-      <h2>What a revision is</h2>
+      <h2>As many changes as you want</h2>
       <p>
-        One change request, sent from your portal, applied as a new version.
-        "Make the hero warmer and swap the photo" is one revision. A person
-        reviews each one before it goes live.
+        One revision is one request from your portal. Put everything in it —
+        a new headline, three photos, and another page are still one revision.
+        A person reviews it before it goes live.
       </p>
     </div>
   </section>
@@ -136,7 +137,7 @@ const description =
           <>
             <h2 class="cta-band__title">We're in beta. Want in?</h2>
             <p class="lead" style="margin-inline:auto">
-              We're taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
+              We're taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off Startup with code <PromoCode />.
             </p>
           </>
         ) : (
