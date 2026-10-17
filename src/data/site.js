@@ -458,19 +458,14 @@ export const GOATCOUNTER_ID = '';
 export const META_PIXEL_ID = '';
 
 /**
- * The client portal, for the "Sign in" link in the header and footer.
- *
- * Unset. Set it to https://portal.getyourwebsite.now once that subdomain is
- * serving. It answered HTTP 522 (Cloudflare reached, origin did not) on every
- * attempt while this was built, and a Sign in button that lands on an error
- * page is worse than no button — so the link is built, styled and tested, and
- * simply doesn't render while this is empty. Filling it in is the whole switch.
+ * The client portal, for the Sign in button in the header and the link in
+ * the footer.
  *
  * Clients are given accounts by us. The label is "Sign in" and never "Sign up"
  * or "Log in" — there is no self-serve registration and the wording must not
  * imply one.
  */
-export const PORTAL_URL = '';
+export const PORTAL_URL = 'https://portal.getyourwebsite.now';
 
 /**
  * The live site, used to prefill the PageSpeed Insights link on /how-it-works.

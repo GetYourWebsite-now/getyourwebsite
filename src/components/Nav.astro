@@ -100,7 +100,7 @@ const here = Astro.url.pathname;
 
     {
       PORTAL_URL && (
-        <a class="nav__signin" href={PORTAL_URL} rel="noopener">
+        <a class="btn btn--secondary btn--sm nav__signin" href={PORTAL_URL} rel="noopener">
           Sign in
         </a>
       )
@@ -138,7 +138,7 @@ const here = Astro.url.pathname;
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
       {PORTAL_URL && (
-        <a class="nav__drawer-signin" href={PORTAL_URL} rel="noopener">
+        <a class="btn btn--secondary nav__drawer-signin" href={PORTAL_URL} rel="noopener">
           Sign in
         </a>
       )}
@@ -303,24 +303,12 @@ const here = Astro.url.pathname;
     font-weight: 600;
   }
 
-  /* Sign in. Deliberately quiet and set apart from the main link group: the
-     CTA is the primary action and this must not compete with it. Clients
-     arrive here knowing they have an account, so it only has to be findable. */
+  /* Sign in. A secondary button, set apart from the primary CTA. Clients
+     arrive here knowing they have an account. */
   .nav__signin {
     display: none;
-    align-items: center;
-    margin-left: 0.5rem;
-    padding: 0.5rem 0 0.5rem 1.25rem;
-    border-left: 1px solid var(--line);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--ink-soft);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color var(--dur) var(--ease);
+    margin-left: 0.85rem;
   }
-
-  .nav__signin:hover { color: var(--ink); }
 
   .nav__cta { display: none; margin-left: 0.75rem; }
 
@@ -394,13 +382,14 @@ const here = Astro.url.pathname;
     justify-content: center;
   }
 
-  .nav__drawer-signin {
+  .nav__drawer-links a.nav__drawer-signin {
     margin-top: var(--s-3);
-    text-align: center;
-    border-bottom: 0 !important;
-    font-size: 0.9375rem;
-    color: var(--ink-soft) !important;
-    font-weight: 500 !important;
+    padding: 0 1.4rem;
+    border: 1px solid var(--line-input);
+    border-bottom: 1px solid var(--line-input);
+    color: var(--ink);
+    background: var(--bg);
+    justify-content: center;
   }
 
   /* Desktop --------------------------------------------------------------- */
