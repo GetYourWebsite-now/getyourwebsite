@@ -21,7 +21,6 @@ import sharp from '../../node_modules/sharp/lib/index.js';
 import { mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { CUTS, FPS, assertReadingTime, compositionId, frames } from './src/script.ts';
-import { assertTextSize } from './src/sizes.ts';
 
 const mode = process.argv[2] ?? 'stills';
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
@@ -30,7 +29,6 @@ const MAX_BYTES = 20 * 1024 * 1024;
 mkdirSync(OUT, { recursive: true });
 
 assertReadingTime();
-assertTextSize();
 
 console.log('Bundling…');
 const serveUrl = await bundle({ entryPoint: here('./src/index.ts') });

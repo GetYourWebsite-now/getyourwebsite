@@ -2,11 +2,9 @@
   "name": "gyw-launch-video",
   "private": true,
   "type": "module",
-  "description": "The beta launch film and three 15s ads, as code. See docs/ads/LAUNCH-VIDEO.md and README.md here.",
+  "description": "The beta launch film and three vertical ads, as code. See docs/ads/LAUNCH-VIDEO-V2.md and README.md here.",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "table": "node table.mjs",
-    "capture": "node capture.mjs",
     "stills": "node render.mjs stills",
     "render": "node render.mjs all"
   },

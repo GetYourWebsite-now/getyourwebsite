@@ -1,0 +1,5 @@
+# Added to what .gitignore already keeps out of `railway up`.
+
+# The launch-video Remotion project: its own package.json, footage and
+# renders. Nothing in the site build reads it.
+tools/video/
