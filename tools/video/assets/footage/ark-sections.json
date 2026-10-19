@@ -1,0 +1,24 @@
+{
+ "1440": {
+  "sections": [
+   {
+    "id": "header",
+    "y": 0,
+    "height": 79
+   },
+   {
+    "id": "hero",
+    "y": 79,
+    "height": 821
+   },
+   {
+    "id": "stats",
+    "y": 900,
+    "height": 920
+   }
+  ],
+  "stopAt": 4503
+ },
+ "url": "https://allergyrescuekit.com",
+ "scale": 2
+}

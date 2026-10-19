@@ -1,0 +1,22 @@
+{
+ "name": "ark-phone-scroll",
+ "fps": 30,
+ "scale": 2,
+ "width": 390,
+ "height": 784,
+ "frames": 204,
+ "duration": 6.8,
+ "log": [
+  {
+   "t": 0,
+   "type": "move",
+   "x": 241.8,
+   "y": 564.48
+  },
+  {
+   "t": 0.5,
+   "type": "mark",
+   "label": "scroll"
+  }
+ ]
+}

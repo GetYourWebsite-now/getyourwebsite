@@ -166,3 +166,134 @@ quick-edit flow; never a drawn page.
   in the first commit so nothing falls back to them.
 - Don't type a price anywhere. Don't claim how long a build takes.
 - Don't push, merge or deploy.
+
+---
+
+# V2.1 — motion pass (2026-10-17, after Jack reviewed the first V2 cut)
+
+Jack's verdict on the first cut: right structure, right footage, **no umph —
+"it's just typing."** The reference is the startup launch film: Linear,
+Raycast, Vercel, Arc. What those have and we don't: a dark stage, UI floating
+in 3D space with parallax, a camera that dives into details, text that blurs
+in and snaps into place, light moving across surfaces, spring physics on
+everything. This pass adds that. Footage, copy, captions and the beat order
+stay as reviewed. **Sound is removed entirely for now** — no music, no SFX;
+the loudness gate is dropped. Keep the 120-BPM grid for cut timing anyway so
+the rhythm survives.
+
+## 1. The stage
+
+- **Dark throughout.** Background `#0a0a0c` (the site's `--footer`), never
+  pure black, never white. The end card is dark too: white type, indigo
+  button, the mark in indigo.
+- One **indigo light** (`#2f3dd6` radial, ~40% of the frame, 18% opacity,
+  blurred) that drifts slowly and moves *with* the camera at 0.4× — it is
+  the far layer of the parallax.
+- Grain over everything at 6%, animated (new noise seed every frame) so
+  nothing is ever still even on a hold.
+- A hairline **indigo rule** (2px) that lives at the bottom of the caption
+  and whips to the new caption's width on every cut — the one element that
+  persists across the whole film and ties the cuts together.
+
+## 2. Devices in 3D
+
+- Every browser/phone frame sits in `perspective: 1400px`. It **enters**
+  from depth: `translateZ(-700px) rotateY(14deg)` with 60% opacity and 10px
+  blur → `translateZ(0) rotateY(0)` sharp, on a Remotion `spring`
+  (`damping: 16, stiffness: 120, mass: 0.9`) — a little overshoot, not a
+  linear slide.
+- While on screen, each device **drifts**: rotateY ±2.5°, rotateX ±1.5°, on
+  a slow sine tied to the frame, plus the camera push-in. The light edge on
+  the frame moves with the tilt: a 1px white-20% top edge and a soft
+  specular highlight that slides across the glass as it rotates (a white
+  linear mask that moves with rotateY).
+- Shadow: a large soft one (`0 60px 120px rgba(0,0,0,.55)`) so the device
+  reads as lifted off the stage.
+- Frames are dark glass (`#141418` chrome, URL text in the mono font, real
+  URL), no notch art.
+
+## 3. Camera
+
+- Default is never static: push-in 1.00 → 1.06 on every hold.
+- **Dive zooms** on the detail that matters, with spring easing: 1.0 → 1.8×
+  into the request box as "Make this warmer" types; into the Live pill as it
+  moves; into the "Sent ✓" button; into the first assembling section. Pull
+  back on a spring before the cut.
+- **Whip pans** between beats where the subject changes: 10 frames,
+  horizontal translate of the whole stage plus a 3-copy offset stack at
+  35/25/15% opacity for motion blur. The caption rule whips with it.
+- One **match cut**: the end card's mark grows out of the Live pill's indigo.
+
+## 4. Type
+
+- Captions and hook: Inter 700, `letter-spacing: -0.03em`. Each word enters
+  with **blur 14px → 0, translateY 18px → 0, opacity 0 → 1, letter-spacing
+  from -0.01em to -0.03em** (it tightens as it lands), 70ms apart, spring.
+- One word per caption is **indigo**: "business", "template", "change",
+  "live", "domain", "$560". Pick the noun that carries the beat.
+- Captions sit low-left on the dark stage in 16:9, upper safe band in 9:16;
+  the 2px indigo rule under them is the persistent element from §1.
+- Hook cards: 110px (16:9) / 128px (9:16), centred, same blur-in; the
+  previous card exits with blur + scale 1.04 as the next enters, overlapping
+  6 frames, so it reads as one continuous thought.
+
+## 5. The build beat, specifically
+
+- Form: 2.0s total as already specified. The form itself is a dark-glass
+  card on the stage, 3D like the devices. Typing has no sound; the caret
+  blinks at 530ms.
+- "Sent ✓": the button's indigo **flashes to white for 2 frames** and a ring
+  (1px indigo) expands from it and fades — the only "effect" on the form.
+- Time jump: hard cut to the empty dark browser frame entering from depth
+  (§2), 0.3s.
+- **Assembly from depth, not from the side:** each Cedar section starts at
+  `translateZ(-900px)`, 30% opacity, 12px blur, slightly rotated (±3°), and
+  springs into place with overshoot, 90ms apart, while the camera pushes
+  down the page. The last section landing triggers a single light sweep
+  across the whole frame (the specular from §2, fast).
+
+## 6. Portal beats
+
+- Change: dive zoom into the real request box (1.8×) as the text types;
+  cursor has a 6-frame trail and a click ripple (ring, 160ms). On send, the
+  panel's status line pops (scale 0.9 → 1 spring) and the camera pulls back.
+- Person: the status chip flipping to approved gets the ring pulse; nothing
+  else — this beat is short.
+- Switch: split screen; the Live pill **moves** between nodes along the
+  connector (not teleports) with the ring pulse on arrival, and the preview
+  does its 1.04× push as the palette changes. Connector lines draw in.
+
+## 7. Hosted and end
+
+- ARK phone enters from depth; the desktop frame enters 300ms later from the
+  opposite rotation so they settle facing each other slightly, like two
+  panels on a stage. Slow counter-drift between them (parallax).
+- End card: dark. The mark grows from the Live pill (match cut), "Startup
+  from $560" blur-snaps in with "$560" indigo, the beta line under it, the
+  button last with the ring pulse. Hold 4.0s with the light drifting; the
+  indigo rule settles to the button's width.
+
+## 8. Gates (updated)
+
+- Drop: loudness, music/SFX presence.
+- Keep: reading rule 1.2×/1.2s-min, text floors, no-still-frame (now
+  trivially met by grain + drift — keep it anyway), size < 25 MB, yuv420p
+  limited range, 9:16 safe zones.
+- Add: **no pure black (#000) or pure white (#fff) frame anywhere** — the
+  stage is #0a0a0c and type is #f6f7f9.
+
+## 9. Order
+
+1. Build §1–4 as reusable pieces (Stage, Device3D, Camera, Type) and show a
+   10-second **motion test** on the hook + build beat only. Stop.
+2. On OK, apply to the whole film. Contact sheet + MP4. Stop.
+3. Ads get the same system. Contact sheet. Stop.
+4. Render, gates, commit "Launch video V2.1: motion pass, silent", stop.
+
+## Don't
+
+- No gradients on text, no glow on text, no lens flares, no particles, no
+  3D models, no stock anything. The 3D is perspective on flat real footage,
+  nothing more.
+- No sound of any kind in this pass.
+- Don't change copy, captions, footage or beat order from the reviewed cut.

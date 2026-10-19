@@ -1,0 +1,34 @@
+{
+ "1440": {
+  "sections": [
+   {
+    "id": "header",
+    "y": 0,
+    "height": 80
+   },
+   {
+    "id": "hero",
+    "y": 80,
+    "height": 600
+   },
+   {
+    "id": "fix",
+    "y": 680,
+    "height": 693
+   },
+   {
+    "id": "band",
+    "y": 1373,
+    "height": 560
+   },
+   {
+    "id": "how",
+    "y": 1933,
+    "height": 502
+   }
+  ],
+  "stopAt": 2435
+ },
+ "url": "https://andysauto.org",
+ "scale": 2
+}

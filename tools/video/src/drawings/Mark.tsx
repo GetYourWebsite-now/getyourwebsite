@@ -15,9 +15,9 @@ const HEX =
 
 const c = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
 
-export const Mark: React.FC<{ size: number; draw?: number; inverse?: boolean; style?: React.CSSProperties }> = ({ size, draw = 1, inverse, style }) => {
+export const Mark: React.FC<{ size: number; draw?: number; inverse?: boolean; page?: string; style?: React.CSSProperties }> = ({ size, draw = 1, inverse, page: pageColour, style }) => {
   const fg = inverse ? '#ffffff' : ACCENT;
-  const page = inverse ? TOKENS.black : '#ffffff';
+  const page = pageColour ?? (inverse ? TOKENS.black : '#ffffff');
   const outline = interpolate(draw, [0, 0.55], [1, 0], c);
   const fill = interpolate(draw, [0.55, 0.75], [0, 1], c);
   const p1 = interpolate(draw, [0.75, 0.88], [0, 1], c);

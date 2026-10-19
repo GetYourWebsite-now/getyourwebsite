@@ -1,0 +1,34 @@
+{
+ "1440": {
+  "sections": [
+   {
+    "id": "header",
+    "y": 0,
+    "height": 119
+   },
+   {
+    "id": "hero",
+    "y": 119,
+    "height": 685
+   },
+   {
+    "id": "services",
+    "y": 804,
+    "height": 722
+   },
+   {
+    "id": "seasons",
+    "y": 1526,
+    "height": 507
+   },
+   {
+    "id": "process",
+    "y": 2033,
+    "height": 508
+   }
+  ],
+  "stopAt": 2540
+ },
+ "url": "public/landscaping.html",
+ "scale": 2
+}

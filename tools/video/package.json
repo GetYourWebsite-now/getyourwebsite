@@ -5,6 +5,9 @@
   "description": "The beta launch film and three vertical ads, as code. See docs/ads/LAUNCH-VIDEO-V2.md and README.md here.",
   "scripts": {
     "studio": "remotion studio src/index.ts",
+    "capture": "node capture.mjs",
+    "music": "node bpm.mjs",
+    "table": "node table.mjs",
     "stills": "node render.mjs stills",
     "render": "node render.mjs all"
   },

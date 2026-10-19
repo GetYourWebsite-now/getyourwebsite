@@ -2,5 +2,7 @@ declare module '*.woff2' { const url: string; export default url; }
 declare module '*.png' { const url: string; export default url; }
 declare module '*.jpg' { const url: string; export default url; }
 declare module '*.svg' { const url: string; export default url; }
+declare module '*.webm' { const url: string; export default url; }
+declare module '*.mp3' { const url: string; export default url; }
+declare module '*.wav' { const url: string; export default url; }
 declare module '*/site.js';
-declare module '*/version-tree.js';
