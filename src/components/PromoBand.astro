@@ -1,0 +1,71 @@
+---
+/**
+ * The beta promotion, under the header. One size of type, the way the seat
+ * banner is: the percent and the code are the accent, the rest is the
+ * sentence. A midpoint keeps the three parts of the offer in one line on
+ * a wide screen, and they stack on a phone without a stray dot.
+ * The whole band is the link — no second primary button.
+ */
+import { BETA, BETA_PERCENT } from '../data/site.js';
+import { url } from '../data/url.js';
+import PromoCode from './PromoCode.astro';
+---
+
+<a class="promo-band" href={url(BETA.path)}>
+  <span class="promo-band__line"><span class="promo-band__bit"><span class="promo-band__pct">{BETA_PERCENT}</span> off Startup</span><span class="promo-band__bit">Code <PromoCode plain /></span><span class="promo-band__bit">The first {BETA.seats} businesses in the beta</span></span>
+</a>
+
+<style>
+  .promo-band {
+    display: block;
+    background: var(--bg);
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    padding: 0.85rem 1.25rem;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  /* The nav's own rule would cut a line through this white header. The
+     band's bottom edge is the one line before the page. */
+  :global(body:has(.promo-band) .nav) { border-bottom: 0; }
+
+  .promo-band:hover { color: var(--ink); }
+  .promo-band:hover .promo-band__pct,
+  .promo-band:hover :global(.promo-code--plain) { color: var(--accent-hover); }
+
+  .promo-band__line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    column-gap: 0.85rem;
+    row-gap: 0.15rem;
+    font-size: var(--t-lead);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+
+  .promo-band__pct {
+    color: var(--accent);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* The dot belongs to the phrase that follows it, so a wrap never leaves
+     a midpoint stranded at the end of a line. */
+  .promo-band__bit + .promo-band__bit::before {
+    content: '·';
+    margin-right: 0.85rem;
+    color: var(--ink-muted);
+    font-weight: 400;
+  }
+
+  @media (max-width: 640px) {
+    .promo-band__line {
+      flex-direction: column;
+      align-items: center;
+    }
+    .promo-band__bit + .promo-band__bit::before { content: none; }
+  }
+</style>

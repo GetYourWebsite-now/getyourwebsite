@@ -1,9 +1,9 @@
 ---
 /**
- * Sticky site navigation. White, one hairline bottom border, no blur.
- *
- * Solid on every page including the home page: there is no longer a dark
- * hero for it to float over.
+ * Site navigation. At the top of the page it is full width, in the header.
+ * Once that bar scrolls off, the links stay put and the surface eases
+ * inward: frosted white, rounded, with a faint purple border that fades in after.
+ * The seat count stays in the page and scrolls away.
  */
 import { BETA, NAV_LINKS, PORTAL_URL, PRIMARY_CTA, SIGNUP_COUNT_URL } from '../data/site.js';
 import { url, isActive } from '../data/url.js';
@@ -76,6 +76,9 @@ const here = Astro.url.pathname;
     )
   }
 
+  <div class="nav__slot" data-nav-slot>
+  <div class="nav__bar" data-nav-bar>
+  <div class="nav__glass" data-nav-glass aria-hidden="true"></div>
   <div class="nav__inner shell">
     <a class="nav__brand" href={url('/')} aria-label="GetYourWebsite — home">
       <Wordmark />
@@ -97,7 +100,7 @@ const here = Astro.url.pathname;
 
     {
       PORTAL_URL && (
-        <a class="nav__signin" href={PORTAL_URL} rel="noopener">
+        <a class="btn btn--secondary btn--sm nav__signin" href={PORTAL_URL} rel="noopener">
           Sign in
         </a>
       )
@@ -135,21 +138,95 @@ const here = Astro.url.pathname;
       {/* Below the CTA on purpose: findable, and out of the way of the thing we
           actually want a first-time visitor to press. */}
       {PORTAL_URL && (
-        <a class="nav__drawer-signin" href={PORTAL_URL} rel="noopener">
+        <a class="btn btn--secondary nav__drawer-signin" href={PORTAL_URL} rel="noopener">
           Sign in
         </a>
       )}
     </nav>
   </div>
+  </div>
+  </div>
 </header>
 
 <style>
   .nav {
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 100;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
+  }
+
+  /* Holds the bar's height in the page once the bar itself is fixed, so the
+     promo band does not jump up under it. */
+  .nav__slot { height: 68px; }
+
+  .nav__bar { background: var(--bg); }
+
+  /* The links stay in the shell. This layer eases inward to a frosted
+     white panel. The border is one faint purple line on every side, and
+     it arrives after the shape. */
+  .nav__glass {
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    border: 1px solid transparent;
+    border-radius: 0;
+    background: var(--bg);
+    box-shadow: none;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      left 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      right 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 720ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 1800ms cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+
+  .nav__bar.is-fixed {
+    position: fixed;
+    z-index: 100;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    width: auto;
+    margin: 0;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .nav__bar.is-fixed .nav__glass {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav__bar.is-floating .nav__glass {
+    left: max(0.5rem, calc((100% - var(--shell)) / 2 - 0.75rem));
+    right: max(0.5rem, calc((100% - var(--shell)) / 2 - 0.75rem));
+    border-radius: var(--radius);
+    border-color: rgba(47, 61, 214, 0.18);
+    background: rgba(255, 255, 255, 0.62);
+    box-shadow: var(--lift);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    backdrop-filter: blur(18px) saturate(1.4);
+  }
+
+  .nav__bar.is-fixed .nav__inner,
+  .nav__bar.is-fixed .nav__drawer { pointer-events: auto; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__bar,
+    .nav__glass { transition: none; }
+  }
+
+  .nav__bar.is-floating .nav__drawer {
+    background: transparent;
+    border-bottom: 0;
   }
 
   /* Seat count. Hidden until the script has a number, so a failed
@@ -182,6 +259,8 @@ const here = Astro.url.pathname;
   }
 
   .nav__inner {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     gap: var(--s-4);
@@ -224,24 +303,12 @@ const here = Astro.url.pathname;
     font-weight: 600;
   }
 
-  /* Sign in. Deliberately quiet and set apart from the main link group: the
-     CTA is the primary action and this must not compete with it. Clients
-     arrive here knowing they have an account, so it only has to be findable. */
+  /* Sign in. A secondary button, set apart from the primary CTA. Clients
+     arrive here knowing they have an account. */
   .nav__signin {
     display: none;
-    align-items: center;
-    margin-left: 0.5rem;
-    padding: 0.5rem 0 0.5rem 1.25rem;
-    border-left: 1px solid var(--line);
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--ink-soft);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: color var(--dur) var(--ease);
+    margin-left: 0.85rem;
   }
-
-  .nav__signin:hover { color: var(--ink); }
 
   .nav__cta { display: none; margin-left: 0.75rem; }
 
@@ -280,6 +347,8 @@ const here = Astro.url.pathname;
   /* Drawer ---------------------------------------------------------------- */
 
   .nav__drawer {
+    position: relative;
+    z-index: 1;
     background: var(--bg);
     border-bottom: 1px solid var(--line);
   }
@@ -313,13 +382,14 @@ const here = Astro.url.pathname;
     justify-content: center;
   }
 
-  .nav__drawer-signin {
+  .nav__drawer-links a.nav__drawer-signin {
     margin-top: var(--s-3);
-    text-align: center;
-    border-bottom: 0 !important;
-    font-size: 0.9375rem;
-    color: var(--ink-soft) !important;
-    font-weight: 500 !important;
+    padding: 0 1.4rem;
+    border: 1px solid var(--line-input);
+    border-bottom: 1px solid var(--line-input);
+    color: var(--ink);
+    background: var(--bg);
+    justify-content: center;
   }
 
   /* Desktop --------------------------------------------------------------- */
@@ -338,6 +408,94 @@ const here = Astro.url.pathname;
 </style>
 
 <script>
+  // The links never travel. The glass starts as the full-width bar and eases
+  // inward; scrolling back puts the bar in the header again.
+  const slot = document.querySelector<HTMLElement>('[data-nav-slot]');
+  const bar = document.querySelector<HTMLElement>('[data-nav-bar]');
+  const glass = document.querySelector<HTMLElement>('[data-nav-glass]');
+  if (slot && bar && glass) {
+    const FLOAT_TOP = 16;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let ticking = false;
+
+    const pastTop = () => window.scrollY > 0 && slot.getBoundingClientRect().top < FLOAT_TOP;
+
+    const holdGlass = () => {
+      glass.style.transition = 'none';
+      glass.style.opacity = '1';
+      glass.style.top = '0';
+      glass.style.right = '0';
+      glass.style.bottom = '0';
+      glass.style.left = '0';
+      glass.style.borderRadius = '0';
+      glass.style.background = '#fff';
+      glass.style.boxShadow = 'none';
+      glass.style.borderColor = 'transparent';
+      glass.style.backdropFilter = 'none';
+    };
+
+    const releaseGlass = () => {
+      glass.style.transition = '';
+      glass.style.opacity = '';
+      glass.style.top = '';
+      glass.style.right = '';
+      glass.style.bottom = '';
+      glass.style.left = '';
+      glass.style.borderRadius = '';
+      glass.style.background = '';
+      glass.style.boxShadow = '';
+      glass.style.borderColor = '';
+      glass.style.backdropFilter = '';
+    };
+
+    const toFloating = () => {
+      const off = bar.getBoundingClientRect().top < 0;
+      bar.classList.add('is-fixed');
+      if (reduce || off) {
+        releaseGlass();
+        bar.classList.add('is-floating');
+        return;
+      }
+      holdGlass();
+      void glass.offsetWidth;
+      bar.classList.add('is-floating');
+      releaseGlass();
+    };
+
+    const toRest = () => {
+      glass.style.transition = 'none';
+      bar.classList.remove('is-floating', 'is-fixed');
+      releaseGlass();
+      glass.style.transition = 'none';
+      void bar.offsetWidth;
+      glass.style.transition = '';
+    };
+
+    const update = () => {
+      ticking = false;
+      const past = pastTop();
+      const floating = bar.classList.contains('is-floating');
+      if (past && !floating) toFloating();
+      else if (!past && floating) toRest();
+    };
+
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    if (reduce) {
+      update();
+      window.addEventListener('scroll', update, { passive: true });
+    } else {
+      slot.style.height = `${bar.offsetHeight}px`;
+      update();
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onScroll, { passive: true });
+    }
+  }
+
   // --- Mobile drawer -------------------------------------------------------
   const burger = document.querySelector<HTMLButtonElement>('[data-burger]');
   const drawer = document.querySelector<HTMLElement>('[data-drawer]');

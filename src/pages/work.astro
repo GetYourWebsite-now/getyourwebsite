@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import CaseStudy from '../components/CaseStudy.astro';
+import PromoCode from '../components/PromoCode.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import { BETA, BETA_PERCENT, PRIMARY_CTA, LIVE_SITES, CONCEPT_PROJECTS } from '../data/site.js';
 import { url } from '../data/url.js';
@@ -68,7 +69,7 @@ import { url } from '../data/url.js';
           <>
             <h2>Want one of these with your name on it?</h2>
             <p class="lead" style="margin-inline:auto">
-              We're in beta, taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off.
+              We're in beta, taking on a small number of businesses — the first {BETA.seats} at {BETA_PERCENT} off Startup with code <PromoCode />.
             </p>
           </>
         ) : (

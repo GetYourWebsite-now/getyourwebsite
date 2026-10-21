@@ -30,6 +30,8 @@ interface Props {
     price?: number;
     monthly?: number;
     popular?: boolean;
+    /** Who the tier is for. Shown on the full card, not the home teaser. */
+    fit?: string;
   };
   /** Home page version: name, price and the revision count only. */
   teaser?: boolean;
@@ -43,14 +45,17 @@ const listPrice = isStartup ? tier.price! : tier.monthly!;
 const charged = isStartup ? startupPrice(tier) : listPrice;
 const discounted = isStartup && BETA.on && charged !== listPrice;
 
+const revisions = (n: number, tail: string) =>
+  `${n} revision${n === 1 ? '' : 's'} ${tail}`;
+
 const lines = isStartup
   ? [
-      `${tier.revisions} revisions included`,
+      revisions(tier.revisions, 'included'),
       `Use them within ${STARTUP_REVISIONS_EXPIRE_DAYS} days`,
       'Unlimited pages',
     ]
   : [
-      `${tier.revisions} revisions a month`,
+      revisions(tier.revisions, 'a month'),
       `Extras ${money(EXTRA_REVISION)} each`,
       'Hosting, domain and SSL included',
       'Every version kept',
@@ -65,6 +70,7 @@ const lines = isStartup
 
   <header class="tier__head">
     <h3 class="tier__name">{tier.name}</h3>
+    {!teaser && tier.fit && <p class="tier__fit">{tier.fit}</p>}
     {
       discounted && (
         <p class="tier__was-line">
@@ -142,6 +148,14 @@ const lines = isStartup
   .tier__name {
     font-size: 1.125rem;
     margin-bottom: 0.6rem;
+  }
+
+  .tier__name:has(+ .tier__fit) { margin-bottom: 0.35rem; }
+
+  .tier__fit {
+    margin-bottom: 0.85rem;
+    font-size: var(--t-small);
+    color: var(--ink-soft);
   }
 
   .tier__price {

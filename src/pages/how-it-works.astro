@@ -19,6 +19,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { url } from '../data/url.js';
 import { LIVE_SITE_URL, BETA, BETA_PERCENT, PRIMARY_CTA } from '../data/site.js';
 import ClickToChange from '../components/anim/ClickToChange.astro';
+import PromoCode from '../components/PromoCode.astro';
 import PhotoDrop from '../components/anim/PhotoDrop.astro';
 import DomainConnect from '../components/anim/DomainConnect.astro';
 
@@ -204,9 +205,11 @@ const pagespeed = `https://pagespeed.web.dev/analysis?url=${encodeURIComponent(L
     <div class="shell-narrow" style="text-align:center" data-reveal>
       <h2 class="cta-band__title">See it with your own business in it.</h2>
       <p class="lead" style="margin-inline:auto">
-        {BETA.on
-          ? `We're in beta — the first ${BETA.seats} businesses get ${BETA_PERCENT} off Startup.`
-          : "We'll build you a free mock of your homepage first. No card, no catch."}
+        {BETA.on ? (
+          <>We're in beta — the first {BETA.seats} businesses get {BETA_PERCENT} off Startup with code <PromoCode />.</>
+        ) : (
+          "We'll build you a free mock of your homepage first. No card, no catch."
+        )}
       </p>
       <div class="btn-row btn-row--center" style="margin-top:var(--s-5)">
         <a class="btn btn--primary btn--lg" href={url(PRIMARY_CTA.href)}>{PRIMARY_CTA.label}</a>
